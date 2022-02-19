@@ -1,5 +1,5 @@
 import pandas as pd
-import cupy as np
+import numpy as np
 import json
 from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
