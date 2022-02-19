@@ -9,7 +9,8 @@ import tensorflow as tf
 def my_loss(y_true, y_pred):
     y_true = tf.cast(y_true, tf.float32)
    # tf.math.maximum(y_true, tf.keras.backend.epsilon())
-    loss1 = tf.reduce_mean(y_true * -tf.math.log(tf.math.maximum(y_pred, tf.keras.backend.epsilon())) + (1-y_true) * (-tf.math.log(tf.math.maximum(1 - y_pred, tf.keras.backend.epsilon()))))
+    loss1 = tf.reduce_mean(y_true * -tf.math.log(tf.math.maximum(y_pred, tf.keras.backend.epsilon())) + (1-y_true) * (-tf.math.log(tf.math.maximum(1 - y_pred, tf.keras.backend.epsilon()))), axis = 1)
+    print(loss1.get_shape())
     loss = tf.reduce_mean(loss1)
     return loss
     
@@ -103,7 +104,7 @@ def max_pooling(x_train, y_train):
     #Compile model
     model.compile(loss = my_loss, optimizer = "Adam", metrics = ["Accuracy", "Precision"])
     #Train model
-    model.fit(x_train, y_train, batch_size = 192, epochs = 50, validation_split = 0.2)
+    model.fit(x_train, y_train, epochs = 50, validation_split = 0.2)
     
     return model
     
