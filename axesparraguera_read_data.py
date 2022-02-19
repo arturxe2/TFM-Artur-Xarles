@@ -7,7 +7,8 @@ from tensorflow.keras import layers
 import tensorflow as tf
 
 def my_loss(y_true, y_pred):
-    tf.reduce_mean(tf.reduce_mean(y_true * tf.math.log(y_pred) + (1 - y_true) * - tf.math.log(1 - y_pred), axis = 1))
+    loss = tf.reduce_mean(tf.reduce_mean(y_true * tf.math.log(y_pred) + (1 - y_true) * - tf.math.log(1 - y_pred), axis = 1))
+    return loss
 
 def read_data(chunks = 60, data_split = "train"):
     #Initialize values
@@ -62,7 +63,7 @@ def read_data(chunks = 60, data_split = "train"):
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 20:
+        if i == 3:
             break
     
     #Resize data, and put output in one-hot-encoding
