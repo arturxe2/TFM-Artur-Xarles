@@ -99,7 +99,7 @@ def max_pooling(x_train, y_train):
     return model
     
 chunks = 120
-x_train, y_train, classes = read_data_train(chunks = chunks, data_split = "train")
+x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
 #np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
 #np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
 
@@ -107,9 +107,9 @@ x_train, y_train, classes = read_data_train(chunks = chunks, data_split = "train
 #y_train = np.load('/home-net/axesparraguera/data/y_train.npy')
 
 #classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free-kick', 
-           'Foul', 'Goal', 'Indirect free-kick', 'Kick-off', 'Offside', 'Penalty', 'Red card', 
-           'Shots off target', 'Shots on target', 'Substitution', 'Throw-in', 'Yellow card', 
-           'Yellow->red card']
+#           'Foul', 'Goal', 'Indirect free-kick', 'Kick-off', 'Offside', 'Penalty', 'Red card', 
+#           'Shots off target', 'Shots on target', 'Substitution', 'Throw-in', 'Yellow card', 
+#           'Yellow->red card']
 
 x_test, y_test, classes2 = read_data(chunks = chunks, data_split = "test")
 
