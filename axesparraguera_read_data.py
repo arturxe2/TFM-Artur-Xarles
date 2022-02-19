@@ -58,7 +58,7 @@ def read_data_train(chunks = 60):
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 200:
+        if i == 1000:
             break
     
     #Resize data, and put output in one-hot-encoding
@@ -94,7 +94,7 @@ def max_pooling(x_train, y_train):
     #Compile model
     model.compile(loss = "BinaryCrossentropy", optimizer = "Adam", metrics = ["Accuracy", "Precision"])
     #Train model
-    model.fit(x_train, y_train, epochs = 300, validation_split = 0.2)
+    model.fit(x_train, y_train, epochs = 50, validation_split = 0.2)
     
     return model
     
