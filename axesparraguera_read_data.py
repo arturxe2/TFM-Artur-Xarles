@@ -96,7 +96,7 @@ def max_pooling(x_train, y_train):
             layers.MaxPooling1D(pool_size = chunks),
             layers.Flatten(),
             layers.Dense(x_train.shape[2] * 2, activation = 'relu'),
-            layers.Dropout(0.4),
+            layers.Dropout(0.6),
             layers.Dense(output_shape, activation = "sigmoid"),
             ]
         )
