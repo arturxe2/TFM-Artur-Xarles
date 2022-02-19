@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
-import os
 import json
 from sklearn.preprocessing import MultiLabelBinarizer
+from tensorflow import keras
+from tensorflow.kears import layers
 
 def read_data_train(chunks = 60):
     #Initialize values
@@ -57,7 +58,7 @@ def read_data_train(chunks = 60):
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 100:
+        if i == 5:
             break
     
     #Resize data, and put output in one-hot-encoding
@@ -71,7 +72,30 @@ def read_data_train(chunks = 60):
 
     return X, res, classes
 
-x_train, y_train, classes = read_data_train(chunks = 120)
-print(x_train.shape)
-print(y_train.shape)
-print(classes)
+def max_pooling(x_train, y_train):
+    #Input and output sizes
+    chunks = x_train.shape[1]
+    input_shape = (chunks, x_train.shape[2])
+    output_shape = y_train.shape[1]
+    #Define model
+    model = keras.Sequential(
+        [
+            keras.Input(shape = input_shape),
+            layers.MaxPooling1D(pool_size = chunks),
+            layers.Flatten(),
+            layers.Dense(200, activation = 'relu'),
+            layers.Dropout(0.4),
+            layers.Dense(output_shape, activation = "sigmoid"),
+            ]
+        )
+    print(model.summary)
+    #Compile model
+    model.compile(loss = "BinaryCrossentropy", optimizer = "Adam", metrics = ["Accuracy", "Precision"])
+    #Train model
+    model.fit(x_train, y_train, epochs = 25, validation_split = 0.2)
+    
+    return model
+    
+chunks = 120
+x_train, y_train, classes = read_data_train(chunks = chunks)
+model = max_pooling(x_train, y_train)
