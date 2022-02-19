@@ -51,8 +51,6 @@ for line in lines:
         y_train.append(y)
         i += 1
 
-    print(X)
-    print(y_train)
     print(i)
     if i == 2:
         break
