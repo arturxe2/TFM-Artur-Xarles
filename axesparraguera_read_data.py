@@ -5,7 +5,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
 from tensorflow.keras import layers
 
-def read_data_train(chunks = 60):
+def read_data(chunks = 60, data_split = "train"):
     #Initialize values
     i = 0
     n_total = 0
@@ -14,7 +14,7 @@ def read_data_train(chunks = 60):
     #Define train matches directories
     path = '/data-net/datasets/SoccerNetv2/data_split/'
     init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
-    with open(path + 'train.txt') as f:
+    with open(path + data_split + '.txt') as f:
         lines = f.readlines()
     #Read data for each match
     for line in lines:
@@ -99,7 +99,7 @@ def max_pooling(x_train, y_train):
     return model
     
 chunks = 120
-#x_train, y_train, classes = read_data_train(chunks = chunks)
+#x_train, y_train, classes = read_data_train(chunks = chunks, data_split = "train")
 #np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
 #np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
 
@@ -111,9 +111,14 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
            'Shots off target', 'Shots on target', 'Substitution', 'Throw-in', 'Yellow card', 
            'Yellow->red card']
 
+x_test, y_test, classes2 = read_data(chunks = chunks, data_split = "test")
+
 
 model = max_pooling(x_train, y_train)
 
-print(np.round(model.predict(x_train[0:10, :, :]), 2))
-print(y_train[0:10])
+print(model.evaluate(x_test, y_test))
+
+print(np.round(model.predict(x_test[0:10, :, :]), 2))
+print(y_test[0:10])
 print(classes)
+print(classes2)
