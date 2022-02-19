@@ -49,7 +49,7 @@ for line in lines:
         else:
             y = y.tolist()
         y_train.append(y)
-    i += 1
+
 
     print(i)
     if i == 2:
