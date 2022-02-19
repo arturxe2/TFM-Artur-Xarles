@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import json
+from sklearn.preprocessing import MultiLabelBinarizer
 
 path = '/data-net/datasets/SoccerNetv2/data_split/'
 init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
@@ -23,6 +24,7 @@ for line in lines:
     features1 = np.load(init_path + line.rstrip('\n') + '/1_ResNET_TF2.npy')
     features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
     n_chunks1 = int(features1.shape[0] // chunks)
+    print(features1.shape)
     n_chunks2 = int(features2.shape[0] // chunks)
     n_total = n_total + n_chunks1 + n_chunks2
     actions = pd.DataFrame(json.load(open(init_path + line.rstrip('\n') + '/Labels-v2.json'))['annotations'])
@@ -54,3 +56,14 @@ for line in lines:
     print(i)
     if i == 2:
         break
+
+X = np.array(X).reshape(n_total, chunks, features1.shape[1])
+y_train = y_train[1:]
+aux = pd.Series(y_train)
+mlb = MultiLabelBinarizer()
+res = pd.DataFrame(mlb.fit_transform(aux), columns = mlb.classes_, index = aux.index)
+classes = res.columns
+res = np.array(res)
+print(X.shape)
+print(res.shape)
+print(classes)
