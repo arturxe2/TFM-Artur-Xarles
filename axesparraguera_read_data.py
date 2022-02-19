@@ -7,7 +7,7 @@ from tensorflow.keras import layers
 import tensorflow as tf
 
 def my_loss(y_true, y_pred):
-    loss = tf.reduce_mean(tf.reduce_mean(y_true * -tf.math.log(y_pred) + (1 - y_true) * -tf.math.log(1 - y_pred), axis = 1))
+    loss = tf.reduce_mean(tf.reduce_mean(y_true * -tf.math.log(y_pred) + (1 - y_true) * -tf.math.log(1 - y_pred)))
     return loss
 
 def read_data(chunks = 60, data_split = "train"):
@@ -99,7 +99,7 @@ def max_pooling(x_train, y_train):
     #Compile model
     model.compile(loss = my_loss, optimizer = "Adam", metrics = ["Accuracy", "Precision"])
     #Train model
-    model.fit(x_train, y_train, epochs = 50, validation_split = 0.2)
+    model.fit(x_train, y_train.astype('float'), epochs = 50, validation_split = 0.2)
     
     return model
     
