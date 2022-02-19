@@ -7,8 +7,6 @@ from tensorflow.keras import layers
 import tensorflow as tf
 
 def my_loss(y_true, y_pred):
-    y_true = tf.cast(y_true, tf.float32)
-    y_pred = tf.cast(y_pred, tf.float32)
     tf.reduce_mean(tf.reduce_mean(y_true * tf.math.log(y_pred) + (1 - y_true) * - tf.math.log(1 - y_pred), axis = 1))
 
 def read_data(chunks = 60, data_split = "train"):
