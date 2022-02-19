@@ -8,7 +8,9 @@ import tensorflow as tf
 
 def my_loss(y_true, y_pred):
     y_true = tf.cast(y_true, tf.float32)
-    loss = tf.reduce_mean(tf.reduce_mean(tf.math.maximum(y_true, tf.keras.backend.epsilon()) * -tf.math.log(tf.math.maximum(y_pred, tf.keras.backend.epsilon())) + (1-y_true) * (-tf.math.log(tf.math.maximum(1 - y_pred, tf.keras.backend.epsilon()))), axis = 0))
+    loss1 = tf.reduce_mean(tf.math.maximum(y_true, tf.keras.backend.epsilon()) * -tf.math.log(tf.math.maximum(y_pred, tf.keras.backend.epsilon())) + (1-y_true) * (-tf.math.log(tf.math.maximum(1 - y_pred, tf.keras.backend.epsilon()))), axis = 0)
+    loss = tf.reduce_mean(loss1)
+    print(loss1.get_shape())
     return loss
 
 def read_data(chunks = 60, data_split = "train"):
