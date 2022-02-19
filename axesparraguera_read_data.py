@@ -9,7 +9,7 @@ import tensorflow as tf
 def my_loss(y_true, y_pred):
     y_true = tf.cast(y_true, tf.float32)
     #loss = tf.reduce_mean(y_true * y_pred + (1 - y_true) * y_pred)
-    loss = tf.reduce_mean((1-y_true) * (-tf.math.log(tf.math.maximum(1 - y_pred, tf.keras.backend.epsilon()))))
+    loss = tf.reduce_mean(tf.math.log(y_pred) + (1-y_true) * (-tf.math.log(tf.math.maximum(1 - y_pred, tf.keras.backend.epsilon()))))
     return loss
 
 def read_data(chunks = 60, data_split = "train"):
