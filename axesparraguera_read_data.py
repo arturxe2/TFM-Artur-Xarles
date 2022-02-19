@@ -8,7 +8,7 @@ init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
 with open(path + 'train.txt') as f:
     lines = f.readlines()
     
-print(os.listdir(init_path + '/england_epl'))
+print(os.listdir(init_path + 'england_epl/'))
 
 i = 0
 for line in lines:
