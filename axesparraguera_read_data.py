@@ -58,7 +58,7 @@ def read_data(chunks = 60, data_split = "train"):
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 10:
+        if i == 20:
             break
     
     #Resize data, and put output in one-hot-encoding
@@ -99,14 +99,14 @@ def max_pooling(x_train, y_train):
     return model
     
 chunks = 120
-#x_train, y_train, classes = read_data_train(chunks = chunks, data_split = "train")
+x_train, y_train, classes = read_data_train(chunks = chunks, data_split = "train")
 #np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
 #np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
 
-x_train = np.load('/home-net/axesparraguera/data/x_train.npy')
-y_train = np.load('/home-net/axesparraguera/data/y_train.npy')
+#x_train = np.load('/home-net/axesparraguera/data/x_train.npy')
+#y_train = np.load('/home-net/axesparraguera/data/y_train.npy')
 
-classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free-kick', 
+#classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free-kick', 
            'Foul', 'Goal', 'Indirect free-kick', 'Kick-off', 'Offside', 'Penalty', 'Red card', 
            'Shots off target', 'Shots on target', 'Substitution', 'Throw-in', 'Yellow card', 
            'Yellow->red card']
@@ -115,11 +115,11 @@ x_test, y_test, classes2 = read_data(chunks = chunks, data_split = "test")
 
 print(classes)
 print(classes2)
-#model = max_pooling(x_train, y_train)
+model = max_pooling(x_train, y_train)
 
-#print(model.evaluate(x_test, y_test))
+print(model.evaluate(x_test, y_test))
 
-#print(np.round(model.predict(x_test[0:10, :, :]), 2))
-#print(y_test[0:10])
+print(np.round(model.predict(x_test[0:10, :, :]), 2))
+print(y_test[0:10])
 #print(classes)
 #print(classes2)
