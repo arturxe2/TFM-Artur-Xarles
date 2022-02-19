@@ -4,6 +4,10 @@ import json
 from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
 from tensorflow.keras import layers
+import tensorflow as tf
+
+def my_loss(y_true, y_pred):
+    tf.mean(tf.reduce_mean(y_true * tf.math.log(y_pred) + (1 - y_true) * - tf.math.log(1 - y_pred), axis = 1))
 
 def read_data(chunks = 60, data_split = "train"):
     #Initialize values
@@ -92,7 +96,7 @@ def max_pooling(x_train, y_train):
         )
     print(model.summary)
     #Compile model
-    model.compile(loss = "BinaryCrossentropy", optimizer = "Adam", metrics = ["Accuracy", "Precision"])
+    model.compile(loss = my_loss, optimizer = "Adam", metrics = ["Accuracy", "Precision"])
     #Train model
     model.fit(x_train, y_train, epochs = 50, validation_split = 0.2)
     
