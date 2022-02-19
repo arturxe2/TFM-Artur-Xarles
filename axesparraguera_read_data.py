@@ -98,7 +98,7 @@ def max_pooling(x_train, y_train):
     #Compile model
     model.compile(loss = my_loss, optimizer = "Adam", metrics = ["Accuracy", "Precision"])
     #Train model
-    model.fit(x_train, y_train, epochs = 50, validation_split = 0.2)
+    model.fit(x_train, y_train.astype(float), epochs = 50, validation_split = 0.2)
     
     return model
     
