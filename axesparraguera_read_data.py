@@ -38,7 +38,7 @@ for line in lines:
         else:
             y = y.tolist()
         y_train.append(y)
-        i += 1
+        
 
     for n in range(n_chunks2):
         x = features2[n * chunks : (n + 1) * chunks, :]
@@ -49,7 +49,7 @@ for line in lines:
         else:
             y = y.tolist()
         y_train.append(y)
-        i += 1
+    i += 1
 
     print(i)
     if i == 2:
