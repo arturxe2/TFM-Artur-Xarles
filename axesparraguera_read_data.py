@@ -85,7 +85,7 @@ def max_pooling(x_train, y_train):
             keras.Input(shape = input_shape),
             layers.MaxPooling1D(pool_size = chunks),
             layers.Flatten(),
-            layers.Dense(200, activation = 'relu'),
+            layers.Dense(x_train.shape[2], activation = 'relu'),
             layers.Dropout(0.4),
             layers.Dense(output_shape, activation = "sigmoid"),
             ]
