@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy as np
+import cupy as np
 import json
 from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
@@ -62,7 +62,9 @@ def read_data_train(chunks = 60):
             break
     
     #Resize data, and put output in one-hot-encoding
+    print('Resizing features...')
     X = np.array(X).reshape(n_total, chunks, features1.shape[1])
+    print('Getting output one-hot encoding')
     y_train = y_train[1:]
     aux = pd.Series(y_train)
     mlb = MultiLabelBinarizer()
@@ -100,5 +102,5 @@ chunks = 120
 x_train, y_train, classes = read_data_train(chunks = chunks)
 model = max_pooling(x_train, y_train)
 
-print(round(model.predict(x_train[0:5, :, :]), 2))
+print(np.round(model.predict(x_train[0:5, :, :]), 2))
 print(y_train[0:5])
