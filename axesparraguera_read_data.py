@@ -99,3 +99,6 @@ def max_pooling(x_train, y_train):
 chunks = 120
 x_train, y_train, classes = read_data_train(chunks = chunks)
 model = max_pooling(x_train, y_train)
+
+print(round(model.predict(x_train[0:5, :, :]), 2))
+print(y_train[0:5])
