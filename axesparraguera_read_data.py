@@ -3,7 +3,7 @@ import numpy as np
 import json
 from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
-from tensorflow.kears import layers
+from tensorflow.keras import layers
 
 def read_data_train(chunks = 60):
     #Initialize values
