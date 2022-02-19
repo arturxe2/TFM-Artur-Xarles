@@ -15,6 +15,8 @@ print(os.listdir(init_path + 'england_epl/2014-2015/2015-04-11 - 19-30 Burnley 0
 i = 0
 chunks = 60
 n_total = 0
+y_train = ['Elements']
+X = []
 for line in lines:
     i += 1
     print(line)
@@ -27,7 +29,30 @@ for line in lines:
     actions['half'] = actions['gameTime'].apply(lambda x: int(x[0]))
     actions['minute'] = actions['gameTime'].apply(lambda x: x[4:])
     actions['frame'] = actions['minute'].apply(lambda x: int(x[0:2]) * 60 * 2 + int(x[3:5]) * 2)
-    print(actions.head())
-    print(features1.shape)
+    for n in range(n_chunks1):
+        x = features1[n * chunks : (n + 1) * chunks, :]
+        X.append(x.tolist())
+        y = actions['label'][(actions['frame'] >= n * chunks) & (actions['frame'] < (n + 1) * chunks) & (actions['half'] == 1)].values
+        if len(y) == 0:
+            y = ['']
+        else:
+            y = y.tolist()
+        y_train.append(y)
+        i += 1
+
+    for n in range(n_chunks2):
+        x = features2[n * chunks : (n + 1) * chunks, :]
+        X.append(x.tolist())
+        y = actions['label'][(actions['frame'] >= n * chunks) & (actions['frame'] < (n + 1) * chunks) & (actions['half'] == 2)].values
+        if len(y) == 0:
+            y = ['']
+        else:
+            y = y.tolist()
+        y_train.append(y)
+        i += 1
+
+    print(X)
+    print(y_train)
+    print(i)
     if i == 2:
         break
