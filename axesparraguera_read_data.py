@@ -104,3 +104,4 @@ model = max_pooling(x_train, y_train)
 
 print(np.round(model.predict(x_train[0:5, :, :]), 2))
 print(y_train[0:5])
+print(classes)
