@@ -57,7 +57,7 @@ def read_data_train(chunks = 60):
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 2:
+        if i == 100:
             break
     
     #Resize data, and put output in one-hot-encoding
