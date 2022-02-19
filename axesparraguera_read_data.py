@@ -99,9 +99,9 @@ def max_pooling(x_train, y_train):
     return model
     
 chunks = 120
-x_train, y_train, classes = read_data_train(chunks = chunks)
-np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
-np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
+#x_train, y_train, classes = read_data_train(chunks = chunks)
+#np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
+#np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
 
 x_train = np.load('/home-net/axesparraguera/data/x_train.npy')
 y_train = np.load('/home-net/axesparraguera/data/y_train.npy')
@@ -114,6 +114,6 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 
 model = max_pooling(x_train, y_train)
 
-print(np.round(model.predict(x_train[0:5, :, :]), 2))
-print(y_train[0:5])
+print(np.round(model.predict(x_train[0:10, :, :]), 2))
+print(y_train[0:10])
 print(classes)
