@@ -15,7 +15,7 @@ i = 0
 for line in lines:
     i += 1
     print(line)
-    features = np.load(init_path + line.rstrip('\n') + '/')
+    features = np.load(init_path + line.rstrip('\n') + '/1_ResNET_TF2.npy')
     print(features.shape)
     if i == 2:
         break
