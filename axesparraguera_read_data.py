@@ -113,12 +113,13 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 
 x_test, y_test, classes2 = read_data(chunks = chunks, data_split = "test")
 
-
-model = max_pooling(x_train, y_train)
-
-print(model.evaluate(x_test, y_test))
-
-print(np.round(model.predict(x_test[0:10, :, :]), 2))
-print(y_test[0:10])
 print(classes)
 print(classes2)
+#model = max_pooling(x_train, y_train)
+
+#print(model.evaluate(x_test, y_test))
+
+#print(np.round(model.predict(x_test[0:10, :, :]), 2))
+#print(y_test[0:10])
+#print(classes)
+#print(classes2)
