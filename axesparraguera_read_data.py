@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 path = '/data-net/datasets/SoccerNetv2/data_split/'
-init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2'
+init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
 
 with open(path + 'train.txt') as f:
     lines = f.readlines()
