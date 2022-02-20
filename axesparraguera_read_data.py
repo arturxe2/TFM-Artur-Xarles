@@ -107,6 +107,24 @@ def max_pooling(x_train, y_train):
     model.fit(x_train, y_train, epochs = 50, validation_split = 0.2)
     
     return model
+
+def make_predictions(chunks = 60, data_split = "test"):
+    path = '/data-net/datasets/SoccerNetv2/data_split/'
+    init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
+    with open(path + data_split + '.txt') as f:
+        lines = f.readlines()
+    for line in lines:
+        i += 1
+        #1 -> 1st half, 2 -> 2nd half
+        #Load .npy files
+        features1 = np.load(init_path + line.rstrip('\n') + '/1_ResNET_TF2.npy')
+        features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
+        
+        
+        
+        if i == 1:
+            break
+    return features1
     
 chunks = 120
 #x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
@@ -126,10 +144,11 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 #print(classes)
 #print(classes2)
 model = max_pooling(x_train, y_train)
+make_predictions(chunks = chunks, data_split = "test")
 
 #print(model.evaluate(x_test, y_test))
 
-print(np.round(model.predict(x_train[0:20, :, :]), 2))
-print(y_train[0:20])
-print(classes)
+#print(np.round(model.predict(x_train[0:20, :, :]), 2))
+#print(y_train[0:20])
+#print(classes)
 #print(classes2)
