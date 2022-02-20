@@ -108,7 +108,7 @@ def max_pooling(x_train, y_train):
     
     return model
 
-def make_predictions(chunks = 60, data_split = "test", frames_window = 2, model):
+def make_predictions(model, chunks = 60, data_split = "test", frames_window = 2):
     i = 0
     path = '/data-net/datasets/SoccerNetv2/data_split/'
     init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
@@ -150,7 +150,7 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 #print(classes)
 #print(classes2)
 model = max_pooling(x_train, y_train)
-print(make_predictions(chunks = chunks, data_split = "test"))
+print(make_predictions(model = model, chunks = chunks, data_split = "test", frames_window = 2))
 
 #print(model.evaluate(x_test, y_test))
 
