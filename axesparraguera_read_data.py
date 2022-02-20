@@ -134,6 +134,8 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
         
         if i == 1:
             break
+    print(action_frame1[0:20, :])
+    print(n_preds1[0:20])
     return np.round(action_frame1[0:20, :], 2)
     
 chunks = 120
