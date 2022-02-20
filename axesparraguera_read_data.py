@@ -104,11 +104,11 @@ def max_pooling(x_train, y_train):
     #Compile model
     model.compile(loss = "BinaryCrossentropy", optimizer = "Adam", metrics = ["Accuracy", "Precision"])
     #Train model
-    model.fit(x_train, y_train, epochs = 50, validation_split = 0.2)
+    model.fit(x_train, y_train, epochs = 10, validation_split = 0.2)
     
     return model
 
-def make_predictions(chunks = 60, data_split = "test"):
+def make_predictions(chunks = 60, data_split = "test", frames_window = 2, model):
     i = 0
     path = '/data-net/datasets/SoccerNetv2/data_split/'
     init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
@@ -120,6 +120,11 @@ def make_predictions(chunks = 60, data_split = "test"):
         #Load .npy files
         features1 = np.load(init_path + line.rstrip('\n') + '/1_ResNET_TF2.npy')
         features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
+        n_frames1 = features1.shape[0]
+        n_frames2 = features2.shape[0]
+        for x in range((n_frames1 - chunks) // frames_window):
+            print(model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :]))
+        
         
         
         
@@ -145,7 +150,7 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 #print(classes)
 #print(classes2)
 model = max_pooling(x_train, y_train)
-make_predictions(chunks = chunks, data_split = "test")
+print(make_predictions(chunks = chunks, data_split = "test"))
 
 #print(model.evaluate(x_test, y_test))
 
