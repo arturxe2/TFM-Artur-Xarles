@@ -122,16 +122,18 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
         features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
         n_frames1 = features1.shape[0]
         n_frames2 = features2.shape[0]
-        action_frame = np.zeros((n_frames1, n_classes))
+        action_frame1 = np.zeros((n_frames1, n_classes))
+        n_preds1 = np.zeros(n_frames1)
         for x in range((n_frames1 - chunks) // frames_window):
-            action_frame[(x * frames_window) : (x * frames_window + chunks), :] = (model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features1.shape[1])))
-        
+            action_frame1[(x * frames_window) : (x * frames_window + chunks), :] += (model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features1.shape[1])))
+            n_preds1[(x * frames_window): (x * frames_window + chunks)] += 1
+        action_frame1 = action_frame1 / n_preds1
         
         
         
         if i == 1:
             break
-    return action_frame[0:10, :]
+    return action_frame1[0:20, :]
     
 chunks = 120
 #x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
@@ -152,7 +154,7 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 #print(classes2)
 model = max_pooling(x_train, y_train)
 n_classes = y_train.shape[1]
-print(make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 2))
+print(make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 20))
 
 #print(model.evaluate(x_test, y_test))
 
