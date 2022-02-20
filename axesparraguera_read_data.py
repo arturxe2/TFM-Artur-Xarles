@@ -108,7 +108,7 @@ def max_pooling(x_train, y_train):
     
     return model
 
-def make_predictions(model, chunks = 60, data_split = "test", frames_window = 2):
+def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_window = 2):
     i = 0
     path = '/data-net/datasets/SoccerNetv2/data_split/'
     init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
@@ -122,15 +122,16 @@ def make_predictions(model, chunks = 60, data_split = "test", frames_window = 2)
         features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
         n_frames1 = features1.shape[0]
         n_frames2 = features2.shape[0]
+        action_frame = np.zeros((n_frames1, n_classes))
         for x in range((n_frames1 - chunks) // frames_window):
-            print(model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features1.shape[1])))
+            action_frame[(x * frames_window) : (x * frames_window + chunks), :] = (model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features1.shape[1])))
         
         
         
         
         if i == 1:
             break
-    return features1.shape
+    return action_frame[0:10, :]
     
 chunks = 120
 #x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
@@ -150,7 +151,8 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 #print(classes)
 #print(classes2)
 model = max_pooling(x_train, y_train)
-print(make_predictions(model = model, chunks = chunks, data_split = "test", frames_window = 2))
+n_classes = y_train.shape[1]
+print(make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 2))
 
 #print(model.evaluate(x_test, y_test))
 
