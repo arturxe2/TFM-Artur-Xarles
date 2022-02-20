@@ -109,6 +109,7 @@ def max_pooling(x_train, y_train):
     return model
 
 def make_predictions(chunks = 60, data_split = "test"):
+    i = 0
     path = '/data-net/datasets/SoccerNetv2/data_split/'
     init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
     with open(path + data_split + '.txt') as f:
@@ -124,7 +125,7 @@ def make_predictions(chunks = 60, data_split = "test"):
         
         if i == 1:
             break
-    return features1
+    return features1.shape
     
 chunks = 120
 #x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
