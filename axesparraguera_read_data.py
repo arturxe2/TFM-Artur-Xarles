@@ -127,7 +127,7 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
         for x in range((n_frames1 - chunks) // frames_window):
             action_frame1[(x * frames_window) : (x * frames_window + chunks), :] += (model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features1.shape[1])))
             n_preds1[(x * frames_window): (x * frames_window + chunks)] += 1
-        action_frame1 = action_frame1 / n_preds1[None, :]
+        action_frame1 = action_frame1 / n_preds1[:, None]
         
         
         
