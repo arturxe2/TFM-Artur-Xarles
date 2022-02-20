@@ -123,7 +123,7 @@ def make_predictions(model, chunks = 60, data_split = "test", frames_window = 2)
         n_frames1 = features1.shape[0]
         n_frames2 = features2.shape[0]
         for x in range((n_frames1 - chunks) // frames_window):
-            print(model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :]))
+            print(model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, features1.shape[1], chunks)))
         
         
         
