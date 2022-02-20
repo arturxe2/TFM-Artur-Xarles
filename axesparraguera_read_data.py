@@ -115,6 +115,7 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
     with open(path + data_split + '.txt') as f:
         lines = f.readlines()
     for line in lines:
+        print(line)
         i += 1
         #1 -> 1st half, 2 -> 2nd half
         #Load .npy files
@@ -133,7 +134,7 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
         
         if i == 1:
             break
-    return action_frame1[0:20, :]
+    return np.round(action_frame1[0:20, :], 2)
     
 chunks = 120
 #x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
