@@ -47,7 +47,8 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
             x = features1[(x * window_size) : (x * window_size + chunks), :]
             X.append(x.tolist())
             #Collect outputs
-            y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < x * window_size + chunks) & (actions['half'] == 1)].values
+            y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < (x * window_size + chunks)) & (actions['half'] == 1)].values
+            #y = actions['label'][(actions['frame'] >= n * chunks) & (actions['frame'] < (n + 1) * chunks) & (actions['half'] == 1)].values
             if len(y) == 0:
                 y = ['Background']
             else:
@@ -61,7 +62,8 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
             x = features2[(x * window_size) : (x * window_size + chunks), :]
             X.append(x.tolist())
             #Collect outputs
-            y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < x * window_size + chunks) & (actions['half'] == 2)].values
+            y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < (x * window_size + chunks)) & (actions['half'] == 2)].values
+            
             if len(y) == 0:
                 y = ['Background']
             else:
