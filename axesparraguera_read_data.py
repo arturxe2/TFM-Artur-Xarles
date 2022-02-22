@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy as np
+import cupy as np
 import json
 from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
@@ -147,6 +147,8 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
 
 def spotting(action_frame):
     frames, n_classes = action_frame.shape
+    for i in range(frames):
+        
     
 chunks = 120
 #x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
