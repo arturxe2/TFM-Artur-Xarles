@@ -169,7 +169,7 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 #print(classes2)
 model = max_pooling(x_train, y_train)
 n_classes = y_train.shape[1]
-preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 4)
+preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 8)
 
 print(preds1[0:30, :])
 print(preds2[0:30, :])
