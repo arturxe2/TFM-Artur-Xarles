@@ -68,7 +68,7 @@ def read_data(chunks = 60, data_split = "train"):
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 400:
+        if i == 20:
             break
     
     #Resize data, and put output in one-hot-encoding
@@ -160,17 +160,17 @@ def spotting(action_frame, n_comparisons = 10, treshold = 0.4):
        
     
 chunks = 120
-#x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
+x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
 #np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
 #np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
 
-x_train = np.load('/home-net/axesparraguera/data/x_train.npy')
-y_train = np.load('/home-net/axesparraguera/data/y_train.npy')
+#x_train = np.load('/home-net/axesparraguera/data/x_train.npy')
+#y_train = np.load('/home-net/axesparraguera/data/y_train.npy')
 
-classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free-kick', 
-           'Foul', 'Goal', 'Indirect free-kick', 'Kick-off', 'Offside', 'Penalty', 'Red card', 
-           'Shots off target', 'Shots on target', 'Substitution', 'Throw-in', 'Yellow card', 
-           'Yellow->red card']
+#classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free-kick', 
+#           'Foul', 'Goal', 'Indirect free-kick', 'Kick-off', 'Offside', 'Penalty', 'Red card', 
+#           'Shots off target', 'Shots on target', 'Substitution', 'Throw-in', 'Yellow card', 
+#           'Yellow->red card']
 
 #x_test, y_test, classes2 = read_data(chunks = chunks, data_split = "test")
 
@@ -183,9 +183,11 @@ print(preds1[0:10])
 print(preds1[-10:])
 
 
-spots = spotting(preds1)
+spots1 = spotting(preds1)
+spots2 = spotting(preds2)
 print(spots[0:20])
-print(spots.sum(axis = 0))
+print(spots1.sum(axis = 0))
+print(spots2.sum(axis = 0))
 
 #print(preds1[0:30, :])
 #print(preds2[0:30, :])
