@@ -6,15 +6,22 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import tensorflow as tf
 
+
+#Function to define my loss (not working right now)
 def my_loss(y_true, y_pred):
+    #y_true to float 
     y_true = tf.cast(y_true, tf.float32)
-   # tf.math.maximum(y_true, tf.keras.backend.epsilon())
+   #Loss function (introducing epsilons to avoid 0)
     loss1 = tf.reduce_mean(y_true * -tf.math.log(tf.math.maximum(y_pred, tf.keras.backend.epsilon())) + (1-y_true) * (-tf.math.log(tf.math.maximum(1 - y_pred, tf.keras.backend.epsilon()))))
-    print(loss1.get_shape())
     loss = tf.reduce_mean(loss1)
     return loss
     
 
+'''Function to read data to train the model, with size chunk * n_features. It also
+returns the outputs in a one-hot-encoding for all the possible classes. Allow to 
+choose a window_size to decide the frequence of the samples and the dataset that 
+you want to use (train in general)
+'''
 def read_data(chunks = 60, data_split = "train", window_size = 60):
     #Initialize values
     i = 0
@@ -72,7 +79,7 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 10:
+        if i == 40:
             break
     
     #Resize data, and put output in one-hot-encoding
@@ -88,6 +95,9 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
 
     return X, res, classes
 
+'''Function to create a basic model. Takes the x_train, applies a MaxPooling in 
+the temporal dimension and applies it to a FCNN. Outputs a vector of sigmoid neurons
+'''
 def max_pooling(x_train, y_train):
     #Input and output sizes
     chunks = x_train.shape[1]
@@ -109,7 +119,6 @@ def max_pooling(x_train, y_train):
     model.compile(loss = "BinaryCrossentropy", optimizer = "Adam", metrics = ["Accuracy", "Precision"])
     #Train model
     model.fit(x_train, y_train, epochs = 10, validation_split = 0.2)
-    
     return model
 
 def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_window = 2):
