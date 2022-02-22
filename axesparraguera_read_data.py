@@ -175,9 +175,12 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 model = max_pooling(x_train, y_train)
 n_classes = y_train.shape[1]
 preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 20)
+print(preds1[0:10])
+print(preds1[-10:])
+
 
 spots = spotting(preds1)
-print(spots)
+print(spots[0:20])
 print(spots.sum(axis = 0))
 
 #print(preds1[0:30, :])
