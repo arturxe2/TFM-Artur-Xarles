@@ -77,7 +77,7 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
     
     #Resize data, and put output in one-hot-encoding
     print('Resizing features...')
-    X = np.array(X).resize(n_total, chunks, features1.shape[1])
+    X = np.array(X).reshape(n_total, chunks, features1.shape[1])
     print('Getting output one-hot encoding')
     y_train = y_train[1:]
     aux = pd.Series(y_train)
