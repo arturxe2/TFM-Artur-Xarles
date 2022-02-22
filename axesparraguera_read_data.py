@@ -129,9 +129,7 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
         n_preds2 = np.zeros(n_frames2)
         print('Predicting 1st half actions...')
         for x in range((n_frames1 - chunks) // frames_window):
-            print('a')
             action_frame1[(x * frames_window) : (x * frames_window + chunks), :] += (model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features1.shape[1])))
-            print('b')
             n_preds1[(x * frames_window): (x * frames_window + chunks)] += 1
         print('Predicting 2nd half actions...')
         for x in range((n_frames2 - chunks) // frames_window):
