@@ -62,6 +62,8 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
             x = features2[(x * window_size) : (x * window_size + chunks), :]
             X.append(x.tolist())
             #Collect outputs
+            print(x * window_size)
+            print(actions[(actions['frame'] >= x * window_size) & (actions['frame'] < (x * window_size + chunks)) & (actions['half'] == 2)])
             y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < (x * window_size + chunks)) & (actions['half'] == 2)].values
             
             if len(y) == 0:
