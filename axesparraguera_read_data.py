@@ -15,7 +15,7 @@ def my_loss(y_true, y_pred):
     return loss
     
 
-def read_data(chunks = 60, data_split = "train"):
+def read_data(chunks = 60, data_split = "train", window_size = 60):
     #Initialize values
     i = 0
     n_total = 0
@@ -34,6 +34,8 @@ def read_data(chunks = 60, data_split = "train"):
         features1 = np.load(init_path + line.rstrip('\n') + '/1_ResNET_TF2.npy')
         features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
         #Define number of chunks second splits
+        n_frames1 = features1.shape[0]
+        n_frames2 = features2.shape[0]
         n_chunks1 = int(features1.shape[0] // chunks)
         n_chunks2 = int(features2.shape[0] // chunks)
         n_total = n_total + n_chunks1 + n_chunks2
@@ -43,37 +45,39 @@ def read_data(chunks = 60, data_split = "train"):
         actions['minute'] = actions['gameTime'].apply(lambda x: x[4:])
         actions['frame'] = actions['minute'].apply(lambda x: int(x[0:2]) * 60 * 2 + int(x[3:5]) * 2)
         #Split data in 60-frames chunks (for 1st half)
-        for n in range(n_chunks1):
+        for x in range((n_frames1 - chunks) // window_size):
             #Collect features
-            x = features1[n * chunks : (n + 1) * chunks, :]
+            x = features1[(x * window_size) : (x * window_size + chunks), :]
             X.append(x.tolist())
             #Collect outputs
-            y = actions['label'][(actions['frame'] >= n * chunks) & (actions['frame'] < (n + 1) * chunks) & (actions['half'] == 1)].values
+            y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < x * window_size + chunks) & (actions['half'] == 1)].values
             if len(y) == 0:
                 y = ['Background']
             else:
                 y = y.tolist()
             y_train.append(y)
             
-        #Split data in 60-frame chunks (for 2nd half)
-        for n in range(n_chunks2):
-            x = features2[n * chunks : (n + 1) * chunks, :]
-            X.append(x.tolist())
-            y = actions['label'][(actions['frame'] >= n * chunks) & (actions['frame'] < (n + 1) * chunks) & (actions['half'] == 2)].values
-            if len(y) == 0:
-                y = ['Background']
-            else:
-                y = y.tolist()
-            y_train.append(y)
+            #Split data in 60-frames chunks (for 2nd half)
+            for x in range((n_frames2 - chunks) // window_size):
+                #Collect features
+                x = features2[(x * window_size) : (x * window_size + chunks), :]
+                X.append(x.tolist())
+                #Collect outputs
+                y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < x * window_size + chunks) & (actions['half'] == 2)].values
+                if len(y) == 0:
+                    y = ['Background']
+                else:
+                    y = y.tolist()
+                y_train.append(y)
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 200:
+        if i == 10:
             break
     
     #Resize data, and put output in one-hot-encoding
     print('Resizing features...')
-    X = np.array(X).reshape(n_total, chunks, features1.shape[1])
+    X = np.array(X).resize(n_total, chunks, features1.shape[1])
     print('Getting output one-hot encoding')
     y_train = y_train[1:]
     aux = pd.Series(y_train)
@@ -161,7 +165,8 @@ def spotting(action_frame, n_comparisons = 10, treshold = 0.4):
        
     
 chunks = 120
-x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
+x_train, y_train, classes = read_data(chunks = chunks, data_split = "train", window_size = 20)
+print(y_train.sum(axis = 0))
 #np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
 #np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
 
