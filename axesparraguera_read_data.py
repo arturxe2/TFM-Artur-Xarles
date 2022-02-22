@@ -42,15 +42,12 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
         actions['minute'] = actions['gameTime'].apply(lambda x: x[4:])
         actions['frame'] = actions['minute'].apply(lambda x: int(x[0:2]) * 60 * 2 + int(x[3:5]) * 2)
         #Split data in 60-frames chunks (for 1st half)
-        for x in range((n_frames1 - chunks) // window_size):
+        for n in range((n_frames1 - chunks) // window_size):
             #Collect features
-            x = features1[(x * window_size) : (x * window_size + chunks), :]
+            x = features1[(n * window_size) : (n * window_size + chunks), :]
             X.append(x.tolist())
             #Collect outputs
-            print(x * window_size)
-            print(actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < (x * window_size + chunks)) & (actions['half'] == 1)])
-            y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < (x * window_size + chunks)) & (actions['half'] == 1)].values
-            #y = actions['label'][(actions['frame'] >= n * chunks) & (actions['frame'] < (n + 1) * chunks) & (actions['half'] == 1)].values
+            y = actions['label'][(actions['frame'] >= n * window_size) & (actions['frame'] < (n * window_size + chunks)) & (actions['half'] == 1)].values
             if len(y) == 0:
                 y = ['Background']
             else:
@@ -59,14 +56,12 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
             n_total += 1
             
         #Split data in 60-frames chunks (for 2nd half)
-        for x in range((n_frames2 - chunks) // window_size):
+        for n in range((n_frames2 - chunks) // window_size):
             #Collect features
             x = features2[(x * window_size) : (x * window_size + chunks), :]
             X.append(x.tolist())
             #Collect outputs
-            print(x * window_size)
-            print(actions[(actions['frame'] >= x * window_size) & (actions['frame'] < (x * window_size + chunks)) & (actions['half'] == 2)])
-            y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < (x * window_size + chunks)) & (actions['half'] == 2)].values
+            y = actions['label'][(actions['frame'] >= n * window_size) & (actions['frame'] < (n * window_size + chunks)) & (actions['half'] == 2)].values
             
             if len(y) == 0:
                 y = ['Background']
