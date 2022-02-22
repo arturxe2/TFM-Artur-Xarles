@@ -68,7 +68,7 @@ def read_data(chunks = 60, data_split = "train"):
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
-        if i == 20:
+        if i == 50:
             break
     
     #Resize data, and put output in one-hot-encoding
@@ -156,6 +156,7 @@ def spotting(action_frame, n_comparisons = 10, treshold = 0.4):
         action_frame[i, :] = (max_bool * action_frame[i, :])
         if i > 0:
             action_frame[max(0, i - n_comparisons): i, :] = (1 - max_bool)[None, :] * action_frame[max(0, i - n_comparisons): i, :]
+    action_frame = (action_frame > 0).astype("float")
     return action_frame
        
     
