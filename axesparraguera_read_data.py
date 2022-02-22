@@ -185,7 +185,7 @@ print(preds1[-10:])
 
 spots1 = spotting(preds1)
 spots2 = spotting(preds2)
-print(spots[0:20])
+print(spots1[0:100, :])
 print(spots1.sum(axis = 0))
 print(spots2.sum(axis = 0))
 
