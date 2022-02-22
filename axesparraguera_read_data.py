@@ -145,9 +145,9 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
 
     return action_frame1, action_frame2
 
-def spotting(action_frame):
-    frames, n_classes = action_frame.shape
-    for i in range(frames):
+#def spotting(action_frame):
+#    frames, n_classes = action_frame.shape
+#    for i in range(frames):
         
     
 chunks = 120
