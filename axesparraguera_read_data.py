@@ -36,9 +36,6 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
         #Define number of chunks second splits
         n_frames1 = features1.shape[0]
         n_frames2 = features2.shape[0]
-        n_chunks1 = int(features1.shape[0] // chunks)
-        n_chunks2 = int(features2.shape[0] // chunks)
-        n_total = n_total + n_chunks1 + n_chunks2
         #Read actions for match and determine the nº of frame it corresponds
         actions = pd.DataFrame(json.load(open(init_path + line.rstrip('\n') + '/Labels-v2.json'))['annotations'])
         actions['half'] = actions['gameTime'].apply(lambda x: int(x[0]))
@@ -56,19 +53,21 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
             else:
                 y = y.tolist()
             y_train.append(y)
+            n_total += 1
             
-            #Split data in 60-frames chunks (for 2nd half)
-            for x in range((n_frames2 - chunks) // window_size):
-                #Collect features
-                x = features2[(x * window_size) : (x * window_size + chunks), :]
-                X.append(x.tolist())
-                #Collect outputs
-                y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < x * window_size + chunks) & (actions['half'] == 2)].values
-                if len(y) == 0:
-                    y = ['Background']
-                else:
-                    y = y.tolist()
-                y_train.append(y)
+        #Split data in 60-frames chunks (for 2nd half)
+        for x in range((n_frames2 - chunks) // window_size):
+            #Collect features
+            x = features2[(x * window_size) : (x * window_size + chunks), :]
+            X.append(x.tolist())
+            #Collect outputs
+            y = actions['label'][(actions['frame'] >= x * window_size) & (actions['frame'] < x * window_size + chunks) & (actions['half'] == 2)].values
+            if len(y) == 0:
+                y = ['Background']
+            else:
+                y = y.tolist()
+            y_train.append(y)
+            n_total += 1
     
         #Print the number of the match we are
         print('Data collected for ' + str(i) + ' matches.')
