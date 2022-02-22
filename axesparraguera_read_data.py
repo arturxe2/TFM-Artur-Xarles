@@ -1,5 +1,5 @@
 import pandas as pd
-import cupy as np
+import numpy as np
 import json
 from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
@@ -145,10 +145,15 @@ def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_
 
     return action_frame1, action_frame2
 
-#def spotting(action_frame):
-#    frames, n_classes = action_frame.shape
-#    for i in range(frames):
-        
+def spotting(action_frame, n_comparisons = 10, treshold = 0.4):
+    frames, n_classes = action_frame.shape
+    for i in range(frames):
+        max_bool = (action_frame[i, :] == (action_frame[max(0, i - n_comparisons):(i + 1), :].max(axis = 0))) & (action_frame[i, :] >= (np.ones(n_classes) * treshold))
+        action_frame[i, :] = (max_bool * action_frame[i, :])
+        if i > 0:
+            action_frame[max(0, i - n_comparisons): i, :] = (1 - max_bool)[None, :] * action_frame[max(0, i - n_comparisons): i, :]
+    return action_frame
+       
     
 chunks = 120
 #x_train, y_train, classes = read_data(chunks = chunks, data_split = "train")
@@ -169,10 +174,14 @@ classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free
 #print(classes2)
 model = max_pooling(x_train, y_train)
 n_classes = y_train.shape[1]
-preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 8)
+preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 20)
 
-print(preds1[0:30, :])
-print(preds2[0:30, :])
+spots = spotting(preds1)
+print(spots)
+print(spots.sum(axis = 0))
+
+#print(preds1[0:30, :])
+#print(preds2[0:30, :])
 #print(model.evaluate(x_test, y_test))
 
 #print(np.round(model.predict(x_train[0:20, :, :]), 2))
