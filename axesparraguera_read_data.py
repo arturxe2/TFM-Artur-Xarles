@@ -188,7 +188,7 @@ def NMS_spotting(action_frame, n_comparisons = 10, treshold = 0.4):
 Function that given the spots per frame for 2 halfs of a match returns a dictionary
 with the desired structure for spotting evaluation.
 '''
-def prediction_output(spots1, spots2, labels):
+def prediction_output(spots1, spots2, labels, match):
     positions1, positions2 = spots1.nonzero()
     sol = {}
     half = 1
@@ -215,7 +215,7 @@ def prediction_output(spots1, spots2, labels):
                "half": half,
                "confidence": spots2[comb[0], comb[1]]}
         action.append(dict)
-    sol.update({"predictions": action})
+    sol.update({"UrlLocal": match, "predictions": action})
     
     return(sol)
        
@@ -245,15 +245,15 @@ for line in lines:
 #Predictions for a match
     preds1, preds2 = make_predictions(model = model, n_classes = n_classes, line = line, chunks = chunks, data_split = "test", frames_window = window_size_pred)
 #Spotting for each half
-#spots1 = NMS_spotting(preds1, n_comparisons = n_comparisons_NMS)
-#spots2 = NMS_spotting(preds2, n_comparisons = n_comparisons_NMS)
+    spots1 = NMS_spotting(preds1, n_comparisons = n_comparisons_NMS)
+    spots2 = NMS_spotting(preds2, n_comparisons = n_comparisons_NMS)
 #Dictionary output
-#solution = prediction_output(spots1, spots2, classes)
-
+    solution = prediction_output(spots1, spots2, classes)
+    print(solution)
 #Return some interesting things:
-#print(spots1.sum(axis = 0))
-#print(spots2.sum(axis = 0))
-#print(classes)
+    print(spots1.sum(axis = 0))
+    print(spots2.sum(axis = 0))
+    print(classes)
 
 
 '''
