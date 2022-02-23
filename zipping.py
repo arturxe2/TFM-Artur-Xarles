@@ -6,6 +6,9 @@ Created on Wed Feb 23 22:03:45 2022
 """
 
 import shutil
+import os
 
-print(shutil.make_archive('Results.zip', 'zip', '/home-net/axesparraguera/data/test_predictions'))
+os.chdir('/home-net/axesparraguera/data/test_predictions')
+
+shutil.make_archive('Results', 'zip', '/home-net/axesparraguera/data/test_predictions')
 
