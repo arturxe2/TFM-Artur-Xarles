@@ -243,7 +243,7 @@ saving_path = '/home-net/axesparraguera/data/test_predictions/'
 
 with open(path + 'test.txt') as f:
     lines = f.readlines()
-    
+i = 0
 for line in lines:
     line = line.replace("\n", "")
 #For each match
@@ -254,7 +254,6 @@ for line in lines:
     spots2 = NMS_spotting(preds2, n_comparisons = n_comparisons_NMS)
 #Dictionary output
     solution = prediction_output(spots1 = spots1, spots2 = spots2, labels = classes, match = line)
-    print(solution)
 #Return some interesting things:
     print(spots1.sum(axis = 0))
     print(spots2.sum(axis = 0))
@@ -269,6 +268,8 @@ for line in lines:
         os.makedirs(split_name[0] + '/' + split_name[1] + '/' + split_name[2])
     with open(split_name[0] + '/' + split_name[1] + '/' + split_name[2] + '/results_spotting.json', 'w') as fp:
         json.dump(solution, fp)
+    i += 1
+    print('Test matches predicted: ' + str(i))
 
 
 '''
