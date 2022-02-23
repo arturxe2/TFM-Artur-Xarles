@@ -5,7 +5,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
 from tensorflow.keras import layers
 import tensorflow as tf
-from collections import OrderedDict
+import os
 
 
 '''
@@ -194,27 +194,29 @@ def prediction_output(spots1, spots2, labels, match):
     half = 1
     action = []
     for comb in zip(positions1, positions2):
-        minu = comb[0] // (2 * 60)
-        sec = comb[0] % (2 * 60) / 2
-    
-        dict = {"gameTime": str(half) + " - " + str(minu) + ":" + str("%02d" % sec), 
-               "label": labels[comb[1]],
-               "position": (minu * 60 + sec) * 1000, 
-               "half": half,
-               "confidence": spots1[comb[0], comb[1]]}
-        action.append(dict)
+        if spots1[comb[0], comb[1]] != "Background":
+            minu = comb[0] // (2 * 60)
+            sec = comb[0] % (2 * 60) / 2
+        
+            dict = {"gameTime": str(half) + " - " + str(minu) + ":" + str("%02d" % sec), 
+                   "label": labels[comb[1]],
+                   "position": (minu * 60 + sec) * 1000, 
+                   "half": half,
+                   "confidence": spots1[comb[0], comb[1]]}
+            action.append(dict)
     positions1, positions2 = spots2.nonzero()
     half = 2
     for comb in zip(positions1, positions2):
-        minu = comb[0] // (2 * 60)
-        sec = comb[0] % (2 * 60) / 2
-    
-        dict = {"gameTime": str(half) + " - " + str(minu) + ":" + str("%02d" % sec), 
-               "label": labels[comb[1]],
-               "position": (minu * 60 + sec) * 1000, 
-               "half": half,
-               "confidence": spots2[comb[0], comb[1]]}
-        action.append(dict)
+        if spots2[comb[0], comb[1]] != "Background":
+            minu = comb[0] // (2 * 60)
+            sec = comb[0] % (2 * 60) / 2
+        
+            dict = {"gameTime": str(half) + " - " + str(minu) + ":" + str("%02d" % sec), 
+                   "label": labels[comb[1]],
+                   "position": (minu * 60 + sec) * 1000, 
+                   "half": half,
+                   "confidence": spots2[comb[0], comb[1]]}
+            action.append(dict)
     sol = {"UrlLocal": match, "predictions": action}
     
     return(sol)
@@ -237,6 +239,7 @@ model = max_pooling(x_train, y_train)
 #Iteration to make predictions for each test match:
 #Pathes of the data
 path = '/data-net/datasets/SoccerNetv2/data_split/'
+saving_path = '/home-net/axesparraguera/data/test_predictions/'
 
 with open(path + 'test.txt') as f:
     lines = f.readlines()
@@ -254,6 +257,16 @@ for line in lines:
     print(spots1.sum(axis = 0))
     print(spots2.sum(axis = 0))
     print(classes)
+    os.chdir(saving_path)
+    split_name = line.split('/')
+    if not os.path.exists(split_name[0]):
+        os.makedirs(split_name[0])
+    if not os.path.exists(split_name[0] + '/' + split_name[1]):
+        os.makedirs(split_name[0] + '/' + split_name[1])
+    if not os.path.exists(split_name[0] + '/' + split_name[1] + '/' + split_name[2]):
+        os.makedirs(split_name[0] + '/' + split_name[1] + '/' + split_name[2])
+    with open(line + 'results_spotting.json', 'w') as fp:
+        json.dump(solution, fp)
 
 
 '''
