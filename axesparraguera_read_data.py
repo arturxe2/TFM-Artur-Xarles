@@ -190,10 +190,14 @@ def NMS_spotting(action_frame, n_comparisons = 10, treshold = 0.4):
         action_frame[i, :] = (max_bool * action_frame[i, :])
         if i > 0:
             action_frame[max(0, i - n_comparisons): i, :] = (1 - max_bool)[None, :] * action_frame[max(0, i - n_comparisons): i, :]
-    action_frame = (action_frame > 0).astype("float")
+    #action_frame = (action_frame > 0).astype("float")
     return action_frame
 
 
+'''
+Function that given the spots per frame for 2 halfs of a match returns a dictionary
+with the desired structure for spotting evaluation.
+'''
 def prediction_output(spots1, spots2, labels):
     positions1, positions2 = spots1.nonzero()
     sol = {}
@@ -225,50 +229,45 @@ def prediction_output(spots1, spots2, labels):
     
     return(sol)
        
-    
+'''
+MAIN CODE
+'''
+
+#Define parameters:
 chunks = 120
-x_train, y_train, classes = read_data(chunks = chunks, data_split = "train", window_size = chunks)
-print(y_train.sum(axis = 0))
-#np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
-#np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
+window_size_class = 15
+window_size_pred = 15
+n_comparisons_NMS = 15
 
-#x_train = np.load('/home-net/axesparraguera/data/x_train.npy')
-#y_train = np.load('/home-net/axesparraguera/data/y_train.npy')
-
-#classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free-kick', 
-#           'Foul', 'Goal', 'Indirect free-kick', 'Kick-off', 'Offside', 'Penalty', 'Red card', 
-#           'Shots off target', 'Shots on target', 'Substitution', 'Throw-in', 'Yellow card', 
-#           'Yellow->red card']
-
-#x_test, y_test, classes2 = read_data(chunks = chunks, data_split = "test")
-
-#print(classes)
-#print(classes2)
-model = max_pooling(x_train, y_train)
+#Methods used:
+x_train, y_train, classes = read_data(chunks = chunks, data_split = "train", window_size = window_size_class)
 n_classes = y_train.shape[1]
-preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = 40)
-print(preds1[0:10])
-print(preds1[-10:])
-
-
-spots1 = NMS_spotting(preds1)
-spots2 = NMS_spotting(preds2)
-print(spots1[0:100, :])
-
+model = max_pooling(x_train, y_train)
+#Predictions for a match
+preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = window_size_pred)
+#Spotting for each half
+spots1 = NMS_spotting(preds1, n_comparisons = n_comparisons_NMS)
+spots2 = NMS_spotting(preds2, n_comparisons = n_comparisons_NMS)
+print(spots1)
+#Dictionary output
 solution = prediction_output(spots1, spots2, classes)
 
-print(solution)
-
-
-
+#Return some interesting things:
 print(spots1.sum(axis = 0))
 print(spots2.sum(axis = 0))
+print(classes)
 
-#print(preds1[0:30, :])
-#print(preds2[0:30, :])
-#print(model.evaluate(x_test, y_test))
 
-#print(np.round(model.predict(x_train[0:20, :, :]), 2))
-#print(y_train[0:20])
-#print(classes)
-#print(classes2)
+'''
+Extra code to save data:
+np.save('/home-net/axesparraguera/data/x_train.npy', x_train)
+np.save('/home-net/axesparraguera/data/y_train.npy', y_train)
+
+x_train = np.load('/home-net/axesparraguera/data/x_train.npy')
+y_train = np.load('/home-net/axesparraguera/data/y_train.npy')
+
+classes = ['Background', 'Ball out of play', 'Clearance', 'Corner', 'Direct free-kick', 
+           'Foul', 'Goal', 'Indirect free-kick', 'Kick-off', 'Offside', 'Penalty', 'Red card', 
+           'Shots off target', 'Shots on target', 'Substitution', 'Throw-in', 'Yellow card', 
+           'Yellow->red card']
+'''
