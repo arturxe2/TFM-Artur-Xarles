@@ -7,5 +7,5 @@ Created on Wed Feb 23 22:03:45 2022
 
 import shutil
 
-shutil.make_archive('Results.zip', 'zip', '/home-net/axesparraguera/data/test_predictions')
+print(shutil.make_archive('Results.zip', 'zip', '/home-net/axesparraguera/data/test_predictions'))
 
