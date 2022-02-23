@@ -240,22 +240,31 @@ window_size_pred = 15
 n_comparisons_NMS = 15
 
 #Methods used:
-x_train, y_train, classes = read_data(chunks = chunks, data_split = "train", window_size = window_size_class)
-n_classes = y_train.shape[1]
-model = max_pooling(x_train, y_train)
+#x_train, y_train, classes = read_data(chunks = chunks, data_split = "train", window_size = window_size_class)
+#n_classes = y_train.shape[1]
+#model = max_pooling(x_train, y_train)
+
+#Iteration to make predictions for each test match:
+#Pathes of the data
+path = '/data-net/datasets/SoccerNetv2/data_split/'
+
+with open(path + 'test.txt') as f:
+    lines = f.readlines()
+for line in lines:
+    print(lines)
+#For each match
 #Predictions for a match
-preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = window_size_pred)
+#preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = window_size_pred)
 #Spotting for each half
-spots1 = NMS_spotting(preds1, n_comparisons = n_comparisons_NMS)
-spots2 = NMS_spotting(preds2, n_comparisons = n_comparisons_NMS)
-print(spots1)
+#spots1 = NMS_spotting(preds1, n_comparisons = n_comparisons_NMS)
+#spots2 = NMS_spotting(preds2, n_comparisons = n_comparisons_NMS)
 #Dictionary output
-solution = prediction_output(spots1, spots2, classes)
+#solution = prediction_output(spots1, spots2, classes)
 
 #Return some interesting things:
-print(spots1.sum(axis = 0))
-print(spots2.sum(axis = 0))
-print(classes)
+#print(spots1.sum(axis = 0))
+#print(spots2.sum(axis = 0))
+#print(classes)
 
 
 '''
