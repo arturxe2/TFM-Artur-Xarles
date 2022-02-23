@@ -132,49 +132,39 @@ for classes and for a chunk, returns an array with as many rows as frames of the
 and as many columns as classes, with the probability for each frame to have the 
 class action
 '''
-def make_predictions(model, n_classes, chunks = 60, data_split = "test", frames_window = 2):
-    i = 0
+def make_predictions(model, n_classes, line, chunks = 60, data_split = "test", frames_window = 2):
     #Pathes of the data
-    path = '/data-net/datasets/SoccerNetv2/data_split/'
     init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
-    with open(path + data_split + '.txt') as f:
-        lines = f.readlines()
-    #For each match
-    for line in lines:
-        print(line)
-        i += 1
-        #1 -> 1st half, 2 -> 2nd half
-        #Load .npy files
-        features1 = np.load(init_path + line.rstrip('\n') + '/1_ResNET_TF2.npy')
-        features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
-        n_frames1 = features1.shape[0]
-        n_frames2 = features2.shape[0]
-        #Initialize array of probabilities for each class and frame
-        action_frame1 = np.zeros((n_frames1, n_classes))
-        action_frame2 = np.zeros((n_frames2, n_classes))
-        #Initialize number of predictions made for each frame
-        n_preds1 = np.zeros(n_frames1)
-        n_preds2 = np.zeros(n_frames2)
-        #Predict 1st half actions
-        print('Predicting 1st half actions...')
-        for x in range((n_frames1 - chunks) // frames_window):
-            action_frame1[(x * frames_window) : (x * frames_window + chunks), :] += (model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features1.shape[1])))
-            n_preds1[(x * frames_window): (x * frames_window + chunks)] += 1
-        action_frame1[(n_frames1 - chunks):(n_frames1), :]+= model.predict(features1[(n_frames1 - chunks):(n_frames1), :].reshape(1, chunks, features1.shape[1]))
-        n_preds1[(n_frames1 - chunks):(n_frames1)] += 1
-        #Predict 2nd half actions
-        print('Predicting 2nd half actions...')
-        for x in range((n_frames2 - chunks) // frames_window):
-            action_frame2[(x * frames_window) : (x * frames_window + chunks), :] += (model.predict(features2[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features2.shape[1])))
-            n_preds2[(x * frames_window): (x * frames_window + chunks)] += 1
-        action_frame2[(n_frames2 - chunks):(n_frames2), :]+= model.predict(features2[(n_frames2 - chunks):(n_frames2), :].reshape(1, chunks, features2.shape[1]))
-        n_preds2[(n_frames2 - chunks):(n_frames2)] += 1
-        #Normalize
-        action_frame1 = action_frame1 / n_preds1[:, None]
-        action_frame2 = action_frame2 / n_preds2[:, None]        
-        
-        if i == 1:
-            break
+    print(line)
+    #1 -> 1st half, 2 -> 2nd half
+    #Load .npy files
+    features1 = np.load(init_path + line.rstrip('\n') + '/1_ResNET_TF2.npy')
+    features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
+    n_frames1 = features1.shape[0]
+    n_frames2 = features2.shape[0]
+    #Initialize array of probabilities for each class and frame
+    action_frame1 = np.zeros((n_frames1, n_classes))
+    action_frame2 = np.zeros((n_frames2, n_classes))
+    #Initialize number of predictions made for each frame
+    n_preds1 = np.zeros(n_frames1)
+    n_preds2 = np.zeros(n_frames2)
+    #Predict 1st half actions
+    print('Predicting 1st half actions...')
+    for x in range((n_frames1 - chunks) // frames_window):
+        action_frame1[(x * frames_window) : (x * frames_window + chunks), :] += (model.predict(features1[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features1.shape[1])))
+        n_preds1[(x * frames_window): (x * frames_window + chunks)] += 1
+    action_frame1[(n_frames1 - chunks):(n_frames1), :]+= model.predict(features1[(n_frames1 - chunks):(n_frames1), :].reshape(1, chunks, features1.shape[1]))
+    n_preds1[(n_frames1 - chunks):(n_frames1)] += 1
+    #Predict 2nd half actions
+    print('Predicting 2nd half actions...')
+    for x in range((n_frames2 - chunks) // frames_window):
+        action_frame2[(x * frames_window) : (x * frames_window + chunks), :] += (model.predict(features2[(x * frames_window) : (x * frames_window + chunks), :].reshape(1, chunks, features2.shape[1])))
+        n_preds2[(x * frames_window): (x * frames_window + chunks)] += 1
+    action_frame2[(n_frames2 - chunks):(n_frames2), :]+= model.predict(features2[(n_frames2 - chunks):(n_frames2), :].reshape(1, chunks, features2.shape[1]))
+    n_preds2[(n_frames2 - chunks):(n_frames2)] += 1
+    #Normalize
+    action_frame1 = action_frame1 / n_preds1[:, None]
+    action_frame2 = action_frame2 / n_preds2[:, None]        
 
     return action_frame1, action_frame2
 
@@ -235,14 +225,14 @@ MAIN CODE
 
 #Define parameters:
 chunks = 120
-window_size_class = 15
-window_size_pred = 15
+window_size_class = chunks
+window_size_pred = 40
 n_comparisons_NMS = 15
 
 #Methods used:
-#x_train, y_train, classes = read_data(chunks = chunks, data_split = "train", window_size = window_size_class)
-#n_classes = y_train.shape[1]
-#model = max_pooling(x_train, y_train)
+x_train, y_train, classes = read_data(chunks = chunks, data_split = "train", window_size = window_size_class)
+n_classes = y_train.shape[1]
+model = max_pooling(x_train, y_train)
 
 #Iteration to make predictions for each test match:
 #Pathes of the data
@@ -251,10 +241,9 @@ path = '/data-net/datasets/SoccerNetv2/data_split/'
 with open(path + 'test.txt') as f:
     lines = f.readlines()
 for line in lines:
-    print(lines)
 #For each match
 #Predictions for a match
-#preds1, preds2 = make_predictions(model = model, n_classes = n_classes, chunks = chunks, data_split = "test", frames_window = window_size_pred)
+    preds1, preds2 = make_predictions(model = model, n_classes = n_classes, line = line, chunks = chunks, data_split = "test", frames_window = window_size_pred)
 #Spotting for each half
 #spots1 = NMS_spotting(preds1, n_comparisons = n_comparisons_NMS)
 #spots2 = NMS_spotting(preds2, n_comparisons = n_comparisons_NMS)
