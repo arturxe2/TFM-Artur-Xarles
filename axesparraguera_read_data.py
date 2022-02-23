@@ -194,7 +194,7 @@ def prediction_output(spots1, spots2, labels, match):
     half = 1
     action = []
     for comb in zip(positions1, positions2):
-        if spots1[comb[0], comb[1]] != "Background":
+        if labels[comb[1]] != "Background":
             minu = comb[0] // (2 * 60)
             sec = comb[0] % (2 * 60) / 2
         
@@ -207,7 +207,7 @@ def prediction_output(spots1, spots2, labels, match):
     positions1, positions2 = spots2.nonzero()
     half = 2
     for comb in zip(positions1, positions2):
-        if spots2[comb[0], comb[1]] != "Background":
+        if labels[comb[1]] != "Background":
             minu = comb[0] // (2 * 60)
             sec = comb[0] % (2 * 60) / 2
         
