@@ -266,7 +266,7 @@ for line in lines:
         os.makedirs(split_name[0] + '/' + split_name[1])
     if not os.path.exists(split_name[0] + '/' + split_name[1] + '/' + split_name[2]):
         os.makedirs(split_name[0] + '/' + split_name[1] + '/' + split_name[2])
-    with open(line + '/results_spotting.json', 'w') as fp:
+    with open(split_name[0] + '/' + split_name[1] + '/' + split_name[2] + '/results_spotting.json', 'w') as fp:
         json.dump(solution, fp)
 
 
