@@ -259,7 +259,7 @@ for line in lines:
     print(classes)
     os.chdir(saving_path)
     split_name = line.split('/')
-    print(split_name[2])
+    split_name[2] = split_name[2].replace("\n", "")
     if not os.path.exists(split_name[0]):
         os.makedirs(split_name[0])
     if not os.path.exists(split_name[0] + '/' + split_name[1]):
