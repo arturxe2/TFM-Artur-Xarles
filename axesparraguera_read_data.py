@@ -248,7 +248,7 @@ for line in lines:
     spots1 = NMS_spotting(preds1, n_comparisons = n_comparisons_NMS)
     spots2 = NMS_spotting(preds2, n_comparisons = n_comparisons_NMS)
 #Dictionary output
-    solution = prediction_output(spots1, spots2, classes)
+    solution = prediction_output(spots1 = spots1, spots2 = spots2, labels = classes, match = line)
     print(solution)
 #Return some interesting things:
     print(spots1.sum(axis = 0))
