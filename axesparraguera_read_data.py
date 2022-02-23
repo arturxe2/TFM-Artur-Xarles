@@ -191,7 +191,6 @@ with the desired structure for spotting evaluation.
 '''
 def prediction_output(spots1, spots2, labels, match):
     positions1, positions2 = spots1.nonzero()
-    sol = {}
     half = 1
     action = []
     for comb in zip(positions1, positions2):
@@ -210,13 +209,13 @@ def prediction_output(spots1, spots2, labels, match):
         minu = comb[0] // (2 * 60)
         sec = comb[0] % (2 * 60) / 2
     
-        dict = OrderedDict({"gameTime": str(half) + " - " + str(minu) + ":" + str("%02d" % sec), 
+        dict = {"gameTime": str(half) + " - " + str(minu) + ":" + str("%02d" % sec), 
                "label": labels[comb[1]],
                "position": (minu * 60 + sec) * 1000, 
                "half": half,
-               "confidence": spots2[comb[0], comb[1]]})
+               "confidence": spots2[comb[0], comb[1]]}
         action.append(dict)
-    sol.update({"UrlLocal": match, "predictions": action})
+    sol = {"UrlLocal": match, "predictions": action}
     
     return(sol)
        
