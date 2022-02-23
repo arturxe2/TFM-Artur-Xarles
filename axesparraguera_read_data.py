@@ -243,7 +243,9 @@ saving_path = '/home-net/axesparraguera/data/test_predictions/'
 
 with open(path + 'test.txt') as f:
     lines = f.readlines()
+    
 for line in lines:
+    line = line.replace("\n", "")
 #For each match
 #Predictions for a match
     preds1, preds2 = make_predictions(model = model, n_classes = n_classes, line = line, chunks = chunks, data_split = "test", frames_window = window_size_pred)
@@ -259,7 +261,6 @@ for line in lines:
     print(classes)
     os.chdir(saving_path)
     split_name = line.split('/')
-    split_name[2] = split_name[2].replace("\n", "")
     if not os.path.exists(split_name[0]):
         os.makedirs(split_name[0])
     if not os.path.exists(split_name[0] + '/' + split_name[1]):
