@@ -5,6 +5,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from tensorflow import keras
 from tensorflow.keras import layers
 import tensorflow as tf
+from collections import OrderedDict
 
 
 '''
@@ -120,7 +121,7 @@ def max_pooling(x_train, y_train):
         )
     print(model.summary)
     #Compile model
-    model.compile(loss = "BinaryCrossentropy", optimizer = "Adam", metrics = ["Accuracy", "Precision"])
+    model.compile(loss = "BinaryCrossentropy", optimizer = "Adam", metrics = ["Accuracy", "Precision", "Recall"])
     #Train model
     model.fit(x_train, y_train, epochs = 10, validation_split = 0.2)
     return model
@@ -209,11 +210,11 @@ def prediction_output(spots1, spots2, labels, match):
         minu = comb[0] // (2 * 60)
         sec = comb[0] % (2 * 60) / 2
     
-        dict = {"gameTime": str(half) + " - " + str(minu) + ":" + str("%02d" % sec), 
+        dict = OrderedDict({"gameTime": str(half) + " - " + str(minu) + ":" + str("%02d" % sec), 
                "label": labels[comb[1]],
                "position": (minu * 60 + sec) * 1000, 
                "half": half,
-               "confidence": spots2[comb[0], comb[1]]}
+               "confidence": spots2[comb[0], comb[1]]})
         action.append(dict)
     sol.update({"UrlLocal": match, "predictions": action})
     
