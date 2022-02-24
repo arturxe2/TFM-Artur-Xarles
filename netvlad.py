@@ -9,7 +9,7 @@ import numpy as np
 class NetVLAD(nn.Module):
     """NetVLAD layer implementation"""
 
-    def __init__(self, num_clusters=64, dim=512, 
+    def __init__(self, num_clusters=64, dim=128, 
                  normalize_input=True, vladv2=False):
         """
         Args:
@@ -91,11 +91,11 @@ class NetVLAD(nn.Module):
 
 
 if __name__ == "__main__":
-    vlad = NetVLAD(num_clusters=64, dim=2048, 
+    vlad = NetVLAD(num_clusters=64, dim=512, 
                  normalize_input=True, vladv2=False)
 
-    feat_in = torch.rand((3,2048,120,1))
+    feat_in = torch.rand((3,512,120,1))
     print(feat_in.shape)
     feat_out = vlad(feat_in)
     print(feat_out.shape)
-    print(2048*64)
+    print(512*64)
