@@ -28,7 +28,7 @@ class Model(nn.Module):
 
         if self.pool == "MAX":
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
-            self.fc = nn.Linear(input_size, self.num_classes+1)
+            self.fc = nn.Linear(512, self.num_classes+1)
 
         elif self.pool == "NetVLAD":
             self.pool_layer = NetVLAD(num_clusters=64, dim=512,
