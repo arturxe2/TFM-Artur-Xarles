@@ -91,11 +91,11 @@ class NetVLAD(nn.Module):
 
 
 if __name__ == "__main__":
-    vlad = NetVLAD(num_clusters=64, dim=512, 
+    vlad = NetVLAD(num_clusters=64, dim=2048, 
                  normalize_input=True, vladv2=False)
 
-    feat_in = torch.rand((3,512,120,1))
+    feat_in = torch.rand((3,2048,120,1))
     print(feat_in.shape)
     feat_out = vlad(feat_in)
     print(feat_out.shape)
-    print(512*64)
+    print(2048*64)

@@ -1,1 +1,6 @@
-pandas numpy torch tqdm
+pandas 
+numpy 
+torch 
+tqdm
+SoccerNet
+sklearn
