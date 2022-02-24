@@ -174,4 +174,4 @@ if __name__ == '__main__':
     start=time.time()
     logging.info('Starting main function')
     main(args)
-    #logging.info(f'Total Execution Time is {time.time()-start} seconds')
+    logging.info(f'Total Execution Time is {time.time()-start} seconds')
