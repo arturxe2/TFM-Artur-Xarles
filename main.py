@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 import time
 import numpy as np
+import pdb
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 import torch
@@ -36,7 +37,7 @@ def main(args):
     dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
 
     # create model
-    model = Model(weights=args.load_weights, input_size=args.num_features,
+    model = Model(weights=args.load_weights, input_size=512,
                   num_classes=dataset_Test.num_classes, chunk_size=args.chunk_size*args.framerate,
                   framerate=args.framerate, pool=args.pool).cuda()
     logging.info(model)
