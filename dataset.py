@@ -104,8 +104,8 @@ class SoccerNetClips(Dataset):
             feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1])
             # print("feat_half1.shape",feat_half1.shape)
 
-            feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=self.chunk_size, clip_length=self.chunk_size)
-            feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=self.chunk_size, clip_length=self.chunk_size)
+            feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=self.chunk_size // 2, clip_length=self.chunk_size)
+            feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=self.chunk_size // 2, clip_length=self.chunk_size)
 
             # print("feat_half1.shape",feat_half1.shape)
             # Load labels
