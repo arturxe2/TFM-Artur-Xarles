@@ -143,7 +143,7 @@ class SoccerNetClips(Dataset):
                     continue
                 if half == 2 and frame//self.chunk_size>=label_half2.shape[0]:
                     continue
-                a = frame // self.stride
+                a = frame // stride
                 if half == 1:
                     label_half1[(a - self.size // stride + 1) : (a + 1)][0] = 0 # not BG anymore
                     label_half1[(a - self.size // stride + 1) : (a + 1)] = 1 # that's my class
