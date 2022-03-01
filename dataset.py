@@ -149,7 +149,7 @@ class SoccerNetClips(Dataset):
                 if half == 1:
                     print('asdf')
                     print(a)
-                    print(a - self.size//stride +1)
+                    print(self.size//stride)
                     label_half1[max(a - self.size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
                     print('asdfkñljasdf')
                     label_half1[(a - self.size//stride + 1) : (a + 1)][label+1] = 1 # that's my class
