@@ -147,12 +147,9 @@ class SoccerNetClips(Dataset):
                 a = frame // stride
                 print('asdfkjlñasdfkjasñldf')
                 if half == 1:
-                    print('asdf')
-                    print(a)
-                    print(self.size//stride)
-                    label_half1[max(a - self.size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
+                    label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
                     print('asdfkñljasdf')
-                    label_half1[(a - self.size//stride + 1) : (a + 1)][label+1] = 1 # that's my class
+                    label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][label+1] = 1 # that's my class
 
                 if half == 2:
                     label_half2[(a - self.size // stride + 1) : (a + 1)][0] = 0 # not BG anymore
