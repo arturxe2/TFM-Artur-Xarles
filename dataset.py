@@ -151,7 +151,7 @@ class SoccerNetClips(Dataset):
                     print(max(a - self.chunk_size//stride + 1, 0))
                     print((a + 1))
                     print(label+1)
-                    label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][label+1] = 1 # that's my class
+                    print(label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][label+1]) # that's my class
 
                 if half == 2:
                     label_half2[(a - self.chunk_size // stride + 1) : (a + 1)][0] = 0 # not BG anymore
