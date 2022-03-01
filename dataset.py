@@ -143,9 +143,7 @@ class SoccerNetClips(Dataset):
                     continue
                 if half == 2 and frame//self.chunk_size>=label_half2.shape[0]:
                     continue
-                print('asdfkjñalsdfjaslñd')
                 a = frame // stride
-                print('asdfkjlñasdfkjasñldf')
                 if half == 1:
                     for i in range(self.chunk_size // stride):
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
