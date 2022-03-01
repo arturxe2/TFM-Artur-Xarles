@@ -147,8 +147,8 @@ class SoccerNetClips(Dataset):
                 a = frame // stride
                 print('asdfkjlñasdfkjasñldf')
                 if half == 1:
-                    label_half1[(a - self.size // stride + 1) : (a + 1)][0] = 0 # not BG anymore
-                    label_half1[(a - self.size // stride + 1) : (a + 1)] = 1 # that's my class
+                    label_half1[int(a - self.size//stride + 1) : int(a + 1)][0] = 0 # not BG anymore
+                    label_half1[int(a - self.size//stride + 1) : int(a + 1)][label+1] = 1 # that's my class
 
                 if half == 2:
                     label_half2[(a - self.size // stride + 1) : (a + 1)][0] = 0 # not BG anymore
