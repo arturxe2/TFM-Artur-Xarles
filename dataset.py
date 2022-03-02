@@ -103,7 +103,7 @@ class SoccerNetClips(Dataset):
             feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
             feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1])
             # print("feat_half1.shape",feat_half1.shape)
-            stride = self.chunk_size // 8
+            stride = self.chunk_size // 4
             feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=stride, clip_length=self.chunk_size)
             feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=stride, clip_length=self.chunk_size)
             # print("feat_half1.shape",feat_half1.shape)
