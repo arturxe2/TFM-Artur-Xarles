@@ -138,9 +138,9 @@ class SoccerNetClips(Dataset):
                     label = self.dict_event[event]
 
                 # if label outside temporal of view
-                if half == 1 and frame//self.chunk_size>=label_half1.shape[0]:
+                if half == 1 and frame//stride>=label_half1.shape[0]:
                     continue
-                if half == 2 and frame//self.chunk_size>=label_half2.shape[0]:
+                if half == 2 and frame//stride>=label_half2.shape[0]:
                     continue
                 a = frame // stride
                 if half == 1:
