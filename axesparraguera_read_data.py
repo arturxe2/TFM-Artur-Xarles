@@ -34,7 +34,7 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
     X = []
     #Define train matches directories
     path = '/data-net/datasets/SoccerNetv2/data_split/'
-    init_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2/'
+    init_path = '/data-net/datasets/SoccerNetv2/Baidu_features/'
     with open(path + data_split + '.txt') as f:
         lines = f.readlines()
     #Read data for each match
@@ -42,8 +42,9 @@ def read_data(chunks = 60, data_split = "train", window_size = 60):
         i += 1
         #1 -> 1st half, 2 -> 2nd half
         #Load .npy files
-        features1 = np.load(init_path + line.rstrip('\n') + '/1_ResNET_TF2.npy')
-        features2 = np.load(init_path + line.rstrip('\n') + '/2_ResNET_TF2.npy')
+        features1 = np.load(init_path + line.rstrip('\n') + '/1_baidu_soccer_embeddings.npy')
+        breakpoint()
+        features2 = np.load(init_path + line.rstrip('\n') + '/2_baidu_soccer_embeddings.npy')
         #Define number of chunks second splits
         n_frames1 = features1.shape[0]
         n_frames2 = features2.shape[0]
