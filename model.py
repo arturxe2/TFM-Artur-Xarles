@@ -27,8 +27,12 @@ class Model(nn.Module):
         self.pool = pool
 
         if self.pool == "MAX":
-            self.fc1 = nn.Linear((input_size, chunk_size), (512, chunk_size))
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
+            self.fc = nn.Linear(input_size, self.num_classes+1)
+        
+        elif self.pool == "MAX512":
+            self.fc1 = nn.Linear((chunk_size, input_size), 512)
+            self.pool_layer = nn.MaxPool1d(chunk_size, stride = 1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
 
         elif self.pool == "NetVLAD":
@@ -54,9 +58,14 @@ class Model(nn.Module):
 
         # Temporal pooling operation
         if self.pool == "MAX":
-            inputs_reduced = self.fc1(inputs)
-            inputs_reduced = inputs_reduced.permute((0, 2, 1))
-            inputs_pooled = self.pool_layer(inputs_reduced)
+            inputs = inputs.permute((0, 2, 1))
+            inputs_pooled = self.pool_layer(inputs)
+            inputs_pooled = inputs_pooled.squeeze(-1)
+            
+        elif self.pool == "MAX512":
+            inputs = self.fc1(inputs)
+            inputs = inputs.permute((0, 2, 1))
+            inputs_pooled = self.pool_layer(inputs)
             inputs_pooled = inputs_pooled.squeeze(-1)
 
         elif self.pool == "NetVLAD":
@@ -65,6 +74,6 @@ class Model(nn.Module):
             inputs_pooled = self.pool_layer(inputs)
 
         # Extra FC layer with dropout and sigmoid activation
-        output = self.sigm(self.fc(self.drop(inputs_pooled)))
+        output = self.sigm(self.fc2(self.drop(inputs_pooled)))
 
         return output
