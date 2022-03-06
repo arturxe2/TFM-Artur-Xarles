@@ -64,9 +64,13 @@ class Model(nn.Module):
             
         elif self.pool == "MAX512":
             inputs = self.fc1(inputs)
+            breakpoint()
             inputs = inputs.permute((0, 2, 1))
+            breakpoint()
             inputs_pooled = self.pool_layer(inputs)
+            breakpoint()
             inputs_pooled = inputs_pooled.squeeze(-1)
+            breakpoint()
 
         elif self.pool == "NetVLAD":
             inputs = inputs.unsqueeze(-1)
