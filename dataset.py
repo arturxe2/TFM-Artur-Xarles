@@ -200,12 +200,12 @@ class SoccerNetClipsTesting(Dataset):
             self.labels="Labels-v2.json"
 
         logging.info("Checking/Download features and labels locally")
-        downloader = SoccerNetDownloader(path)
-        for s in split:
-            if s == "challenge":
-                downloader.downloadGames(files=[f"1_{self.features}", f"2_{self.features}"], split=[s], verbose=False)
-            else:
-                downloader.downloadGames(files=[self.labels, f"1_{self.features}", f"2_{self.features}"], split=[s], verbose=False)
+        #downloader = SoccerNetDownloader(path)
+        #for s in split:
+        #    if s == "challenge":
+        #        downloader.downloadGames(files=[f"1_{self.features}", f"2_{self.features}"], split=[s], verbose=False)
+        #    else:
+        #        downloader.downloadGames(files=[self.labels, f"1_{self.features}", f"2_{self.features}"], split=[s], verbose=False)
 
 
     def __getitem__(self, index):
