@@ -28,7 +28,7 @@ class Model(nn.Module):
 
         if self.pool == "MAX":
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
-            self.fc = nn.Linear(input_size, self.num_classes+1)
+            self.fc2 = nn.Linear(input_size, self.num_classes+1)
         
         elif self.pool == "MAX512":
             self.fc1 = nn.Linear(input_size, 512)

@@ -184,6 +184,7 @@ class SoccerNetClipsTesting(Dataset):
     def __init__(self, path, features="ResNET_PCA512.npy", split=["test"], version=1, 
                 framerate=2, chunk_size=240):
         self.path = path
+        labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
         self.listGames = getListGames(split)
         self.features = features
         self.chunk_size = chunk_size
@@ -229,9 +230,9 @@ class SoccerNetClipsTesting(Dataset):
         label_half2 = np.zeros((feat_half2.shape[0], self.num_classes))
         
         # check if annoation exists
-        if os.path.exists(os.path.join(self.path, self.listGames[index], self.labels)):
+        if os.path.exists(os.path.join(labels_path, self.listGames[index], self.labels)):
         
-            labels = json.load(open(os.path.join(self.path, self.listGames[index], self.labels)))
+            labels = json.load(open(os.path.join(labels_path, self.listGames[index], self.labels)))
             for annotation in labels["annotations"]:
 
                 time = annotation["gameTime"]
