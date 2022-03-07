@@ -87,8 +87,8 @@ class SoccerNetClips(Dataset):
             self.labels="Labels-v2.json"
 
         logging.info("Checking/Download features and labels locally")
-        downloader = SoccerNetDownloader(path)
-        downloader.downloadGames(files=[self.labels, f"1_{self.features}", f"2_{self.features}"], split=split, verbose=False)
+        #downloader = SoccerNetDownloader(path)
+        #downloader.downloadGames(files=[self.labels, f"1_{self.features}", f"2_{self.features}"], split=split, verbose=False)
 
 
         logging.info("Pre-compute clips")
