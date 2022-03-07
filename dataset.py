@@ -184,7 +184,7 @@ class SoccerNetClipsTesting(Dataset):
     def __init__(self, path, features="ResNET_PCA512.npy", split=["test"], version=1, 
                 framerate=2, chunk_size=240):
         self.path = path
-        labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
+        
         self.listGames = getListGames(split)
         self.features = features
         self.chunk_size = chunk_size
@@ -219,6 +219,7 @@ class SoccerNetClipsTesting(Dataset):
             label_half1 (np.array): labels (one-hot) for the 1st half.
             label_half2 (np.array): labels (one-hot) for the 2nd half.
         """
+        labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
         # Load features
         feat_half1 = np.load(os.path.join(self.path, self.listGames[index], "1_" + self.features))
         feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1]) #for C3D non PCA
