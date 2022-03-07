@@ -73,6 +73,7 @@ class SoccerNetClips(Dataset):
     def __init__(self, path, features="ResNET_PCA512.npy", split=["train"], version=1, 
                 framerate=2, chunk_size=240):
         self.path = path
+        labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
         self.listGames = getListGames(split)
         self.features = features
         self.chunk_size = chunk_size
@@ -108,7 +109,7 @@ class SoccerNetClips(Dataset):
             feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=stride, clip_length=self.chunk_size)
             # print("feat_half1.shape",feat_half1.shape)
             # Load labels
-            labels = json.load(open(os.path.join(self.path, game, self.labels)))
+            labels = json.load(open(os.path.join(labels_path, game, self.labels)))
 
             label_half1 = np.zeros((feat_half1.shape[0], self.num_classes+1))
             label_half1[:,0]=1 # those are BG classes
