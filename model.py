@@ -63,7 +63,7 @@ class Model(nn.Module):
             inputs_pooled = inputs_pooled.squeeze(-1)
             
         elif self.pool == "MAX512":
-            inputs = self.fc1(inputs)
+            inputs = self.fc1(self.drop(inputs))
             #breakpoint()
             inputs = inputs.permute((0, 2, 1))
             #breakpoint()
