@@ -41,6 +41,7 @@ class Model(nn.Module):
             self.fc = nn.Linear(input_size*64, self.num_classes+1)
 
         self.drop = nn.Dropout(p=0.4)
+        self.drop2 = nn.Dropout(p=0.7)
         self.sigm = nn.Sigmoid()
 
         self.load_weights(weights=weights)
@@ -63,7 +64,7 @@ class Model(nn.Module):
             inputs_pooled = inputs_pooled.squeeze(-1)
             
         elif self.pool == "MAX512":
-            inputs = self.fc1(self.drop(inputs))
+            inputs = self.fc1(self.drop2(inputs))
             #breakpoint()
             inputs = inputs.permute((0, 2, 1))
             #breakpoint()
