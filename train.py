@@ -355,8 +355,8 @@ def testSpotting(dataloader, model, model_name, overwrite=True, NMS_window=30, N
     if split == "challenge": 
         print("Visit eval.ai to evalaute performances on Challenge set")
         return None
-
-    results = evaluate(SoccerNet_path=dataloader.dataset.path, 
+    labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
+    results = evaluate(SoccerNet_path=labels_path, 
                  Predictions_path=output_results,
                  split="test",
                  prediction_file="results_spotting.json", 
