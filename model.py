@@ -31,7 +31,7 @@ class Model(nn.Module):
             self.fc2 = nn.Linear(input_size, self.num_classes+1)
         
         elif self.pool == "MAX512":
-            self.fc1 = nn.Linear(input_size, 512)
+            self.conv1 = nn.Conv1d(input_size, 512, 1, 1)
             self.pool_layer = nn.MaxPool1d(chunk_size, stride = 1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
 
@@ -41,7 +41,6 @@ class Model(nn.Module):
             self.fc = nn.Linear(input_size*64, self.num_classes+1)
 
         self.drop = nn.Dropout(p=0.4)
-        self.drop2 = nn.Dropout(p=0.7)
         self.sigm = nn.Sigmoid()
 
         self.load_weights(weights=weights)
@@ -64,9 +63,10 @@ class Model(nn.Module):
             inputs_pooled = inputs_pooled.squeeze(-1)
             
         elif self.pool == "MAX512":
-            inputs = self.fc1(self.drop2(inputs))
-            #breakpoint()
             inputs = inputs.permute((0, 2, 1))
+            inputs = self.conv1(self.drop2(inputs))
+            #breakpoint()
+            #inputs = inputs.permute((0, 2, 1))
             #breakpoint()
             inputs_pooled = self.pool_layer(inputs)
             #breakpoint()
