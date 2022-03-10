@@ -64,9 +64,11 @@ def main(args):
     # training parameters
     if not args.test_only:
         criterion = NLLLoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
-                                    betas=(0.9, 0.999), eps=1e-08, 
-                                    weight_decay=0, amsgrad=False)
+        #optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
+        #                            betas=(0.9, 0.999), eps=1e-08, 
+        #                            weight_decay=0, amsgrad=False)
+        optimizer = torch.optim.SGD(model.parameters(), lr=args.LR,
+                                    momentum=0.9, eps=1e-08)
 
 
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', verbose=True, patience=args.patience)

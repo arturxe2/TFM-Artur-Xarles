@@ -3,13 +3,33 @@ import __future__
 
 import numpy as np
 import warnings
-
+import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 from netvlad import NetVLAD
 
+class PositionalEncoding(nn.Module):
+
+    def __init__(self, d_model: int, dropout: float = 0.1, max_len: int = 6000):
+        super().__init__()
+        self.dropout = nn.Dropout(p=dropout)
+
+        position = torch.arange(max_len).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
+        pe = torch.zeros(max_len, 1, d_model)
+        pe[:, 0, 0::2] = torch.sin(position * div_term)
+        pe[:, 0, 1::2] = torch.cos(position * div_term)
+        self.register_buffer('pe', pe)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            x: Tensor, shape [seq_len, batch_size, embedding_dim]
+        """
+        x = x + self.pe[:x.size(0)]
+        return self.dropout(x)
 
 class Model(nn.Module):
     def __init__(self, weights=None, input_size=512, num_classes=3, chunk_size=240, framerate=2, pool="NetVLAD"):
@@ -34,6 +54,16 @@ class Model(nn.Module):
             self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
             self.norm = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
+            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
+            self.fc2 = nn.Linear(512, self.num_classes+1)
+            
+        elif self.pool == "MAX512_transformer":
+            self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
+            self.norm = nn.BatchNorm1d(512)
+            self.relu = nn.ReLU()
+            encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
+            self.pos_encoder = PositionalEncoding(512, )
+            self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
 
@@ -72,6 +102,18 @@ class Model(nn.Module):
             #breakpoint()
             inputs_pooled = inputs_pooled.squeeze(-1)
             #breakpoint()
+            #### Transformer
+        elif self.pool == "MAX512_transformer":
+            inputs = inputs.permute((0, 2, 1))
+            inputs = self.relu(self.norm(self.conv1(inputs)))
+            inputs = self.pos_encoder(inputs)
+            inputs = self.encoder(inputs)
+            #breakpoint()
+            inputs_pooled = self.pool_layer(inputs)
+            #breakpoint()
+            inputs_pooled = inputs_pooled.squeeze(-1)
+            #breakpoint()
+            #### Transformer
 
         elif self.pool == "NetVLAD":
             inputs = inputs.unsqueeze(-1)
