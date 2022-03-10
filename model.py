@@ -31,10 +31,11 @@ class Model(nn.Module):
             self.fc2 = nn.Linear(input_size, self.num_classes+1)
         
         elif self.pool == "MAX512":
-            self.conv1 = nn.Conv1d(input_size, 100, 1, 1)
-            self.norm = nn.BatchNorm1d(100)
-            self.pool_layer = nn.MaxPool1d(chunk_size, stride = 1)
-            self.fc2 = nn.Linear(100, self.num_classes+1)
+            self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
+            self.norm = nn.BatchNorm1d(512)
+            self.relu = nn.ReLU()
+            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
+            self.fc2 = nn.Linear(512, self.num_classes+1)
 
         elif self.pool == "NetVLAD":
             self.pool_layer = NetVLAD(num_clusters=64, dim=512,
@@ -65,7 +66,7 @@ class Model(nn.Module):
             
         elif self.pool == "MAX512":
             inputs = inputs.permute((0, 2, 1))
-            inputs = self.norm(self.conv1(inputs))
+            inputs = self.relu(self.norm(self.conv1(inputs)))
             #breakpoint()
             inputs_pooled = self.pool_layer(inputs)
             #breakpoint()
