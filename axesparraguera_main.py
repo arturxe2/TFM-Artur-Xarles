@@ -65,8 +65,8 @@ def main(args):
     if not args.test_only:
         criterion = NLLLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
-                                    betas=(0.9, 0.999), eps=1e-08, 
-                                    weight_decay=0, amsgrad=False)
+                                    betas=(0.7, 0.999), eps=1e-08, 
+                                    weight_decay=0, amsgrad=True)
         #optimizer = torch.optim.SGD(model.parameters(), lr=args.LR,
         #                            momentum=0.9)
 
