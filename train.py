@@ -123,6 +123,7 @@ def train(dataloader,
                 # compute gradient and do SGD step
                 optimizer.zero_grad()
                 loss.backward()
+                torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=10)
                 optimizer.step()
 
             # measure elapsed time
