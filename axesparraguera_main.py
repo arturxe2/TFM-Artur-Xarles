@@ -14,8 +14,8 @@ from train import trainer, test, testSpotting
 from loss import NLLLoss
 
 # for reproducibility
-torch.manual_seed(0)
-np.random.seed(0)
+torch.manual_seed(1)
+np.random.seed(1)
 
 def main(args):
 
