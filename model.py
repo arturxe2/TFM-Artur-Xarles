@@ -105,11 +105,16 @@ class Model(nn.Module):
             #### Transformer
         elif self.pool == "MAX512_transformer":
             inputs = inputs.permute((0, 2, 1))
+            print(inputs.shape)
             inputs = self.relu(self.norm(self.conv1(inputs)))
+            print(inputs.shape)
             inputs = self.pos_encoder(inputs)
+            print(inputs.shape)
             inputs = self.encoder(inputs)
+            print(inputs.shape)
             #breakpoint()
             inputs_pooled = self.pool_layer(inputs)
+            print(inputs_pooled.shape)
             #breakpoint()
             inputs_pooled = inputs_pooled.squeeze(-1)
             #breakpoint()
