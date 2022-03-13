@@ -66,6 +66,16 @@ class Model(nn.Module):
             self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
+            
+        elif self.pool == "MAX512_transformer2":
+            self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
+            self.norm = nn.BatchNorm1d(512)
+            self.relu = nn.ReLU()
+            encoder_layer = nn.TransformerEncoderLayer(d_model=self.framerate * self.chunk_size, nhead=8)
+            self.pos_encoder = PositionalEncoding(self.framerate * self.chunk_size, )
+            self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
+            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
+            self.fc2 = nn.Linear(512, self.num_classes+1)
 
         elif self.pool == "NetVLAD":
             self.pool_layer = NetVLAD(num_clusters=64, dim=512,
@@ -119,6 +129,27 @@ class Model(nn.Module):
             #print(inputs.shape)
             inputs_pooled = self.pool_layer(inputs) #(B x 512 x 1)
             #print(inputs_pooled.shape)
+            #breakpoint()
+            inputs_pooled = inputs_pooled.squeeze(-1)
+            #breakpoint()
+            #### Transformer
+            
+        elif self.pool == "MAX512_transformer2":
+            inputs = inputs.permute((0, 2, 1)) #(B x n_features x n_frames)
+            print(inputs.shape)
+            inputs = self.relu(self.norm(self.conv1(inputs))) #(B x 512 x n_frames)
+            print(inputs.shape)
+            #inputs = inputs.permute((0, 2, 1)) 
+            #print(inputs.shape)
+            inputs = self.pos_encoder(inputs) #(B x 512 x n_frames)
+            print(inputs.shape)
+            inputs = self.encoder(inputs) #(B x 512 x n_frames)
+            print(inputs.shape)
+            #breakpoint()
+            #inputs = inputs.permute((0, 2, 1)) 
+            #print(inputs.shape)
+            inputs_pooled = self.pool_layer(inputs) #(B x 512 x 1)
+            print(inputs_pooled.shape)
             #breakpoint()
             inputs_pooled = inputs_pooled.squeeze(-1)
             #breakpoint()
