@@ -71,7 +71,7 @@ class Model(nn.Module):
             self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
             self.norm = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
-            encoder_layer = nn.TransformerEncoderLayer(d_model=self.framerate * self.chunk_size, nhead=8)
+            encoder_layer = nn.TransformerEncoderLayer(d_model=self.framerate * self.chunk_size, nhead=5)
             self.pos_encoder = PositionalEncoding(self.framerate * self.chunk_size, )
             self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
