@@ -62,7 +62,7 @@ class Model(nn.Module):
             self.norm = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
             encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.pos_encoder = PositionalEncoding(512, )
+            self.pos_encoder = PositionalEncoding(15, )
             self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
