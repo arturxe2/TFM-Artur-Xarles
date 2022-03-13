@@ -115,6 +115,8 @@ class Model(nn.Module):
             inputs = self.encoder(inputs)
             print(inputs.shape)
             #breakpoint()
+            inputs = inputs.permute((0, 2, 1))
+            print(inputs.shape)
             inputs_pooled = self.pool_layer(inputs)
             print(inputs_pooled.shape)
             #breakpoint()
