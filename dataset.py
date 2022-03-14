@@ -106,11 +106,11 @@ class SoccerNetClips(Dataset):
             # print("feat_half1.shape",feat_half1.shape)
             stride = self.chunk_size // 2
             feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=stride, clip_length=self.chunk_size)
-            if (feat_half1.mean(2) < 0.001).sum() > 0:
+            if (feat_half1.mean(2) > 1).sum() > 0:
                 print('SMALL VALUE HALF 1')
             
             feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=stride, clip_length=self.chunk_size)
-            if (feat_half2.mean(2) < 0.001).sum() > 0:
+            if (feat_half2.mean(2) > 1).sum() > 0:
                 print('SMALL VALUE HALF 2')
             # print("feat_half1.shape",feat_half1.shape)
             # Load labels
