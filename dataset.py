@@ -162,6 +162,7 @@ class SoccerNetClips(Dataset):
 
         self.game_feats = np.concatenate(self.game_feats)
         self.game_labels = np.concatenate(self.game_labels)
+        print(self.dict_event)
 
 
 

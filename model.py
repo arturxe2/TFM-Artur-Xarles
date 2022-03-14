@@ -61,24 +61,32 @@ class Model(nn.Module):
             self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
             self.norm = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
+            #First TransformerEncoder (1 layer)
             encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.pos_encoder = PositionalEncoding(512, )
             self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
+            
+            #Second TransformerEncoder (1 layer)
             encoder_layer2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.pos_encoder2 = PositionalEncoding(512, )
             self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
+            
+            
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
             
-        elif self.pool == "MAX512_transformer2":
-            self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
-            self.norm = nn.BatchNorm1d(512)
+        elif self.pool == "transformer_2features":
+            self.conv1R = nn.Conv1d(2048, 512, 1, stride=1, bias=False)
+            self.normR = nn.BatchNorm1d(512)
+            self.conv1B = nn.Conv1d(8576, 512, 1, stride=1, bias=False)
+            self.normB = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
-            encoder_layer = nn.TransformerEncoderLayer(d_model=self.framerate * self.chunk_size, nhead=5)
-            self.pos_encoder = PositionalEncoding(self.framerate * self.chunk_size, )
-            self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
-            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
-            self.fc2 = nn.Linear(512, self.num_classes+1)
+            #Add segment embedding
+            self.pos_encoder = PositionalEncoding(512, )
+            encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
+            self.encoder = nn.TransformerEncoder(encoder_layer, 1)
+            
+            
 
         elif self.pool == "NetVLAD":
             self.pool_layer = NetVLAD(num_clusters=64, dim=512,
@@ -139,26 +147,25 @@ class Model(nn.Module):
             #breakpoint()
             #### Transformer
             
-        elif self.pool == "MAX512_transformer2":
-            inputs = inputs.permute((0, 2, 1)) #(B x n_features x n_frames)
-            print(inputs.shape)
-            inputs = self.relu(self.norm(self.conv1(inputs))) #(B x 512 x n_frames)
-            print(inputs.shape)
-            #inputs = inputs.permute((0, 2, 1)) 
-            #print(inputs.shape)
-            inputs = self.pos_encoder(inputs) #(B x 512 x n_frames)
-            print(inputs.shape)
-            inputs = self.encoder(inputs) #(B x 512 x n_frames)
-            print(inputs.shape)
-            #breakpoint()
-            #inputs = inputs.permute((0, 2, 1)) 
-            #print(inputs.shape)
-            inputs_pooled = self.pool_layer(inputs) #(B x 512 x 1)
-            print(inputs_pooled.shape)
-            #breakpoint()
+        elif self.pool == "transformer_2features":
+            inputs = inputs.permute((0, 2, 1))
+            inputsR = inputs[:, :2048, :]
+            inputsB = inputs[:, 2048:, :]
+            inputsR = self.relu(self.normR(self.conv1R(inputsR)))#(B x 512 x (chunk_size * 2))
+            inputsB = self.relu(self.normB(self.conv1B(inputsB))) #(B x 512 x (chunk_size))
+            inputsR = inputsR.permute((0, 2, 1))#(B x (chunk_size * 2) x 512)
+            inputsB = inputsB.permute((0, 2, 1))#(B x (chunk_size) x 512)
+            
+            inputsR = self.pos_encoder(inputsR)#(B x (chunk_size * 2) x 512)
+            inputsB = self.pos_encoder(inputsB)#(B x (chunk_size) x 512)
+            inputs = torch.cat((inputsR, inputsB), dim=2) #(B x (chunk_size * (1 + 2)) x 512)
+            inputs = self.encoder(inputs)
+            
+            inputs = inputs.permute((0, 2, 1))
+            inputs_pooled = self.pool_layer(inputs)
             inputs_pooled = inputs_pooled.squeeze(-1)
-            #breakpoint()
-            #### Transformer
+            
+            
 
         elif self.pool == "NetVLAD":
             inputs = inputs.unsqueeze(-1)
