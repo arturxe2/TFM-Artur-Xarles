@@ -44,6 +44,7 @@ def main(args):
             resnet_name = 'ResNET_TF2.npy'
             
             dataset_TrainB = SoccerNetClips(path=baidu_path, features=baidu_name, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            breakpoint()
             dataset_TrainR = SoccerNetClips(path=resnet_path, features=resnet_name, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             dataset_ValidB = SoccerNetClips(path=baidu_path, features=baidu_name, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             dataset_ValidR = SoccerNetClips(path=resnet_path, features=resnet_name, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
