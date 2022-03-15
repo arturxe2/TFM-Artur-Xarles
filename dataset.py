@@ -105,6 +105,7 @@ class SoccerNetClips(Dataset):
         for game in tqdm(self.listGames):
             # Load features
             if self.path != 'Baidu+ResNet':
+                print('asdf')
                 feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
                 feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1])
                 feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))

@@ -25,34 +25,19 @@ def main(args):
 
     # create dataset
     if not args.test_only:
-        if args.SoccerNet_path != 'Baidu+ResNet':
-            if args.version == 1:
-                dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+
+        if args.version == 1:
+            dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
     
-            if args.version == 2:
-                dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+        if args.version == 2:
+            dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+        dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             
-        else:
-            baidu_path = '/data-net/datasets/SoccerNetv2/Baidu_features'
-            baidu_name = 'baidu_soccer_embeddings.npy'
-            resnet_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2'
-            resnet_name = 'ResNET_TF2.npy'
-            
-            dataset_TrainB = SoccerNetClips(path=baidu_path, features=baidu_name, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            breakpoint()
-            dataset_TrainR = SoccerNetClips(path=resnet_path, features=resnet_name, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_ValidB = SoccerNetClips(path=baidu_path, features=baidu_name, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_ValidR = SoccerNetClips(path=resnet_path, features=resnet_name, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_Valid_metricB  = SoccerNetClips(path=baidu_path, features=baidu_name, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_Valid_metricR  = SoccerNetClips(path=resnet_path, features=resnet_name, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-    
-            dataset_TestB  = SoccerNetClipsTesting(path=baidu_path, features=baidu_name, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_TestR  = SoccerNetClipsTesting(path=resnet_path, features=resnet_name, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+        
             
     # create model
     model = Model(weights=args.load_weights, input_size=args.num_features,
@@ -103,7 +88,11 @@ def main(args):
 
     # test on multiple splits [test/challenge]
     for split in args.split_test:
-        dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+        if args.SoccerNet_path != 'Baidu+ResNet':
+            dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+        else: 
+            dataset_TestB  = SoccerNetClipsTesting(path=baidu_path, features=baidu_name, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            dataset_TestR  = SoccerNetClipsTesting(path=resnet_path, features=resnet_name, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
 
         test_loader = torch.utils.data.DataLoader(dataset_Test,
             batch_size=1, shuffle=False,
