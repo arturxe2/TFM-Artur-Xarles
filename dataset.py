@@ -268,15 +268,34 @@ class SoccerNetClipsTesting(Dataset):
             label_half2 (np.array): labels (one-hot) for the 2nd half.
         """
         labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
+        baidu_path = '/data-net/datasets/SoccerNetv2/Baidu_features'
+        baidu_name = 'baidu_soccer_embeddings.npy'
+        resnet_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2'
+        resnet_name = 'ResNET_TF2.npy'
         # Load features
-        feat_half1 = np.load(os.path.join(self.path, self.listGames[index], "1_" + self.features))
-        feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1]) #for C3D non PCA
-        feat_half2 = np.load(os.path.join(self.path, self.listGames[index], "2_" + self.features))
-        feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1]) #for C3D non PCA
-
-        # Load labels
-        label_half1 = np.zeros((feat_half1.shape[0], self.num_classes))
-        label_half2 = np.zeros((feat_half2.shape[0], self.num_classes))
+        
+        if self.path != 'Baidu+ResNet':
+            feat_half1 = np.load(os.path.join(self.path, self.listGames[index], "1_" + self.features))
+            feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1]) #for C3D non PCA
+            feat_half2 = np.load(os.path.join(self.path, self.listGames[index], "2_" + self.features))
+            feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1]) #for C3D non PCA
+    
+            # Load labels
+            label_half1 = np.zeros((feat_half1.shape[0], self.num_classes))
+            label_half2 = np.zeros((feat_half2.shape[0], self.num_classes))
+        
+        else:
+            feat1_half1 = np.load(os.path.join(baidu_path, self.listGames[index], "1_" + baidu_name))
+            feat1_half1 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
+            feat1_half2 = np.load(os.path.join(baidu_path, self.listGames[index], "2_" + baidu_name))
+            feat1_half2 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
+            feat2_half1 = np.load(os.path.join(resnet_path, self.listGames[index], "1_" + resnet_name))
+            feat2_half1 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
+            feat2_half2 = np.load(os.path.join(resnet_path, self.listGames[index], "2_" + resnet_name))
+            feat2_half2 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
+            
+            label_half1 = np.zeros((feat1_half1.shape[0], self.num_classes))
+            label_half2 = np.zeros((feat1_half2.shape[0], self.num_classes))
         
         # check if annoation exists
         if os.path.exists(os.path.join(labels_path, self.listGames[index], self.labels)):
@@ -318,17 +337,33 @@ class SoccerNetClipsTesting(Dataset):
 
             
                 
-
-        feat_half1 = feats2clip(torch.from_numpy(feat_half1), 
-                        stride=1, off=int(self.chunk_size/2), 
-                        clip_length=self.chunk_size)
-
-        feat_half2 = feats2clip(torch.from_numpy(feat_half2), 
-                        stride=1, off=int(self.chunk_size/2), 
-                        clip_length=self.chunk_size)
+        if self.path != 'Baidu+ResNet':
+            feat_half1 = feats2clip(torch.from_numpy(feat_half1), 
+                            stride=1, off=int(self.chunk_size/2), 
+                            clip_length=self.chunk_size)
+    
+            feat_half2 = feats2clip(torch.from_numpy(feat_half2), 
+                            stride=1, off=int(self.chunk_size/2), 
+                            clip_length=self.chunk_size)
+            return self.listGames[index], feat_half1, feat_half2, label_half1, label_half2
+        
+        else:
+            feat1_half1 = feats2clip(torch.from_numpy(feat1_half1),
+                                     stride=1, off=int(self.chunk_size/2),
+                                     clip_length=self.chunk_size)
+            feat1_half2 = feats2clip(torch.from_numpy(feat1_half2),
+                                     stride=1, off=int(self.chunk_size/2),
+                                     clip_length=self.chunk_size)
+            feat2_half1 = feats2clip(torch.from_numpy(feat2_half1),
+                                     stride=2, off=int(self.chunk_size/2),
+                                     clip_length=self.chunk_size * 2)
+            feat2_half2 = feats2clip(torch.from_numpy(feat2_half2),
+                                     stride=2, off=int(self.chunk_size/2),
+                                     clip_length=self.chunk_size * 2)
+            return self.listGames[index], feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2
 
         
-        return self.listGames[index], feat_half1, feat_half2, label_half1, label_half2
+        
 
     def __len__(self):
         return len(self.listGames)

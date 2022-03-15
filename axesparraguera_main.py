@@ -88,17 +88,13 @@ def main(args):
 
     # test on multiple splits [test/challenge]
     for split in args.split_test:
-        if args.SoccerNet_path != 'Baidu+ResNet':
-            dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-        else: 
-            dataset_TestB  = SoccerNetClipsTesting(path=baidu_path, features=baidu_name, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_TestR  = SoccerNetClipsTesting(path=resnet_path, features=resnet_name, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+        dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
 
         test_loader = torch.utils.data.DataLoader(dataset_Test,
             batch_size=1, shuffle=False,
             num_workers=1, pin_memory=True)
 
-        results = testSpotting(test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
+        results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
         if results is None:
             continue
 
