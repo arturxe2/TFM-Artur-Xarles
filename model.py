@@ -163,11 +163,14 @@ class Model(nn.Module):
             print(inputsR.shape)
             print(inputsB.shape)
             inputs = torch.cat((inputsR, inputsB), dim=1) #(B x (chunk_size * (1 + 2)) x 512)
+            print(inputs.shape)
             inputs = self.encoder(inputs)
             
+            print(inputs.shape)
             inputs = inputs.permute((0, 2, 1))
             inputs_pooled = self.pool_layer(inputs)
             inputs_pooled = inputs_pooled.squeeze(-1)
+            print(inputs_pooled.shape)
             
             
 
