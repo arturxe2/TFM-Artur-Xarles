@@ -113,7 +113,9 @@ class SoccerNetClips(Dataset):
             else:
                 feat_half1B = np.load(os.path.join(baidu_path, game, "1_" + baidu_name))
                 feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
+                print(feat_half1B.shape)
                 feat_half1R = np.load(os.path.join(resnet_path, game, "1_" + resnet_name))
+                print(feat_half1R.shape)
                 feat_half1R = feat_half1R.reshape(-1, feat_half1R.shape[-1])
                 feat_half2B = np.load(os.path.join(baidu_path, game, "2_" + baidu_name))
                 feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
