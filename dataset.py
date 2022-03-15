@@ -288,11 +288,11 @@ class SoccerNetClipsTesting(Dataset):
             feat1_half1 = np.load(os.path.join(baidu_path, self.listGames[index], "1_" + baidu_name))
             feat1_half1 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
             feat1_half2 = np.load(os.path.join(baidu_path, self.listGames[index], "2_" + baidu_name))
-            feat1_half2 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
+            feat1_half2 = feat1_half2.reshape(-1, feat1_half2.shape[-1])    #for C3D non PCA
             feat2_half1 = np.load(os.path.join(resnet_path, self.listGames[index], "1_" + resnet_name))
-            feat2_half1 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
+            feat2_half1 = feat2_half1.reshape(-1, feat2_half1.shape[-1])    #for C3D non PCA
             feat2_half2 = np.load(os.path.join(resnet_path, self.listGames[index], "2_" + resnet_name))
-            feat2_half2 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
+            feat2_half2 = feat2_half2.reshape(-1, feat2_half2.shape[-1])    #for C3D non PCA
             
             label_half1 = np.zeros((feat1_half1.shape[0], self.num_classes))
             label_half2 = np.zeros((feat1_half2.shape[0], self.num_classes))
