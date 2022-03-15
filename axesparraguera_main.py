@@ -35,7 +35,7 @@ def main(args):
             dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-        dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+    dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             
         
             
