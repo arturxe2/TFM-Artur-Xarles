@@ -124,9 +124,9 @@ class SoccerNetClips(Dataset):
                 feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
                 
                 feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
-                feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride, clip_length=self.chunk_size) 
+                feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride, clip_length=self.chunk_size * 2) 
                 feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
-                feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride, clip_length=self.chunk_size) 
+                feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride, clip_length=self.chunk_size * 2) 
                 
                 print(feat_half1B.shape)
                 print(feat_half1R.shape)
