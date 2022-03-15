@@ -157,7 +157,9 @@ class Model(nn.Module):
             
             inputsR = self.pos_encoder(inputsR)#(B x (chunk_size * 2) x 512)
             inputsB = self.pos_encoder(inputsB)#(B x (chunk_size) x 512)
-            inputs = torch.cat((inputsR, inputsB), dim=2) #(B x (chunk_size * (1 + 2)) x 512)
+            print(inputsR.shape)
+            print(inputsB.shape)
+            inputs = torch.cat((inputsR, inputsB), dim=1) #(B x (chunk_size * (1 + 2)) x 512)
             inputs = self.encoder(inputs)
             
             inputs = inputs.permute((0, 2, 1))
