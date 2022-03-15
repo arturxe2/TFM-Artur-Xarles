@@ -326,14 +326,22 @@ class SoccerNetClipsTesting(Dataset):
                 if "visibility" in annotation.keys():
                     if annotation["visibility"] == "not shown":
                         value = -1
-
-                if half == 1:
-                    frame = min(frame, feat_half1.shape[0]-1)
-                    label_half1[frame][label] = value
-
-                if half == 2:
-                    frame = min(frame, feat_half2.shape[0]-1)
-                    label_half2[frame][label] = value
+                if self.path != 'Baidu+ResNet':
+                    if half == 1:
+                        frame = min(frame, feat_half1.shape[0]-1)
+                        label_half1[frame][label] = value
+    
+                    if half == 2:
+                        frame = min(frame, feat_half2.shape[0]-1)
+                        label_half2[frame][label] = value
+                else:
+                    if half == 1:
+                        frame = min(frame, feat1_half1.shape[0]-1)
+                        label_half1[frame][label] = value
+    
+                    if half == 2:
+                        frame = min(frame, feat1_half2.shape[0]-1)
+                        label_half2[frame][label] = value
 
             
                 
