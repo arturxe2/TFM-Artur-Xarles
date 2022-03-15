@@ -90,7 +90,8 @@ class Model(nn.Module):
             encoder_layer3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.encoder3 = nn.TransformerEncoder(encoder_layer3, 1)
             #Pool layer
-            self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
+            #self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
+            self.pool_layer = nn.AvgPool1d(chunk_size * (2 + 1), stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
             
             
