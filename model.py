@@ -85,6 +85,9 @@ class Model(nn.Module):
             self.pos_encoder = PositionalEncoding(512, )
             encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.encoder = nn.TransformerEncoder(encoder_layer, 1)
+            #Pool layer
+            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
+            self.fc2 = nn.Linear(512, self.num_classes+1)
             
             
 
