@@ -23,12 +23,12 @@ class PositionalEncoding(nn.Module):
         pe[:, 0, 1::2] = torch.cos(position * div_term)
         self.register_buffer('pe', pe)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, add: float = 0.) -> torch.Tensor:
         """
         Args:
             x: Tensor, shape [seq_len, batch_size, embedding_dim]
         """
-        x = x + self.pe[:x.size(0)]
+        x = x + self.pe[:x.size(0)] + add
         return self.dropout(x)
 
 class Model(nn.Module):
@@ -85,6 +85,10 @@ class Model(nn.Module):
             self.pos_encoder = PositionalEncoding(512, )
             encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.encoder = nn.TransformerEncoder(encoder_layer, 1)
+            encoder_layer2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
+            self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
+            encoder_layer3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
+            self.encoder3 = nn.TransformerEncoder(encoder_layer3, 1)
             #Pool layer
             self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
@@ -158,10 +162,14 @@ class Model(nn.Module):
             inputsR = inputsR.permute((0, 2, 1))#(B x (chunk_size * 2) x 512)
             inputsB = inputsB.permute((0, 2, 1))#(B x (chunk_size) x 512)
             
-            inputsR = self.pos_encoder(inputsR)#(B x (chunk_size * 2) x 512)
-            inputsB = self.pos_encoder(inputsB)#(B x (chunk_size) x 512)
-            inputs = torch.cat((inputsR, inputsB), dim=1) #(B x (chunk_size * (1 + 2)) x 512)
-            inputs = self.encoder(inputs)
+            #Positional encodding + feature encoding (1 for R, 0 for B)
+            inputsR = self.pos_encoder(inputsR, add=1.)#(B x (chunk_size * 2) x 512)
+            inputsB = self.pos_encoder(inputsB, add=0.)#(B x (chunk_size) x 512)
+            inputs = torch.cat((inputsB, inputsR), dim=1) #(B x (chunk_size * (1 + 2)) x 512)
+            #Encoders
+            inputs = self.encoder(inputs) #(B x (chunk_size * (1 + 2)) x 512)
+            inputs = self.encoder2(inputs)
+            inputs = self.encoder3(inputs)
             
             inputs = inputs.permute((0, 2, 1))
             inputs_pooled = self.pool_layer(inputs)
