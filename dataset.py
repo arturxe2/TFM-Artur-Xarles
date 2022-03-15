@@ -92,8 +92,12 @@ class SoccerNetClips(Dataset):
 
 
         logging.info("Pre-compute clips")
-
-        self.game_feats = list()
+        
+        if self.path != 'Baidu+ResNet':
+            self.game_feats = list()
+        else:
+            self.game_feats1 = list()
+            self.game_feats2 = list()
         self.game_labels = list()
 
         # game_counter = 0
@@ -135,12 +139,16 @@ class SoccerNetClips(Dataset):
 
             # Load labels
             labels = json.load(open(os.path.join(labels_path, game, self.labels)))
-
-            label_half1 = np.zeros((feat_half1.shape[0], self.num_classes+1))
-            label_half1[:,0]=1 # those are BG classes
-            label_half2 = np.zeros((feat_half2.shape[0], self.num_classes+1))
-            label_half2[:,0]=1 # those are BG classes
-
+            if self.path != 'Baidu+ResNet':
+                label_half1 = np.zeros((feat_half1.shape[0], self.num_classes+1))
+                label_half1[:,0]=1 # those are BG classes
+                label_half2 = np.zeros((feat_half2.shape[0], self.num_classes+1))
+                label_half2[:,0]=1 # those are BG classes
+            else:
+                label_half1 = np.zeros((feat_half1B.shape[0], self.num_classes+1))
+                label_half1[:,0]=1 # those are BG classes
+                label_half2 = np.zeros((feat_half2B.shape[0], self.num_classes+1))
+                label_half2[:,0]=1 # those are BG classes
 
             for annotation in labels["annotations"]:
 
@@ -180,12 +188,23 @@ class SoccerNetClips(Dataset):
                         label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
                         label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
             
-            self.game_feats.append(feat_half1)
-            self.game_feats.append(feat_half2)
+            if self.path != 'Baidu+ResNet':
+                self.game_feats.append(feat_half1)
+                self.game_feats.append(feat_half2)
+            else:
+                self.game_feats1.append(feat_half1B)
+                self.game_feats2.append(feat_half1R)
+                self.game_feats1.append(feat_half2B)
+                self.game_feats2.append(feat_half2R)
+           
             self.game_labels.append(label_half1)
             self.game_labels.append(label_half2)
-
-        self.game_feats = np.concatenate(self.game_feats)
+            
+        if self.path != 'Baidu+ResNet':
+            self.game_feats = np.concatenate(self.game_feats)
+        else:
+            self.game_feats1 = np.concatenate(self.game_feats1)
+            self.game_feats2 = np.concatenate(self.game_feats2)
         self.game_labels = np.concatenate(self.game_labels)
         print(self.dict_event)
 
@@ -200,7 +219,10 @@ class SoccerNetClips(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
-        return self.game_feats[index,:,:], self.game_labels[index,:]
+        if self.path != 'Baidu+ResNet':
+            return self.game_feats[index,:,:], self.game_labels[index,:]
+        else:
+            return self.game_feats1[index,:,:], self.game_feats2[index,:,:], self.game_labels[index,:]
 
     def __len__(self):
         return len(self.game_feats)
