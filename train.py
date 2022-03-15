@@ -63,6 +63,7 @@ def trainer(path, train_loader,
         # Test the model on the validation set
         if epoch % evaluation_frequency == 0 and epoch != 0:
             performance_validation = test(
+                path,
                 val_metric_loader,
                 model,
                 model_name)
@@ -183,7 +184,7 @@ def train(path,
     return losses.avg
 
 
-def test(dataloader, model, model_name):
+def test(path, dataloader, model, model_name):
     batch_time = AverageMeter()
     data_time = AverageMeter()
 
@@ -193,31 +194,59 @@ def test(dataloader, model, model_name):
     all_labels = []
     all_outputs = []
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=120) as t:
-        for i, (feats, labels) in t:
-            # measure data loading time
-            data_time.update(time.time() - end)
-            feats = feats.cuda()
-            # labels = labels.cuda()
-
-            # print(feats.shape)
-            # feats=feats.unsqueeze(0)
-            # print(feats.shape)
-
-            # compute output
-            output = model(feats)
-
-            all_labels.append(labels.detach().numpy())
-            all_outputs.append(output.cpu().detach().numpy())
-
-            batch_time.update(time.time() - end)
-            end = time.time()
-
-            desc = f'Test (cls): '
-            desc += f'Time {batch_time.avg:.3f}s '
-            desc += f'(it:{batch_time.val:.3f}s) '
-            desc += f'Data:{data_time.avg:.3f}s '
-            desc += f'(it:{data_time.val:.3f}s) '
-            t.set_description(desc)
+        if path != 'Baidu+ResNet':
+            for i, (feats, labels) in t:
+                # measure data loading time
+                data_time.update(time.time() - end)
+                feats = feats.cuda()
+                # labels = labels.cuda()
+    
+                # print(feats.shape)
+                # feats=feats.unsqueeze(0)
+                # print(feats.shape)
+    
+                # compute output
+                output = model(feats)
+    
+                all_labels.append(labels.detach().numpy())
+                all_outputs.append(output.cpu().detach().numpy())
+    
+                batch_time.update(time.time() - end)
+                end = time.time()
+    
+                desc = f'Test (cls): '
+                desc += f'Time {batch_time.avg:.3f}s '
+                desc += f'(it:{batch_time.val:.3f}s) '
+                desc += f'Data:{data_time.avg:.3f}s '
+                desc += f'(it:{data_time.val:.3f}s) '
+                t.set_description(desc)
+        else:
+            for i, (feats1, feats2, labels) in t:
+                # measure data loading time
+                data_time.update(time.time() - end)
+                feats1 = feats1.cuda()
+                feats2 = feats2.cuda()
+                # labels = labels.cuda()
+    
+                # print(feats.shape)
+                # feats=feats.unsqueeze(0)
+                # print(feats.shape)
+    
+                # compute output
+                output = model(feats1, feats2)
+    
+                all_labels.append(labels.detach().numpy())
+                all_outputs.append(output.cpu().detach().numpy())
+    
+                batch_time.update(time.time() - end)
+                end = time.time()
+    
+                desc = f'Test (cls): '
+                desc += f'Time {batch_time.avg:.3f}s '
+                desc += f'(it:{batch_time.val:.3f}s) '
+                desc += f'Data:{data_time.avg:.3f}s '
+                desc += f'(it:{data_time.val:.3f}s) '
+                t.set_description(desc)
 
     AP = []
     for i in range(1, dataloader.dataset.num_classes+1):
