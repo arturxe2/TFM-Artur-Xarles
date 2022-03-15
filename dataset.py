@@ -109,7 +109,6 @@ class SoccerNetClips(Dataset):
         for game in tqdm(self.listGames):
             # Load features
             if self.path != 'Baidu+ResNet':
-                print('asdf')
                 feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
                 feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1])
                 feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
@@ -131,9 +130,7 @@ class SoccerNetClips(Dataset):
                 feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * 2, clip_length=self.chunk_size * 2) 
                 feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
                 feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride * 2, clip_length=self.chunk_size * 2) 
-                
-                print(feat_half1B.shape)
-                print(feat_half1R.shape)
+
 
             
 
