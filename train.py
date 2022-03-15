@@ -18,7 +18,7 @@ from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIO
 
 
 
-def trainer(train_loader,
+def trainer(path, train_loader,
             val_loader,
             val_metric_loader,
             model,
@@ -37,7 +37,7 @@ def trainer(train_loader,
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
-        loss_training = train(train_loader, model, criterion,
+        loss_training = train(path, train_loader, model, criterion,
                               optimizer, epoch + 1, train=True)
 
         # evaluate on validation set
@@ -86,7 +86,8 @@ def trainer(train_loader,
     return
 
 
-def train(dataloader,
+def train(path,
+          dataloader,
           model,
           criterion,
           optimizer,
@@ -105,7 +106,7 @@ def train(dataloader,
 
     end = time.time()
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
-        if self.path != 'Baidu+ResNet':
+        if path != 'Baidu+ResNet':
             for i, (feats, labels) in t:
                 # measure data loading time
                 data_time.update(time.time() - end)
@@ -141,43 +142,43 @@ def train(dataloader,
                 desc += f'(it:{data_time.val:.3f}s) '
                 desc += f'Loss {losses.avg:.4e} '
                 t.set_description(desc)
-            else:
-                for i, (feats1, feats2, labels) in t:
-                    # measure data loading time
-                    data_time.update(time.time() - end)
-                    feats1 = feats1.cuda()
-                    feats2 = feats2.cuda()
-                    labels = labels.cuda()
-                    # compute output
-                    output = model(feats1, feats2)
+        else:
+            for i, (feats1, feats2, labels) in t:
+                # measure data loading time
+                data_time.update(time.time() - end)
+                feats1 = feats1.cuda()
+                feats2 = feats2.cuda()
+                labels = labels.cuda()
+                # compute output
+                output = model(feats1, feats2)
         
-                    # hand written NLL criterion
-                    loss = criterion(labels, output)
+                # hand written NLL criterion
+                loss = criterion(labels, output)
         
-                    # measure accuracy and record loss
-                    losses.update(loss.item(), feats1.size(0), feats2.size(0))
+                # measure accuracy and record loss
+                losses.update(loss.item(), feats1.size(0), feats2.size(0))
         
-                    if train:
-                        # compute gradient and do SGD step
-                        optimizer.zero_grad()
-                        loss.backward()
-                        #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
-                        optimizer.step()
+                if train:
+                    # compute gradient and do SGD step
+                    optimizer.zero_grad()
+                    loss.backward()
+                    #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
+                    optimizer.step()
         
-                    # measure elapsed time
-                    batch_time.update(time.time() - end)
-                    end = time.time()
+                # measure elapsed time
+                batch_time.update(time.time() - end)
+                end = time.time()
         
-                    if train:
-                        desc = f'Train {epoch}: '
-                    else:
-                        desc = f'Evaluate {epoch}: '
-                    desc += f'Time {batch_time.avg:.3f}s '
-                    desc += f'(it:{batch_time.val:.3f}s) '
-                    desc += f'Data:{data_time.avg:.3f}s '
-                    desc += f'(it:{data_time.val:.3f}s) '
-                    desc += f'Loss {losses.avg:.4e} '
-                    t.set_description(desc)
+                if train:
+                    desc = f'Train {epoch}: '
+                else:
+                    desc = f'Evaluate {epoch}: '
+                desc += f'Time {batch_time.avg:.3f}s '
+                desc += f'(it:{batch_time.val:.3f}s) '
+                desc += f'Data:{data_time.avg:.3f}s '
+                desc += f'(it:{data_time.val:.3f}s) '
+                desc += f'Loss {losses.avg:.4e} '
+                t.set_description(desc)
 
     return losses.avg
 

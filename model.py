@@ -106,7 +106,7 @@ class Model(nn.Module):
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(weights, checkpoint['epoch']))
 
-    def forward(self, inputs):
+    def forward(self, inputs1, inputs2):
         # input_shape: (batch,frames,dim_features)
 
         # Temporal pooling operation
@@ -148,9 +148,8 @@ class Model(nn.Module):
             #### Transformer
             
         elif self.pool == "transformer_2features":
-            inputs = inputs.permute((0, 2, 1))
-            inputsR = inputs[:, :2048, :]
-            inputsB = inputs[:, 2048:, :]
+            inputsB = inputs1.permute((0, 2, 1))
+            inputsR = inputs2.permute((0, 2, 1))
             inputsR = self.relu(self.normR(self.conv1R(inputsR)))#(B x 512 x (chunk_size * 2))
             inputsB = self.relu(self.normB(self.conv1B(inputsB))) #(B x 512 x (chunk_size))
             inputsR = inputsR.permute((0, 2, 1))#(B x (chunk_size * 2) x 512)
