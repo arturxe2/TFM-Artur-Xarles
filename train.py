@@ -156,7 +156,7 @@ def train(path,
                 loss = criterion(labels, output)
         
                 # measure accuracy and record loss
-                losses.update(loss.item(), feats1.size(0), feats2.size(0))
+                losses.update(loss.item(), feats1.size(0) + feats2.size(0))
         
                 if train:
                     # compute gradient and do SGD step
