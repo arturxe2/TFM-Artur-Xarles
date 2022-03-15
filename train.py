@@ -105,41 +105,79 @@ def train(dataloader,
 
     end = time.time()
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
-        for i, (feats, labels) in t:
-            # measure data loading time
-            data_time.update(time.time() - end)
-            feats = feats.cuda()
-            labels = labels.cuda()
-            # compute output
-            output = model(feats)
-
-            # hand written NLL criterion
-            loss = criterion(labels, output)
-
-            # measure accuracy and record loss
-            losses.update(loss.item(), feats.size(0))
-
-            if train:
-                # compute gradient and do SGD step
-                optimizer.zero_grad()
-                loss.backward()
-                #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
-                optimizer.step()
-
-            # measure elapsed time
-            batch_time.update(time.time() - end)
-            end = time.time()
-
-            if train:
-                desc = f'Train {epoch}: '
+        if self.path != 'Baidu+ResNet':
+            for i, (feats, labels) in t:
+                # measure data loading time
+                data_time.update(time.time() - end)
+                feats = feats.cuda()
+                labels = labels.cuda()
+                # compute output
+                output = model(feats)
+    
+                # hand written NLL criterion
+                loss = criterion(labels, output)
+    
+                # measure accuracy and record loss
+                losses.update(loss.item(), feats.size(0))
+    
+                if train:
+                    # compute gradient and do SGD step
+                    optimizer.zero_grad()
+                    loss.backward()
+                    #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
+                    optimizer.step()
+    
+                # measure elapsed time
+                batch_time.update(time.time() - end)
+                end = time.time()
+    
+                if train:
+                    desc = f'Train {epoch}: '
+                else:
+                    desc = f'Evaluate {epoch}: '
+                desc += f'Time {batch_time.avg:.3f}s '
+                desc += f'(it:{batch_time.val:.3f}s) '
+                desc += f'Data:{data_time.avg:.3f}s '
+                desc += f'(it:{data_time.val:.3f}s) '
+                desc += f'Loss {losses.avg:.4e} '
+                t.set_description(desc)
             else:
-                desc = f'Evaluate {epoch}: '
-            desc += f'Time {batch_time.avg:.3f}s '
-            desc += f'(it:{batch_time.val:.3f}s) '
-            desc += f'Data:{data_time.avg:.3f}s '
-            desc += f'(it:{data_time.val:.3f}s) '
-            desc += f'Loss {losses.avg:.4e} '
-            t.set_description(desc)
+                for i, (feats1, feats2, labels) in t:
+                    # measure data loading time
+                    data_time.update(time.time() - end)
+                    feats1 = feats1.cuda()
+                    feats2 = feats2.cuda()
+                    labels = labels.cuda()
+                    # compute output
+                    output = model(feats1, feats2)
+        
+                    # hand written NLL criterion
+                    loss = criterion(labels, output)
+        
+                    # measure accuracy and record loss
+                    losses.update(loss.item(), feats1.size(0), feats2.size(0))
+        
+                    if train:
+                        # compute gradient and do SGD step
+                        optimizer.zero_grad()
+                        loss.backward()
+                        #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
+                        optimizer.step()
+        
+                    # measure elapsed time
+                    batch_time.update(time.time() - end)
+                    end = time.time()
+        
+                    if train:
+                        desc = f'Train {epoch}: '
+                    else:
+                        desc = f'Evaluate {epoch}: '
+                    desc += f'Time {batch_time.avg:.3f}s '
+                    desc += f'(it:{batch_time.val:.3f}s) '
+                    desc += f'Data:{data_time.avg:.3f}s '
+                    desc += f'(it:{data_time.val:.3f}s) '
+                    desc += f'Loss {losses.avg:.4e} '
+                    t.set_description(desc)
 
     return losses.avg
 

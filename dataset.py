@@ -101,7 +101,7 @@ class SoccerNetClips(Dataset):
         baidu_name = 'baidu_soccer_embeddings.npy'
         resnet_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2'
         resnet_name = 'ResNET_TF2.npy'
-        
+        stride = self.chunk_size #// 2
         for game in tqdm(self.listGames):
             # Load features
             if self.path != 'Baidu+ResNet':
@@ -110,23 +110,28 @@ class SoccerNetClips(Dataset):
                 feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1])
                 feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
                 feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1])
+                feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=stride, clip_length=self.chunk_size)            
+                feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=stride, clip_length=self.chunk_size)
             # print("feat_half1.shape",feat_half1.shape)
             else:
                 feat_half1B = np.load(os.path.join(baidu_path, game, "1_" + baidu_name))
                 feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
-                print(feat_half1B.shape)
                 feat_half1R = np.load(os.path.join(resnet_path, game, "1_" + resnet_name))
-                print(feat_half1R.shape)
                 feat_half1R = feat_half1R.reshape(-1, feat_half1R.shape[-1])
                 feat_half2B = np.load(os.path.join(baidu_path, game, "2_" + baidu_name))
                 feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
                 feat_half2R = np.load(os.path.join(resnet_path, game, "2_" + resnet_name))
                 feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
-                breakpoint()
                 
-            stride = self.chunk_size #// 2
-            feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=stride, clip_length=self.chunk_size)            
-            feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=stride, clip_length=self.chunk_size)
+                feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
+                feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride, clip_length=self.chunk_size) 
+                feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
+                feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride, clip_length=self.chunk_size) 
+                
+                print(feat_half1B.shape)
+                print(feat_half1R.shape)
+
+            
 
             # Load labels
             labels = json.load(open(os.path.join(labels_path, game, self.labels)))
