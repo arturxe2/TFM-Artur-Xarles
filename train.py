@@ -42,7 +42,7 @@ def trainer(path, train_loader,
 
         # evaluate on validation set
         loss_validation = train(
-            val_loader, model, criterion, optimizer, epoch + 1, train=False)
+            path, val_loader, model, criterion, optimizer, epoch + 1, train=False)
 
         state = {
             'epoch': epoch + 1,
