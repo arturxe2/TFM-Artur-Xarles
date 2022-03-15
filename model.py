@@ -86,7 +86,7 @@ class Model(nn.Module):
             encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.encoder = nn.TransformerEncoder(encoder_layer, 1)
             #Pool layer
-            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
+            self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
             
             
@@ -169,6 +169,7 @@ class Model(nn.Module):
             print(inputs.shape)
             inputs = inputs.permute((0, 2, 1))
             inputs_pooled = self.pool_layer(inputs)
+            print(inputs_pooled)
             inputs_pooled = inputs_pooled.squeeze(-1)
             print(inputs_pooled.shape)
             
