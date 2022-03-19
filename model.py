@@ -67,9 +67,9 @@ class Model(nn.Module):
             self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
             
             #Second TransformerEncoder (1 layer)
-            encoder_layer2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.pos_encoder2 = PositionalEncoding(512, )
-            self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
+            #encoder_layer2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
+            #self.pos_encoder2 = PositionalEncoding(512, )
+            #self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
             
             
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
@@ -143,8 +143,8 @@ class Model(nn.Module):
             inputs = self.encoder(inputs) #(B x n_frames x 512)
             #print(inputs.shape)
             #breakpoint()
-            inputs = self.pos_encoder2(inputs)
-            inputs = self.encoder2(inputs)
+            #inputs = self.pos_encoder2(inputs)
+            #inputs = self.encoder2(inputs)
             inputs = inputs.permute((0, 2, 1)) #(B x 512 x n_frames)
             #print(inputs.shape)
             inputs_pooled = self.pool_layer(inputs) #(B x 512 x 1)
