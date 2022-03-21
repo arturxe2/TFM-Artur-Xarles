@@ -36,13 +36,14 @@ def augmentation(features, y, n_aug = 1):
                         1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
                         1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])
     prob_ind = y.dot(weights)
+    print(prob_ind.shape)
     i=0
     feat_aug_list = []
     y_aug_list = []
     while(i < n_aug):
         i+=1
-        id1 = random.choices(np.arange(0, 10), weights = prob_ind, k=1)
-        id2 = random.choices(np.arange(0, 10), weights = prob_ind, k=1)
+        id1 = random.choices(np.arange(0, len(features)), weights = prob_ind, k=1)
+        id2 = random.choices(np.arange(0, len(features)), weights = prob_ind, k=1)
         while(id1 == id2):
             id2 = random.choices(np.arange(0, 10), weights = prob_ind, k=1)
         feat_aug, y_aug = mix_up(features[id1], features[id2], y[id1], y[id2])
