@@ -221,7 +221,6 @@ class SoccerNetClips(Dataset):
                 y_aug_list = []
                 while(i < n_aug):
                     i+=1
-                    print(i)
                     id1 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
                     id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
                     while(id1 == id2):
