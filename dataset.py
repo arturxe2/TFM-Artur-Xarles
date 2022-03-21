@@ -79,7 +79,7 @@ def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
 
 class SoccerNetClips(Dataset):
     def __init__(self, path, features="ResNET_PCA512.npy", split=["train"], version=1, 
-                framerate=2, chunk_size=240):
+                framerate=2, chunk_size=240, augment = False):
         self.path = path
         labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
         self.listGames = getListGames(split)
@@ -209,9 +209,8 @@ class SoccerNetClips(Dataset):
             self.game_feats = np.concatenate(self.game_feats)
             self.game_labels = np.concatenate(self.game_labels)
             
-            augment = True
             if augment == True:
-                n_aug = 10
+                n_aug = 10000
                 weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
                                     1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
                                     1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])
@@ -234,7 +233,7 @@ class SoccerNetClips(Dataset):
                 y_aug_list = np.concatenate(y_aug_list)
                 self.game_feats = np.concatenate((self.game_feats, np.array(feat_aug_list)))
                 self.game_labels = np.concatenate((self.game_labels, np.array(y_aug_list)))
-
+                
         else:
             self.game_feats1 = np.concatenate(self.game_feats1)
             self.game_feats2 = np.concatenate(self.game_feats2)
