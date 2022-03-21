@@ -207,6 +207,7 @@ class SoccerNetClips(Dataset):
             
         if self.path != 'Baidu+ResNet':
             self.game_feats = np.concatenate(self.game_feats)
+            self.game_labels = np.concatenate(self.game_labels)
             
             augment = True
             if augment == True:
@@ -237,7 +238,7 @@ class SoccerNetClips(Dataset):
         else:
             self.game_feats1 = np.concatenate(self.game_feats1)
             self.game_feats2 = np.concatenate(self.game_feats2)
-        self.game_labels = np.concatenate(self.game_labels)
+        #self.game_labels = np.concatenate(self.game_labels)
         print(self.dict_event)
 
 
