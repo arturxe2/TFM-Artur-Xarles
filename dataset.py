@@ -238,6 +238,7 @@ class SoccerNetClips(Dataset):
             if augment == True:
                 breakpoint()
                 game_feats_aug, game_labels_aug = augmentation(self.game_feats, self.game_labels, 10)
+                self.game_feats = self.game_feats.tolist()
                 breakpoint()
                 self.game_feats.append(game_feats_aug)
                 breakpoint()
