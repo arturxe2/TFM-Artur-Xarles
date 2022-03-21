@@ -38,6 +38,7 @@ def augmentation(features, y, n_aug = 1):
                         1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])
     print(weights.shape)
     prob_ind = y.dot(weights)
+    print(len(features))
     breakpoint()
     i=0
     feat_aug_list = []
