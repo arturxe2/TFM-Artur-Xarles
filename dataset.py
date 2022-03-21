@@ -253,8 +253,8 @@ class SoccerNetClips(Dataset):
                     while(id1 == id2):
                         id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
                     feat_aug, y_aug = mix_up(self.game_feats[id1], self.game_feats[id2], self.game_labels[id1], self.game_labels[id2])
-                    feat_aug_list.append(feat_aug.tolist())
-                    y_aug_list.append(y_aug.tolist())
+                    feat_aug_list.append(feat_aug)
+                    y_aug_list.append(y_aug)
                 feat_aug_list = np.concatenate(feat_aug_list)
                 y_aug_list = np.concatenate(y_aug_list)
                 breakpoint()
