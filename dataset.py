@@ -231,23 +231,33 @@ class SoccerNetClips(Dataset):
             self.game_labels.append(label_half1)
             self.game_labels.append(label_half2)
             
-        self.game_labels = np.concatenate(self.game_labels)
         if self.path != 'Baidu+ResNet':
             self.game_feats = np.concatenate(self.game_feats)
+            self.game_labels = np.concatenate(self.game_labels)
             augment = True
             if augment == True:
+                n_aug = 10
+                weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
+                                    1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
+                                    1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])
+                prob_ind = self.game_labels.dot(weights)
+                
+                i=0
+                while(i < n_aug):
+                    i+=1
+                    id1 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
+                    id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
+                    while(id1 == id2):
+                        id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
+                    feat_aug, y_aug = mix_up(self.game_feats[id1], self.game_feats[id2], self.game_labels[id1], self.game_labels[id2])
+                    breakpoint()
+                    self.game_feats = np.concatenate((self.game_feats, feat_aug))
+                    self.game_labels = np.concatenate((self.game_labels, y_aug))
                 breakpoint()
-                game_feats_aug, game_labels_aug = augmentation(self.game_feats, self.game_labels, 10)
-                self.game_feats = self.game_feats.tolist()
-                breakpoint()
-                self.game_feats.append(game_feats_aug)
-                breakpoint()
-                self.game_labels.append(game_labels_aug)
-                breakpoint()
-                self.game_feats = np.concatenate(self.game_feats)
-                breakpoint()
+
+            else:
                 self.game_labels = np.concatenate(self.game_labels)
-                breakpoint()
+                self.game_feats = np.concatenate(self.game_feats)
             
         else:
             self.game_feats1 = np.concatenate(self.game_feats1)
