@@ -15,44 +15,11 @@ import torch
 import logging
 import json
 import random
-
 from SoccerNet.Downloader import getListGames
 from SoccerNet.Downloader import SoccerNetDownloader
 from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
 
-def mix_up(feat1, feat2, y1, y2):
-    lam = np.random.beta(a = 0.2, b=1, size=1)
-    feat_new = feat1 * lam + feat2 * (1-lam)
-    y_new = y1 * lam + y2 * (1-lam)
-    feat_new_list = [l.tolist() for l in feat_new]
-    y_new_list = (y_new).tolist()
-    return feat_new_list, y_new_list
-
-def augmentation(features, y, n_aug = 1):
-    features = np.array(features)
-    y = np.array(y)
-    print(y.shape)
-    weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
-                        1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
-                        1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])
-    print(weights.shape)
-    prob_ind = y.dot(weights)
-    print(len(features))
-    breakpoint()
-    i=0
-    feat_aug_list = []
-    y_aug_list = []
-    while(i < n_aug):
-        i+=1
-        id1 = random.choices(np.arange(0, len(features)), weights = prob_ind, k=1)
-        id2 = random.choices(np.arange(0, len(features)), weights = prob_ind, k=1)
-        while(id1 == id2):
-            id2 = random.choices(np.arange(0, 10), weights = prob_ind, k=1)
-        feat_aug, y_aug = mix_up(features[id1], features[id2], y[id1], y[id2])
-        feat_aug_list.append(feat_aug)
-        y_aug_list.append(y_aug)
-    return feat_aug_list, y_aug_list
 
 
 def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
@@ -221,7 +188,6 @@ class SoccerNetClips(Dataset):
             if self.path != 'Baidu+ResNet':
                 self.game_feats.append(feat_half1)
                 self.game_feats.append(feat_half2)
-                
             else:
                 self.game_feats1.append(feat_half1B)
                 self.game_feats2.append(feat_half1R)
@@ -233,43 +199,10 @@ class SoccerNetClips(Dataset):
             
         if self.path != 'Baidu+ResNet':
             self.game_feats = np.concatenate(self.game_feats)
-            self.game_labels = np.concatenate(self.game_labels)
-            augment = True
-            if augment == True:
-                n_aug = 10
-                weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
-                                    1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
-                                    1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])
-                prob_ind = self.game_labels.dot(weights)
-                
-                i=0
-                feat_aug_list = []
-                y_aug_list = []
-                while(i < n_aug):
-                    i+=1
-                    print(i)
-                    id1 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    while(id1 == id2):
-                        id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    feat_aug, y_aug = mix_up(self.game_feats[id1], self.game_feats[id2], self.game_labels[id1], self.game_labels[id2])
-                    feat_aug_list.append(feat_aug)
-                    y_aug_list.append(y_aug)
-                feat_aug_list = np.concatenate(feat_aug_list)
-                y_aug_list = np.concatenate(y_aug_list)
-                breakpoint()
-                self.game_feats = np.concatenate((self.game_feats, feat_aug_list))
-                self.game_labels = np.concatenate((self.game_labels, y_aug_list))
-                breakpoint()
-
-            else:
-                self.game_labels = np.concatenate(self.game_labels)
-                self.game_feats = np.concatenate(self.game_feats)
-            
         else:
             self.game_feats1 = np.concatenate(self.game_feats1)
             self.game_feats2 = np.concatenate(self.game_feats2)
-        
+        self.game_labels = np.concatenate(self.game_labels)
         print(self.dict_event)
 
 
