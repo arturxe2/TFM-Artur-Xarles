@@ -243,6 +243,8 @@ class SoccerNetClips(Dataset):
                 prob_ind = self.game_labels.dot(weights)
                 
                 i=0
+                feat_aug_list = []
+                y_aug_list = []
                 while(i < n_aug):
                     i+=1
                     print(i)
@@ -251,8 +253,13 @@ class SoccerNetClips(Dataset):
                     while(id1 == id2):
                         id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
                     feat_aug, y_aug = mix_up(self.game_feats[id1], self.game_feats[id2], self.game_labels[id1], self.game_labels[id2])
-                    self.game_feats = np.concatenate((self.game_feats, feat_aug))
-                    self.game_labels = np.concatenate((self.game_labels, y_aug))
+                    feat_aug_list.append(feat_aug.tolist())
+                    y_aug_list.append(y_aug.tolist())
+                feat_aug_list = np.concatenate(feat_aug_list)
+                y_aug_list = np.concatenate(y_aug_list)
+                breakpoint()
+                self.game_feats = np.concatenate((self.game_feats, feat_aug))
+                self.game_labels = np.concatenate((self.game_labels, y_aug))
 
             else:
                 self.game_labels = np.concatenate(self.game_labels)
