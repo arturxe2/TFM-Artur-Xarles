@@ -126,6 +126,7 @@ class Model(nn.Module):
             inputs_pooled = inputs_pooled.squeeze(-1)
             
         elif self.pool == "MAX512":
+            inputs = inputs.float()
             inputs = inputs.permute((0, 2, 1))
             inputs = self.relu(self.norm(self.conv1(inputs)))
             #breakpoint()
