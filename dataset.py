@@ -33,7 +33,7 @@ def augmentation(features, y, n_aug = 1):
     features = np.array(features)
     y = np.array(y)
     print(y.shape)
-    weights = np.array([0, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
+    weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
                         1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
                         1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])
     print(weights.shape)
@@ -137,7 +137,7 @@ class SoccerNetClips(Dataset):
         baidu_name = 'baidu_soccer_embeddings.npy'
         resnet_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2'
         resnet_name = 'ResNET_TF2.npy'
-        stride = self.chunk_size * 20
+        stride = self.chunk_size #// 2
         for game in tqdm(self.listGames):
             # Load features
             if self.path != 'Baidu+ResNet':
