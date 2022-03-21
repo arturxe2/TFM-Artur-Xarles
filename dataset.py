@@ -257,8 +257,9 @@ class SoccerNetClips(Dataset):
                     y_aug_list.append(y_aug)
                 feat_aug_list = np.concatenate(feat_aug_list)
                 y_aug_list = np.concatenate(y_aug_list)
-                self.game_feats = np.concatenate((self.game_feats, np.array(feat_aug_list)))
-                self.game_labels = np.concatenate((self.game_labels, np.array(y_aug_list)))
+                breakpoint()
+                self.game_feats = np.concatenate((self.game_feats, feat_aug_list))
+                self.game_labels = np.concatenate((self.game_labels, y_aug_list))
                 breakpoint()
 
             else:
