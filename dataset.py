@@ -233,7 +233,7 @@ class SoccerNetClips(Dataset):
             
         self.game_labels = np.concatenate(self.game_labels)
         if self.path != 'Baidu+ResNet':
-            #self.game_feats = np.concatenate(self.game_feats)
+            self.game_feats = np.concatenate(self.game_feats)
             augment = True
             if augment == True:
                 breakpoint()
