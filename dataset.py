@@ -210,7 +210,7 @@ class SoccerNetClips(Dataset):
             self.game_labels = np.concatenate(self.game_labels)
             
             if augment == True:
-                n_aug = 10000
+                n_aug = 50000
                 weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
                                     1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
                                     1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])
