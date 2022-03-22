@@ -21,7 +21,7 @@ from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERS
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
 
 def mix_up(feat1, feat2, y1, y2):
-    lam = np.random.beta(a = 0.2, b=1, size=1)
+    lam = np.random.beta(a = 0.2, b=0.2, size=1)
     feat_new = feat1 * lam + feat2 * (1-lam)
     y_new = y1 * lam + y2 * (1-lam)
     feat_new_list = [l.tolist() for l in feat_new]
