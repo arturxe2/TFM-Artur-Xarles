@@ -136,6 +136,7 @@ class Model(nn.Module):
             #breakpoint()
             #### Transformer
         elif self.pool == "MAX512_transformer":
+            inputs = inputs.float()
             inputs = inputs.permute((0, 2, 1)) #(B x n_features x n_frames)
             #print(inputs.shape)
             inputs = self.relu(self.norm(self.conv1(inputs))) #(B x 512 x n_frames)
