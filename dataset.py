@@ -113,7 +113,7 @@ class SoccerNetClips(Dataset):
         baidu_name = 'baidu_soccer_embeddings.npy'
         resnet_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2'
         resnet_name = 'ResNET_TF2.npy'
-        stride = self.chunk_size #// 2
+        stride = self.chunk_size // 2
         for game in tqdm(self.listGames):
             # Load features
             if self.path != 'Baidu+ResNet':
