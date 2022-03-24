@@ -236,6 +236,7 @@ class SoccerNetClips(Dataset):
         else:
             self.game_feats1 = np.concatenate(self.game_feats1)
             self.game_feats2 = np.concatenate(self.game_feats2)
+            self.game_labels = np.concatenate(self.game_labels)
         #self.game_labels = np.concatenate(self.game_labels)
         print(self.dict_event)
 
@@ -253,7 +254,9 @@ class SoccerNetClips(Dataset):
         if self.path != 'Baidu+ResNet':
             return self.game_feats[index,:,:], self.game_labels[index,:]
         else:
-            breakpoint()
+            print(self.game_feats1.shape)
+            print(self.game_feats2.shape)
+            print(self.game_labels.shape)
             return self.game_feats1[index,:,:], self.game_feats2[index,:,:], self.game_labels[index,:]
 
     def __len__(self):
