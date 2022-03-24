@@ -133,7 +133,7 @@ class SoccerNetClips(Dataset):
                 feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
                 feat_half2R = np.load(os.path.join(resnet_path, game, "2_" + resnet_name))
                 feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
-                breakpoint()
+
                 feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
                 feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * 2, clip_length=self.chunk_size * 2) 
                 feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
@@ -253,6 +253,7 @@ class SoccerNetClips(Dataset):
         if self.path != 'Baidu+ResNet':
             return self.game_feats[index,:,:], self.game_labels[index,:]
         else:
+            breakpoint()
             return self.game_feats1[index,:,:], self.game_feats2[index,:,:], self.game_labels[index,:]
 
     def __len__(self):
