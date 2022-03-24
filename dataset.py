@@ -111,9 +111,9 @@ class SoccerNetClips(Dataset):
         # game_counter = 0
         baidu_path = '/data-net/datasets/SoccerNetv2/Baidu_features'
         baidu_name = 'baidu_soccer_embeddings.npy'
-        resnet_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2'
-        resnet_name = 'ResNET_TF2.npy'
-        stride = self.chunk_size // 2
+        resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
+        resnet_name = 'VGGish.npy'
+        stride = self.chunk_size #// 2
         for game in tqdm(self.listGames):
             # Load features
             if self.path != 'Baidu+ResNet':
@@ -230,8 +230,8 @@ class SoccerNetClips(Dataset):
                     y_aug_list.append(y_aug)
                 feat_aug_list = np.concatenate(feat_aug_list)
                 y_aug_list = np.concatenate(y_aug_list)
-                self.game_feats = np.concatenate((self.game_feats, np.array(feat_aug_list)))
-                self.game_labels = np.concatenate((self.game_labels, np.array(y_aug_list)))
+                self.game_feats = np.concatenate((self.game_feats, feat_aug_list))
+                self.game_labels = np.concatenate((self.game_labels, y_aug_list))
                 
         else:
             self.game_feats1 = np.concatenate(self.game_feats1)
@@ -304,8 +304,8 @@ class SoccerNetClipsTesting(Dataset):
         labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
         baidu_path = '/data-net/datasets/SoccerNetv2/Baidu_features'
         baidu_name = 'baidu_soccer_embeddings.npy'
-        resnet_path = '/data-net/datasets/SoccerNetv2/ResNET_TF2'
-        resnet_name = 'ResNET_TF2.npy'
+        resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
+        resnet_name = 'VGGish.npy'
         # Load features
         
         if self.path != 'Baidu+ResNet':

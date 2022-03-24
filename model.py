@@ -79,17 +79,20 @@ class Model(nn.Module):
             self.fc2 = nn.Linear(512, self.num_classes+1)
             
         elif self.pool == "transformer_2features":
-            self.conv1R = nn.Conv1d(2048, 512, 1, stride=1, bias=False)
+            self.conv1R = nn.Conv1d(512, 512, 1, stride=1, bias=False)
             self.normR = nn.BatchNorm1d(512)
             self.conv1B = nn.Conv1d(8576, 512, 1, stride=1, bias=False)
             self.normB = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
             #Add segment embedding
             self.pos_encoder = PositionalEncoding(512, )
+            
             encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
             self.encoder = nn.TransformerEncoder(encoder_layer, 1)
+            
             encoder_layer2 = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
             self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
+            
             encoder_layer3 = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
             self.encoder3 = nn.TransformerEncoder(encoder_layer3, 1)
             #Pool layer
@@ -115,7 +118,7 @@ class Model(nn.Module):
             self.load_state_dict(checkpoint['state_dict'])
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(weights, checkpoint['epoch']))
-    def forward(self, inputs):
+    def forward(self, inputs1, inputs2):
     #def forward(self, inputs1, inputs2):
         # input_shape: (batch,frames,dim_features)
 
