@@ -165,6 +165,8 @@ class Model(nn.Module):
             #### Transformer
             
         elif self.pool == "transformer_2features":
+            inputs1 = inputs1.float()
+            inputs2 = inputs2.float()
             inputsB = inputs1.permute((0, 2, 1))
             inputsR = inputs2.permute((0, 2, 1))
             inputsR = self.relu(self.normR(self.conv1R(inputsR)))#(B x 512 x (chunk_size * 2))
