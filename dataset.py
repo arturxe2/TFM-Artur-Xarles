@@ -254,9 +254,6 @@ class SoccerNetClips(Dataset):
         if self.path != 'Baidu+ResNet':
             return self.game_feats[index,:,:], self.game_labels[index,:]
         else:
-            print(self.game_feats1.shape)
-            print(self.game_feats2.shape)
-            print(self.game_labels.shape)
             return self.game_feats1[index,:,:], self.game_feats2[index,:,:], self.game_labels[index,:]
 
     def __len__(self):
