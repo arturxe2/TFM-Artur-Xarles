@@ -177,9 +177,7 @@ class Model(nn.Module):
             #Positional encodding + feature encoding (1 for R, 0 for B)
             inputsR = self.pos_encoder(inputsR, add=1.)#(B x (chunk_size * 2) x 512)
             inputsB = self.pos_encoder(inputsB, add=0.)#(B x (chunk_size) x 512)
-            
-            print(inputsR.shape)
-            print(inputsB.shape)
+
             
             inputs = torch.cat((inputsB, inputsR), dim=1) #(B x (chunk_size * (1 + 2)) x 512)
             #Encoders
