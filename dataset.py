@@ -400,6 +400,20 @@ class SoccerNetClipsTesting(Dataset):
             print(feat1_half2.shape)
             print(feat2_half2.shape)
             
+            if feat1_half1.shape[0]*2 != feat2_half1.shape[0]:
+                print('Different shape')
+                feat2_half1_aux = np.zeros((feat1_half1.shape[0] // 2, feat2_half1.shape[1]))
+                feat2_half1_aux[:feat2_half1.shape[0]] = feat2_half1
+                feat2_half1 = feat2_half1.aux
+                print('Resized to: ' + str(feat2_half1.shape))
+                
+            if feat1_half2.shape[0]*2 != feat2_half2.shape[0]:
+                print('Different shape')
+                feat2_half2_aux = np.zeros((feat1_half2.shape[0] // 2, feat2_half2.shape[1]))
+                feat2_half2_aux[:feat2_half2.shape[0]] = feat2_half2
+                feat2_half2 = feat2_half2.aux
+                print('Resized to: ' + str(feat2_half1.shape))
+            
             feat1_half1 = feats2clip(torch.from_numpy(feat1_half1),
                                      stride=1, off=int(self.chunk_size/2),
                                      clip_length=self.chunk_size)
