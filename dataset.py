@@ -392,6 +392,14 @@ class SoccerNetClipsTesting(Dataset):
             return self.listGames[index], feat_half1, feat_half2, label_half1, label_half2
         
         else:
+            print('zero prints: \n')
+            print('Features 1st half:')
+            print(feat1_half1.shape)
+            print(feat2_half1.shape)
+            print('Features 2nd half:')
+            print(feat1_half2.shape)
+            print(feat2_half2.shape)
+            
             feat1_half1 = feats2clip(torch.from_numpy(feat1_half1),
                                      stride=1, off=int(self.chunk_size/2),
                                      clip_length=self.chunk_size)
