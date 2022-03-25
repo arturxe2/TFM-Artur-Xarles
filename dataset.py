@@ -328,18 +328,13 @@ class SoccerNetClipsTesting(Dataset):
             feat2_half1 = feat2_half1.reshape(-1, feat2_half1.shape[-1])    #for C3D non PCA
             feat2_half2 = np.load(os.path.join(resnet_path, self.listGames[index], "2_" + resnet_name))
             feat2_half2 = feat2_half2.reshape(-1, feat2_half2.shape[-1])    #for C3D non PCA
+            print('Features 1st half:')
             print(feat1_half1.shape)
             print(feat2_half1.shape)
-            
+            print('Features 2nd half:')
             print(feat1_half2.shape)
             print(feat2_half2.shape)
-            if feat1_half1.shape != feat2_half1.shape:
-                print(feat1_half1.shape)
-                print(feat2_half1.shape)
-            
-            if feat1_half2.shape != feat2_half2.shape:
-                print(feat1_half2.shape)
-                print(feat2_half2.shape)
+
             
             label_half1 = np.zeros((feat1_half1.shape[0], self.num_classes))
             label_half2 = np.zeros((feat1_half2.shape[0], self.num_classes))
