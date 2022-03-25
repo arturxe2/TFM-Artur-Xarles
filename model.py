@@ -79,25 +79,25 @@ class Model(nn.Module):
             self.fc2 = nn.Linear(512, self.num_classes+1)
             
         elif self.pool == "transformer_2features":
-            self.conv1R = nn.Conv1d(512, 8576, 1, stride=1, bias=False)
-            self.normR = nn.BatchNorm1d(8576)
-            #self.conv1B = nn.Conv1d(8576, 512, 1, stride=1, bias=False)
-            #self.normB = nn.BatchNorm1d(512)
+            self.conv1R = nn.Conv1d(512, 1024, 1, stride=1, bias=False)
+            self.normR = nn.BatchNorm1d(1024)
+            self.conv1B = nn.Conv1d(8576, 1024, 1, stride=1, bias=False)
+            self.normB = nn.BatchNorm1d(1024)
             self.relu = nn.ReLU()
             #Add segment embedding
-            self.pos_encoder = PositionalEncoding(8576, )
+            self.pos_encoder = PositionalEncoding(1024, )
             
-            encoder_layer = nn.TransformerEncoderLayer(d_model=8576, nhead=4, dim_feedforward=64)
+            encoder_layer = nn.TransformerEncoderLayer(d_model=1024, nhead=4, dim_feedforward=64)
             self.encoder = nn.TransformerEncoder(encoder_layer, 1)
             
-            encoder_layer2 = nn.TransformerEncoderLayer(d_model=8576, nhead=4, dim_feedforward=64)
+            encoder_layer2 = nn.TransformerEncoderLayer(d_model=1024, nhead=4, dim_feedforward=64)
             self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
             
-            encoder_layer3 = nn.TransformerEncoderLayer(d_model=8576, nhead=4, dim_feedforward=64)
+            encoder_layer3 = nn.TransformerEncoderLayer(d_model=1024, nhead=4, dim_feedforward=64)
             self.encoder3 = nn.TransformerEncoder(encoder_layer3, 1)
             #Pool layer
             self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
-            self.fc2 = nn.Linear(8576, self.num_classes+1)
+            self.fc2 = nn.Linear(1024, self.num_classes+1)
             
             
 
@@ -170,7 +170,7 @@ class Model(nn.Module):
             inputsB = inputs1.permute((0, 2, 1))
             inputsR = inputs2.permute((0, 2, 1))
             inputsR = self.relu(self.normR(self.conv1R(inputsR)))#(B x 512 x (chunk_size * 2))
-            #inputsB = self.relu(self.normB(self.conv1B(inputsB))) #(B x 512 x (chunk_size))
+            inputsB = self.relu(self.normB(self.conv1B(inputsB))) #(B x 512 x (chunk_size))
             inputsR = inputsR.permute((0, 2, 1))#(B x (chunk_size * 2) x 512)
             inputsB = inputsB.permute((0, 2, 1))#(B x (chunk_size) x 512)
             
