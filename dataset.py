@@ -411,6 +411,10 @@ class SoccerNetClipsTesting(Dataset):
                                      stride=2, off=int(self.chunk_size/2),
                                      clip_length=self.chunk_size * 2)
             
+            if feat1_half1.shape[0] != feat2_half1.shape[0]:
+                feat2_half1 = feat2_half1[:feat1_half1.shape[0]]
+            if feat1_half2.shape[0] != feat2_half2.shape[0]:
+                feat2_half2 = feat2_half2[:feat1_half2.shape[0]]
             print('Second prints...')
             print('Features 1st half:')
             print(feat1_half1.shape)
