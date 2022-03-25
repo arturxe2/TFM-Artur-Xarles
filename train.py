@@ -418,6 +418,14 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     feat1_half2 = feat1_half2.squeeze(0)
                     feat2_half2 = feat2_half2.squeeze(0)
                     label_half2 = label_half2.float().squeeze(0)
+                    
+                    print('Second prints...')
+                    print('Features 1st half:')
+                    print(feat1_half1.shape)
+                    print(feat2_half1.shape)
+                    print('Features 2nd half:')
+                    print(feat1_half2.shape)
+                    print(feat2_half2.shape)
     
                     # Compute the output for batches of frames
                     BS = 256
