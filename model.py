@@ -79,10 +79,10 @@ class Model(nn.Module):
             self.fc2 = nn.Linear(512, self.num_classes+1)
             
         elif self.pool == "transformer_2features":
-            self.conv1R = nn.Conv1d(512, 512, 1, stride=1, bias=False)
-            self.normR = nn.BatchNorm1d(512)
-            self.conv1B = nn.Conv1d(8576, 512, 1, stride=1, bias=False)
-            self.normB = nn.BatchNorm1d(512)
+            self.conv1R = nn.Conv1d(512, 8576, 1, stride=1, bias=False)
+            self.normR = nn.BatchNorm1d(8576)
+            #self.conv1B = nn.Conv1d(8576, 512, 1, stride=1, bias=False)
+            #self.normB = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
             #Add segment embedding
             self.pos_encoder = PositionalEncoding(512, )
@@ -170,7 +170,7 @@ class Model(nn.Module):
             inputsB = inputs1.permute((0, 2, 1))
             inputsR = inputs2.permute((0, 2, 1))
             inputsR = self.relu(self.normR(self.conv1R(inputsR)))#(B x 512 x (chunk_size * 2))
-            inputsB = self.relu(self.normB(self.conv1B(inputsB))) #(B x 512 x (chunk_size))
+            #inputsB = self.relu(self.normB(self.conv1B(inputsB))) #(B x 512 x (chunk_size))
             inputsR = inputsR.permute((0, 2, 1))#(B x (chunk_size * 2) x 512)
             inputsB = inputsB.permute((0, 2, 1))#(B x (chunk_size) x 512)
             
