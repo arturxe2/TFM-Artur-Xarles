@@ -409,7 +409,7 @@ class SoccerNetClipsTesting(Dataset):
                 
             if feat1_half2.shape[0]*2 != feat2_half2.shape[0]:
                 print('Different shape')
-                feat2_half2_aux = np.zeros((feat1_half2.shape[0] // 2, feat2_half2.shape[1]))
+                feat2_half2_aux = np.zeros((feat1_half2.shape[0] * 2, feat2_half2.shape[1]))
                 feat2_half2_aux[:feat2_half2.shape[0]] = feat2_half2
                 feat2_half2 = feat2_half2.aux
                 print('Resized to: ' + str(feat2_half1.shape))
