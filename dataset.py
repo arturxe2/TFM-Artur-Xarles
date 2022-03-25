@@ -392,13 +392,6 @@ class SoccerNetClipsTesting(Dataset):
             return self.listGames[index], feat_half1, feat_half2, label_half1, label_half2
         
         else:
-            print('zero prints: \n')
-            print('Features 1st half:')
-            print(feat1_half1.shape)
-            print(feat2_half1.shape)
-            print('Features 2nd half:')
-            print(feat1_half2.shape)
-            print(feat2_half2.shape)
             
             if feat1_half1.shape[0]*2 != feat2_half1.shape[0]:
                 print('Different shape')
@@ -431,14 +424,6 @@ class SoccerNetClipsTesting(Dataset):
                 feat2_half1 = feat2_half1[:feat1_half1.shape[0]]
             if feat1_half2.shape[0] != feat2_half2.shape[0]:
                 feat2_half2 = feat2_half2[:feat1_half2.shape[0]]
-                
-            print('first prints: \n')
-            print('Features 1st half:')
-            print(feat1_half1.shape)
-            print(feat2_half1.shape)
-            print('Features 2nd half:')
-            print(feat1_half2.shape)
-            print(feat2_half2.shape)
             
             return self.listGames[index], feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2
 

@@ -411,13 +411,6 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     data_time.update(time.time() - end)
     
                     # Batch size of 1
-                    print('Second prints...')
-                    print('Features 1st half:')
-                    print(feat1_half1.shape)
-                    print(feat2_half1.shape)
-                    print('Features 2nd half:')
-                    print(feat1_half2.shape)
-                    print(feat2_half2.shape)
                     
                     game_ID = game_ID[0]
                     feat1_half1 = feat1_half1.squeeze(0)
