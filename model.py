@@ -85,19 +85,19 @@ class Model(nn.Module):
             #self.normB = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
             #Add segment embedding
-            self.pos_encoder = PositionalEncoding(512, )
+            self.pos_encoder = PositionalEncoding(8576, )
             
-            encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            encoder_layer = nn.TransformerEncoderLayer(d_model=8576, nhead=4, dim_feedforward=64)
             self.encoder = nn.TransformerEncoder(encoder_layer, 1)
             
-            encoder_layer2 = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            encoder_layer2 = nn.TransformerEncoderLayer(d_model=8576, nhead=4, dim_feedforward=64)
             self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
             
-            encoder_layer3 = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            encoder_layer3 = nn.TransformerEncoderLayer(d_model=8576, nhead=4, dim_feedforward=64)
             self.encoder3 = nn.TransformerEncoder(encoder_layer3, 1)
             #Pool layer
             self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
-            self.fc2 = nn.Linear(512, self.num_classes+1)
+            self.fc2 = nn.Linear(8576, self.num_classes+1)
             
             
 
