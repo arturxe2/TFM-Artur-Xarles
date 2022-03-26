@@ -265,7 +265,7 @@ class Model(nn.Module):
             
             print(outputsB.shape)
             print(outputsR.shape)
-            outputs = torch.cat((outputsR, outputsB), dim=0)
+            outputs = torch.cat((outputsR, outputsB), dim=1)
             print(outputs.shape)
             outputs = self.fcO(outputs)
             
