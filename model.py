@@ -256,8 +256,10 @@ class Model(nn.Module):
             
             outputsR = self.sigm(self.fc2R(self.drop(inputsR_pooled)))
             outputsB = self.sigm(self.fc2B(self.drop(inputsB_pooled)))
-            
-            outputs = torch.cat((outputsR, outputsB))
+            print(outputsB.shape)
+            print(outputsR.shape)
+            outputs = torch.cat((outputsR, outputsB), dim=0)
+            print(outputs.shape)
             outputs = self.fcO(outputs)
             
             
