@@ -226,6 +226,10 @@ class Model(nn.Module):
         elif self.pool == "transformer_2features_2":
             inputs1 = inputs1.float()
             inputs2 = inputs2.float()
+            
+            inputs1 = self.drop(inputs1)
+            inputs2 = self.drop(inputs2)
+            
             inputsB = inputs1.permute((0, 2, 1))
             inputsR = inputs2.permute((0, 2, 1))
             inputsR = self.relu(self.normR(self.conv1R(inputsR)))#(B x 512 x (chunk_size * 2))
@@ -259,7 +263,7 @@ class Model(nn.Module):
             
             outputs = torch.cat((outputsR, outputsB), dim=1)
 
-            outputs = self.fcO(outputs)
+            outputs = self.relu(self.fcO(outputs))
             outputs = self.sigm(outputs)
             
             
