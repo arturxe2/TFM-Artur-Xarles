@@ -130,9 +130,8 @@ class Model(nn.Module):
             #Pool layer
             self.pool_layerB = nn.MaxPool1d(chunk_size * (1), stride=1)
             self.pool_layerR = nn.MaxPool1d(chunk_size * 2, stride = 1)
-            self.fc2B = nn.Linear(512, self.num_classes+1)
-            self.fc2R = nn.Linear(512, self.num_classes+1)
-            self.fcO = nn.Linear((self.num_classes+1)*2, self.num_classes+1)
+            self.fc = nn.Linear(1024, self.num_classes+1)
+            
             
 
         elif self.pool == "NetVLAD":
@@ -258,13 +257,11 @@ class Model(nn.Module):
             inputsR_pooled = inputsR_pooled.squeeze(-1)
             inputsB_pooled = inputsB_pooled.squeeze(-1)
             
-            outputsR = self.sigm(self.fc2R(self.drop(inputsR_pooled)))
-            outputsB = self.sigm(self.fc2B(self.drop(inputsB_pooled)))
+            inputs = torch.cat((inputsR_pooled, inputsB_pooled), dim=1)
             
-            outputs = torch.cat((outputsR, outputsB), dim=1)
-
-            outputs = self.relu(self.fcO(outputs))
-            outputs = self.sigm(outputs)
+            outputs = self.sigm(self.fc(self.drop(inputs)))
+            
+            
             
             
 
