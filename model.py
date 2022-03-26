@@ -99,6 +99,39 @@ class Model(nn.Module):
             self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
             
+        elif self.pool == "transformer_2features_2":
+            self.conv1R = nn.Conv1d(512, 512, 1, stride=1, bias=False)
+            self.normR = nn.BatchNorm1d(512)
+            self.conv1B = nn.Conv1d(8576, 512, 1, stride=1, bias=False)
+            self.normB = nn.BatchNorm1d(512)
+            self.relu = nn.ReLU()
+            #Add segment embedding
+            self.pos_encoder = PositionalEncoding(512, )
+            
+            #Baidu encoders
+            encoder_layer1B = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            self.encoder1B = nn.TransformerEncoder(encoder_layer1B, 1)
+            
+            encoder_layer2B = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            self.encoder2B = nn.TransformerEncoder(encoder_layer2B, 1)
+            
+            encoder_layer3B = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            self.encoder3B = nn.TransformerEncoder(encoder_layer3B, 1)
+            
+            #Audio encoders
+            encoder_layer1R = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            self.encoder1R = nn.TransformerEncoder(encoder_layer1R, 1)
+            
+            encoder_layer2R = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            self.encoder2R = nn.TransformerEncoder(encoder_layer2R, 1)
+            
+            encoder_layer3R = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
+            self.encoder3R = nn.TransformerEncoder(encoder_layer3R, 1)
+            #Pool layer
+            self.pool_layerB = nn.MaxPool1d(chunk_size * (1), stride=1)
+            self.pool_layerR = nn.MaxPool1d(chunk_size * 2, stride = 1)
+            self.fc2B = nn.Linear(512, self.num_classes+1)
+            self.fc2R = nn.Linear(512, self.num_classes+1)
             
 
         elif self.pool == "NetVLAD":
@@ -189,6 +222,41 @@ class Model(nn.Module):
             inputs_pooled = self.pool_layer(inputs)
             inputs_pooled = inputs_pooled.squeeze(-1)
 
+        elif self.pool == "transformer_2features_2":
+            inputs1 = inputs1.float()
+            inputs2 = inputs2.float()
+            inputsB = inputs1.permute((0, 2, 1))
+            inputsR = inputs2.permute((0, 2, 1))
+            inputsR = self.relu(self.normR(self.conv1R(inputsR)))#(B x 512 x (chunk_size * 2))
+            inputsB = self.relu(self.normB(self.conv1B(inputsB))) #(B x 512 x (chunk_size))
+            inputsR = inputsR.permute((0, 2, 1))#(B x (chunk_size * 2) x 512)
+            inputsB = inputsB.permute((0, 2, 1))#(B x (chunk_size) x 512)
+            
+            #Positional encodding + feature encoding (1 for R, 0 for B)
+            inputsR = self.pos_encoder(inputsR, add=0.)#(B x (chunk_size * 2) x 512)
+            inputsB = self.pos_encoder(inputsB, add=0.)#(B x (chunk_size) x 512)
+
+            inputsR = self.encoder1R(inputsR)
+            inputsR = self.encoder2R(inputsR)
+            inputsR = self.encoder3R(inputsR)
+            
+            inputsB = self.encoder1B(inputsB)
+            inputsB = self.encoder2B(inputsB)
+            inputsB = self.encoder3B(inputsB)
+            
+            inputsR = inputsR.permute((0, 2, 1))
+            inputsB = inputsB.permute((0, 2, 1))
+            
+            inputsR_pooled = self.pool_layerR(inputsR)
+            inputsB_pooled = self.pool_layerB(inputsB)
+            
+            inputsR_pooled = inputsR_pooled.squeeze(-1)
+            inputsB_pooled = inputsB_pooled.squeeze(-1)
+            
+            outputsR = self.sigm(self.fc2R(self.drop(inputsR_pooled)))
+            outputsB = self.sigm(self.fc2B(self.drop(inputsB_pooled)))
+            
+            outputs = (outputsR + outputsB) / 2
             
             
 
@@ -198,6 +266,6 @@ class Model(nn.Module):
             inputs_pooled = self.pool_layer(inputs)
 
         # Extra FC layer with dropout and sigmoid activation
-        output = self.sigm(self.fc2(self.drop(inputs_pooled)))
+        #output = self.sigm(self.fc2(self.drop(inputs_pooled)))
 
-        return output
+        return outputs
