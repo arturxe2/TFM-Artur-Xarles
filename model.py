@@ -251,11 +251,18 @@ class Model(nn.Module):
             inputsR_pooled = self.pool_layerR(inputsR)
             inputsB_pooled = self.pool_layerB(inputsB)
             
+            print(inputsR_pooled.shape)
+            print(inputsB_pooled.shape)
+            
             inputsR_pooled = inputsR_pooled.squeeze(-1)
             inputsB_pooled = inputsB_pooled.squeeze(-1)
             
+            print(inputsR_pooled.shape)
+            print(inputsB_pooled.shape)
+            
             outputsR = self.sigm(self.fc2R(self.drop(inputsR_pooled)))
             outputsB = self.sigm(self.fc2B(self.drop(inputsB_pooled)))
+            
             print(outputsB.shape)
             print(outputsR.shape)
             outputs = torch.cat((outputsR, outputsB), dim=0)
