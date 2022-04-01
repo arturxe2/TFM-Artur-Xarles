@@ -179,7 +179,7 @@ class Model(nn.Module):
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(weights, checkpoint['epoch']))
     #def forward(self, inputs):
-    def forward(self, inputs1, inputs2):
+    def forward(self, inputs):
         # input_shape: (batch,frames,dim_features)
 
         # Temporal pooling operation
