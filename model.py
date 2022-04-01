@@ -221,6 +221,8 @@ class Model(nn.Module):
             #print(inputs_pooled.shape)
             #breakpoint()
             inputs_pooled = inputs_pooled.squeeze(-1)
+            
+            outputs = self.sigm(self.fc2(self.drop(inputs_pooled)))
             #breakpoint()
             #### Transformer
             
