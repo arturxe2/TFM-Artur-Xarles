@@ -133,6 +133,42 @@ class SoccerNetClips(Dataset):
                 feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
                 feat_half2R = np.load(os.path.join(resnet_path, game, "2_" + resnet_name))
                 feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
+                
+                if feat_half1B.shape[0]*2 > feat_half1R.shape[0]:
+                    print('Different shape')
+                    print('Previous shape: ' + str(feat_half1R.shape))
+                    feat_half1R_aux = np.zeros((feat_half1B.shape[0] * 2, feat_half1R.shape[1]))
+                    feat_half1R_aux[:feat_half1R.shape[0]] = feat_half1R
+                    feat_half1R_aux[feat_half1R.shape[0]:] = feat_half1R[feat_half1R.shape[0]-1]
+                    feat_half1R = feat_half1R_aux
+                    print('Resized to: ' + str(feat_half1R.shape))
+                    
+                if feat_half2B.shape[0]*2 > feat_half2R.shape[0]:
+                    print('Different shape')
+                    print('Previous shape: ' + str(feat_half2R.shape))
+                    feat_half2R_aux = np.zeros((feat_half2B.shape[0] * 2, feat_half2R.shape[1]))
+                    feat_half2R_aux[:feat_half2R.shape[0]] = feat_half2R
+                    feat_half2R_aux[feat_half2R.shape[0]:] = feat_half2R[feat_half2R.shape[0]-1]
+                    feat_half2R = feat_half2R_aux
+                    print('Resized to: ' + str(feat_half2R.shape))
+                    
+                if feat_half1B.shape[0]*2 < feat_half1R.shape[0]:
+                    print('Different shape')
+                    print('Previous shape: ' + str(feat_half1B.shape))
+                    feat_half1B_aux = np.zeros((feat_half1R.shape[0] // 2, feat_half1B.shape[1]))
+                    feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
+                    feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
+                    feat_half1B = feat_half1B_aux
+                    print('Resized to: ' + str(feat_half1B.shape))
+                    
+                if feat_half2B.shape[0]*2 < feat_half2R.shape[0]:
+                    print('Different shape')
+                    print('Previous shape: ' + str(feat_half2B.shape))
+                    feat_half2B_aux = np.zeros((feat_half2R.shape[0] // 2, feat_half2B.shape[1]))
+                    feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
+                    feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
+                    feat_half2B = feat_half2B_aux
+                    print('Resized to: ' + str(feat_half2B.shape))
 
                 feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
                 feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * 2, clip_length=self.chunk_size * 2) 
