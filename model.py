@@ -172,7 +172,7 @@ class Model(nn.Module):
                                             add_batch_norm=True)
             self.pool_layer_after = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=512,
                                             add_batch_norm=True)
-            self.fc = nn.Linear(input_size*self.vlad_k, self.num_classes+1)
+            self.fc = nn.Linear(512*self.vlad_k, self.num_classes+1)
             self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
             self.norm = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
