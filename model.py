@@ -168,9 +168,9 @@ class Model(nn.Module):
             self.fc = nn.Linear(input_size*64, self.num_classes+1)
             
         elif self.pool == "NetVLAD++":
-            self.pool_layer_before = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=self.input_size,
+            self.pool_layer_before = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=512,
                                             add_batch_norm=True)
-            self.pool_layer_after = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=self.input_size,
+            self.pool_layer_after = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=512,
                                             add_batch_norm=True)
             self.fc = nn.Linear(input_size*self.vlad_k, self.num_classes+1)
             self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
