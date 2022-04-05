@@ -165,6 +165,16 @@ class Model(nn.Module):
             self.pool_layer = NetVLAD(num_clusters=64, dim=512,
                                       normalize_input=True, vladv2=False)
             self.fc = nn.Linear(input_size*64, self.num_classes+1)
+            
+        elif self.pool == "NetVLAD++":
+            self.pool_layer_before = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=self.input_size,
+                                            add_batch_norm=True)
+            self.pool_layer_after = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=self.input_size,
+                                            add_batch_norm=True)
+            self.fc = nn.Linear(input_size*self.vlad_k, self.num_classes+1)
+            self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
+            self.norm = nn.BatchNorm1d(512)
+            self.relu = nn.ReLU()
 
         self.drop = nn.Dropout(p=0.4)
         self.sigm = nn.Sigmoid()
@@ -342,6 +352,19 @@ class Model(nn.Module):
             inputs = inputs.unsqueeze(-1)
             inputs = inputs.permute((0, 2, 1, 3))
             inputs_pooled = self.pool_layer(inputs)
+            
+        elif self.pool == "NetVLAD++" or self.pool == "NetRVLAD++":
+            inputs = inputs.float()
+            inputs = inputs.permute((0, 2, 1)) #(B x n_features x n_frames)
+            #print(inputs.shape)
+            inputs = self.relu(self.norm(self.conv1(inputs))) #(B x 512 x n_frames)
+            #print(inputs.shape)
+            inputs = inputs.permute((0, 2, 1))
+            nb_frames_50 = int(inputs.shape[1]/2)
+            inputs_before_pooled = self.pool_layer_before(inputs[:, :nb_frames_50, :])
+            inputs_after_pooled = self.pool_layer_after(inputs[:, nb_frames_50:, :])
+            inputs_pooled = torch.cat((inputs_before_pooled, inputs_after_pooled), dim=1)
+            outputs = self.sigm(self.fc(self.drop(inputs_pooled)))
 
         # Extra FC layer with dropout and sigmoid activation
         #output = self.sigm(self.fc2(self.drop(inputs_pooled)))
