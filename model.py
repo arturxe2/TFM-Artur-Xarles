@@ -32,7 +32,7 @@ class PositionalEncoding(nn.Module):
         return self.dropout(x)
 
 class Model(nn.Module):
-    def __init__(self, weights=None, input_size=512, num_classes=3, vocab_size=64, chunk_size=240, framerate=2, pool="NetVLAD"):
+    def __init__(self, weights=None, input_size=512, num_classes=3, vocab_size=128, chunk_size=240, framerate=2, pool="NetVLAD"):
         """
         INPUT: a Tensor of shape (batch_size,chunk_size,feature_size)
         OUTPUTS: a Tensor of shape (batch_size,num_classes+1)
@@ -176,6 +176,16 @@ class Model(nn.Module):
             self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
             self.norm = nn.BatchNorm1d(512)
             self.relu = nn.ReLU()
+        
+        elif self.pool == "NetVLAD++2":
+            self.pool_layer_before = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=8576,
+                                            add_batch_norm=True)
+            self.pool_layer_after = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=8576,
+                                            add_batch_norm=True)
+            self.fc = nn.Linear(8576*self.vlad_k, self.num_classes+1)
+            #self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
+            #self.norm = nn.BatchNorm1d(512)
+            #self.relu = nn.ReLU()
 
         self.drop = nn.Dropout(p=0.4)
         self.sigm = nn.Sigmoid()
@@ -361,6 +371,14 @@ class Model(nn.Module):
             inputs = self.relu(self.norm(self.conv1(inputs))) #(B x 512 x n_frames)
             #print(inputs.shape)
             inputs = inputs.permute((0, 2, 1))
+            nb_frames_50 = int(inputs.shape[1]/2)
+            inputs_before_pooled = self.pool_layer_before(inputs[:, :nb_frames_50, :])
+            inputs_after_pooled = self.pool_layer_after(inputs[:, nb_frames_50:, :])
+            inputs_pooled = torch.cat((inputs_before_pooled, inputs_after_pooled), dim=1)
+            outputs = self.sigm(self.fc(self.drop(inputs_pooled)))
+            
+        elif self.pool == "NetVLAD++2" or self.pool == "NetRVLAD++":
+            inputs = inputs.float()
             nb_frames_50 = int(inputs.shape[1]/2)
             inputs_before_pooled = self.pool_layer_before(inputs[:, :nb_frames_50, :])
             inputs_after_pooled = self.pool_layer_after(inputs[:, nb_frames_50:, :])
