@@ -271,6 +271,8 @@ class Model(nn.Module):
             inputs = inputs.permute((0, 2, 1))
             inputs_pooled = self.pool_layer(inputs)
             inputs_pooled = inputs_pooled.squeeze(-1)
+            
+            outputs = self.sigm(self.fc2(self.drop(inputs)))
 
         elif self.pool == "transformer_2features_2":
             inputs1 = inputs1.float()
