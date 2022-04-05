@@ -178,14 +178,14 @@ class Model(nn.Module):
             self.relu = nn.ReLU()
         
         elif self.pool == "NetVLAD++2":
-            self.pool_layer_before = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=8576,
+            self.pool_layer_before = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=2048,
                                             add_batch_norm=True)
-            self.pool_layer_after = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=8576,
+            self.pool_layer_after = NetVLAD(cluster_size=int(self.vlad_k/2), feature_size=2048,
                                             add_batch_norm=True)
-            self.fc = nn.Linear(8576*self.vlad_k, self.num_classes+1)
-            #self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
-            #self.norm = nn.BatchNorm1d(512)
-            #self.relu = nn.ReLU()
+            self.fc = nn.Linear(2048*self.vlad_k, self.num_classes+1)
+            self.conv1 = nn.Conv1d(input_size, 2048, 1, stride=1, bias=False)
+            self.norm = nn.BatchNorm1d(2048)
+            self.relu = nn.ReLU()
 
         self.drop = nn.Dropout(p=0.4)
         self.sigm = nn.Sigmoid()
@@ -379,6 +379,11 @@ class Model(nn.Module):
             
         elif self.pool == "NetVLAD++2" or self.pool == "NetRVLAD++":
             inputs = inputs.float()
+            inputs = inputs.permute((0, 2, 1)) #(B x n_features x n_frames)
+            #print(inputs.shape)
+            inputs = self.relu(self.norm(self.conv1(inputs))) #(B x 512 x n_frames)
+            #print(inputs.shape)
+            inputs = inputs.permute((0, 2, 1))
             nb_frames_50 = int(inputs.shape[1]/2)
             inputs_before_pooled = self.pool_layer_before(inputs[:, :nb_frames_50, :])
             inputs_after_pooled = self.pool_layer_after(inputs[:, nb_frames_50:, :])
