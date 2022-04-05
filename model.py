@@ -32,7 +32,7 @@ class PositionalEncoding(nn.Module):
         return self.dropout(x)
 
 class Model(nn.Module):
-    def __init__(self, weights=None, input_size=512, num_classes=3, chunk_size=240, framerate=2, pool="NetVLAD"):
+    def __init__(self, weights=None, input_size=512, num_classes=3, vocab_size=64, chunk_size=240, framerate=2, pool="NetVLAD"):
         """
         INPUT: a Tensor of shape (batch_size,chunk_size,feature_size)
         OUTPUTS: a Tensor of shape (batch_size,num_classes+1)
@@ -45,6 +45,7 @@ class Model(nn.Module):
         self.chunk_size = chunk_size
         self.framerate = framerate
         self.pool = pool
+        self.vlad_k = vocab_size
 
         if self.pool == "MAX":
             self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
