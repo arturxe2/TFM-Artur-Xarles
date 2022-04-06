@@ -169,12 +169,23 @@ class SoccerNetClips(Dataset):
                     feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
                     feat_half2B = feat_half2B_aux
                     print('Resized to: ' + str(feat_half2B.shape))
-                    
+                
+                print(feat_half1b.min())
                 print(feat_half1B.mean())
+                print(feat_half1B.max())
+                print('---------------')
+                print(feat_half2B.min())
                 print(feat_half2B.mean())
+                print(feat_half2B.max())
+                print('---------------')
+                print(feat_half1R.min())
                 print(feat_half1R.mean())
+                print(feat_half1R.max())
+                print('---------------')
+                print(feat_half2R.min())
                 print(feat_half2R.mean())
-
+                print(feat_half2R.max())
+                
                 feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
                 feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * 2, clip_length=self.chunk_size * 2) 
                 feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
