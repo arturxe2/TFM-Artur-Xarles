@@ -170,7 +170,7 @@ class SoccerNetClips(Dataset):
                     feat_half2B = feat_half2B_aux
                     print('Resized to: ' + str(feat_half2B.shape))
                 
-                print(feat_half1b.min())
+                print(feat_half1B.min())
                 print(feat_half1B.mean())
                 print(feat_half1B.max())
                 print('---------------')
