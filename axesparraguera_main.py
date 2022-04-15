@@ -52,7 +52,7 @@ def main(args):
 
     # create dataloader
     if not args.test_only:
-        sampler = WeightedRandomSampler(dataset_Train.weights.type('torch.DoubleTensor'), len(dataset_Train.weights))
+        sampler = WeightedRandomSampler(torch.from_numpy(dataset_Train.weights).type('torch.DoubleTensor'), len(dataset_Train.weights))
         
         train_loader = torch.utils.data.DataLoader(dataset_Train,
             batch_size=args.batch_size, shuffle=True,
