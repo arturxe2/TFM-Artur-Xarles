@@ -13,6 +13,7 @@ from dataset import SoccerNetClips, SoccerNetClipsTesting #,SoccerNetClipsOld
 from model import Model
 from train import trainer, test, testSpotting
 from loss import NLLLoss
+from loss import NLLLoss_weights
 
 # for reproducibility
 torch.manual_seed(1)
@@ -52,11 +53,16 @@ def main(args):
 
     # create dataloader
     if not args.test_only:
-        sampler = WeightedRandomSampler(torch.from_numpy(dataset_Train.weights).type('torch.DoubleTensor'), len(dataset_Train.weights))
-        
-        train_loader = torch.utils.data.DataLoader(dataset_Train,
-            batch_size=args.batch_size,
-            num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
+        sample_strategy = False
+        if sample_strategy == True:
+            sampler = WeightedRandomSampler(torch.from_numpy(dataset_Train.weights).type('torch.DoubleTensor'), len(dataset_Train.weights))
+            train_loader = torch.utils.data.DataLoader(dataset_Train,
+                batch_size=args.batch_size,
+                num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
+        else:
+            train_loader = torch.utils.data.DataLoader(dataset_Train,
+                           batch_size=args.batch_size, shuffle=True,
+                           num_workers=args.max_num_worker, pin_memory=True)
 
         val_loader = torch.utils.data.DataLoader(dataset_Valid,
             batch_size=args.batch_size, shuffle=False,
@@ -69,7 +75,7 @@ def main(args):
 
     # training parameters
     if not args.test_only:
-        criterion = NLLLoss()
+        criterion = NLLLoss_weights()
         optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
                                     betas=(0.9, 0.999), eps=1e-08, 
                                     weight_decay=1e-5, amsgrad=True)
