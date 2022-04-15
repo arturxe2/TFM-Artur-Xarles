@@ -34,9 +34,11 @@ def main(args):
             dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
     
         if args.version == 2:
-            dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate, augment = False)
-            dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            saved_loader = False
+            if saved_loader == False:
+                dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate, augment = False)
+                dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+                dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
     dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             
         
@@ -54,23 +56,36 @@ def main(args):
     # create dataloader
     if not args.test_only:
         sample_strategy = False
-        if sample_strategy == True:
-            sampler = WeightedRandomSampler(torch.from_numpy(dataset_Train.weights).type('torch.DoubleTensor'), len(dataset_Train.weights))
-            train_loader = torch.utils.data.DataLoader(dataset_Train,
-                batch_size=args.batch_size,
-                num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
+        if saved_loader == False:
+            if sample_strategy == True:
+                sampler = WeightedRandomSampler(torch.from_numpy(dataset_Train.weights).type('torch.DoubleTensor'), len(dataset_Train.weights))
+                train_loader = torch.utils.data.DataLoader(dataset_Train,
+                    batch_size=args.batch_size,
+                    num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
+                torch.save(train_loader, 'train_loader_sampler.pth')
+            else:
+                train_loader = torch.utils.data.DataLoader(dataset_Train,
+                               batch_size=args.batch_size, shuffle=True,
+                               num_workers=args.max_num_worker, pin_memory=True)
+                torch.save(train_loader, 'train_loader.pth')
+                
+            val_loader = torch.utils.data.DataLoader(dataset_Valid,
+                batch_size=args.batch_size, shuffle=False,
+                num_workers=args.max_num_worker, pin_memory=True)
+            torch.save(val_loader, 'val_loader.pth')
+
+            val_metric_loader = torch.utils.data.DataLoader(dataset_Valid_metric,
+                batch_size=args.batch_size, shuffle=False,
+                num_workers=args.max_num_worker, pin_memory=True)
+            torch.save(val_metric_loader, 'val_metric_loader.pth')
         else:
-            train_loader = torch.utils.data.DataLoader(dataset_Train,
-                           batch_size=args.batch_size, shuffle=True,
-                           num_workers=args.max_num_worker, pin_memory=True)
+            if sample_strategy == True:
+                train_loader = torch.load('train_loader_sampler.pth')
+            else:
+                train_loader = torch.load('train_loader.pth')
 
-        val_loader = torch.utils.data.DataLoader(dataset_Valid,
-            batch_size=args.batch_size, shuffle=False,
-            num_workers=args.max_num_worker, pin_memory=True)
-
-        val_metric_loader = torch.utils.data.DataLoader(dataset_Valid_metric,
-            batch_size=args.batch_size, shuffle=False,
-            num_workers=args.max_num_worker, pin_memory=True)
+            val_loader = torch.load('val_loader.pth')
+            val_metric_loader = torch.load('val_metric_loader.pth')
     
 
     # training parameters
