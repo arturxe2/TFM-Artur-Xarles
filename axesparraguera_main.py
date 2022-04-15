@@ -7,6 +7,7 @@ import pdb
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 import torch
+from torch.utils.data import WeightedRandomSampler
 
 from dataset import SoccerNetClips, SoccerNetClipsTesting #,SoccerNetClipsOld
 from model import Model
@@ -51,9 +52,11 @@ def main(args):
 
     # create dataloader
     if not args.test_only:
+        sampler = WeightedRandomSampler(dataset_Train.weights.type('torch.DoubleTensor'), len(dataset_Train.weights))
+        
         train_loader = torch.utils.data.DataLoader(dataset_Train,
             batch_size=args.batch_size, shuffle=True,
-            num_workers=args.max_num_worker, pin_memory=True)
+            num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
 
         val_loader = torch.utils.data.DataLoader(dataset_Valid,
             batch_size=args.batch_size, shuffle=False,
