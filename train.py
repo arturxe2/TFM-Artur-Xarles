@@ -151,10 +151,18 @@ def train(path,
                 feats2 = feats2.cuda()
                 labels = labels.cuda()
                 # compute output
-                output = model(feats1, feats2)
+                outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
         
                 # hand written NLL criterion
-                loss = criterion(labels, output)
+                lossF = criterion(labels, outputs_mix)
+                lossA = criterion(labels, outputsA)
+                lossB1 = criterion(labels, outputsB1)
+                lossB2 = criterion(labels, outputsB2)
+                lossB3 = criterion(labels, outputsB3)
+                lossB4 = criterion(labels, outputsB4)
+                lossB5 = criterion(labels, outputsB5)
+                
+                loss = 0.7 * lossF + 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
         
                 # measure accuracy and record loss
                 losses.update(loss.item(), feats1.size(0) + feats2.size(0))
@@ -233,7 +241,7 @@ def test(path, dataloader, model, model_name):
                 # print(feats.shape)
     
                 # compute output
-                output = model(feats1, feats2)
+                output, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
     
                 all_labels.append(labels.detach().numpy())
                 all_outputs.append(output.cpu().detach().numpy())
