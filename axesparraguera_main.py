@@ -55,7 +55,7 @@ def main(args):
         sampler = WeightedRandomSampler(torch.from_numpy(dataset_Train.weights).type('torch.DoubleTensor'), len(dataset_Train.weights))
         
         train_loader = torch.utils.data.DataLoader(dataset_Train,
-            batch_size=args.batch_size, shuffle=True,
+            batch_size=args.batch_size,
             num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
 
         val_loader = torch.utils.data.DataLoader(dataset_Valid,
