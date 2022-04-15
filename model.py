@@ -246,8 +246,8 @@ class Model(nn.Module):
             outputs = self.sigm(self.fc2(self.drop(inputs_pooled)))
 
         elif self.pool == "final_model":
-            inputsA = inputs1.float()
-            inputsB = inputs2.float()
+            inputsA = inputs2.float()
+            inputsB = inputs1.float()
             
             inputsA = inputsA.permute((0, 2, 1)) #(B x n_features x chunk_size * 2)
             inputsB = inputsB.permute((0, 2, 1)) #(B x n_features x chunk_size)
