@@ -62,22 +62,22 @@ def main(args):
                 train_loader = torch.utils.data.DataLoader(dataset_Train,
                     batch_size=args.batch_size,
                     num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
-                torch.save(train_loader, 'train_loader_sampler.pth')
+                #torch.save(train_loader, 'train_loader_sampler.pth')
             else:
                 train_loader = torch.utils.data.DataLoader(dataset_Train,
                                batch_size=args.batch_size, shuffle=True,
                                num_workers=args.max_num_worker, pin_memory=True)
-                torch.save(train_loader, 'train_loader.pth')
+                #torch.save(train_loader, 'train_loader.pth')
                 
             val_loader = torch.utils.data.DataLoader(dataset_Valid,
                 batch_size=args.batch_size, shuffle=False,
                 num_workers=args.max_num_worker, pin_memory=True)
-            torch.save(val_loader, 'val_loader.pth')
+            #torch.save(val_loader, 'val_loader.pth')
 
             val_metric_loader = torch.utils.data.DataLoader(dataset_Valid_metric,
                 batch_size=args.batch_size, shuffle=False,
                 num_workers=args.max_num_worker, pin_memory=True)
-            torch.save(val_metric_loader, 'val_metric_loader.pth')
+            #torch.save(val_metric_loader, 'val_metric_loader.pth')
         else:
             if sample_strategy == True:
                 train_loader = torch.load('train_loader_sampler.pth')
