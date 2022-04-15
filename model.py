@@ -295,7 +295,7 @@ class Model(nn.Module):
             inputs_mix = inputs_mix.permute((0, 2, 1))
                                                     
             #Individual outputs
-            inputs_pooledA = self.pool_layerA(inputsA) #(B x 256 x 1)
+            inputs_pooledA = self.pool_layerA(inputsA).squeeze(-1) #(B x 256 x 1)
             inputs_pooledB1 = self.pool_layerB1(inputsB1).squeeze(-1) #(B x 256)
             inputs_pooledB2 = self.pool_layerB2(inputsB2).squeeze(-1) #(B x 256)
             inputs_pooledB3 = self.pool_layerB3(inputsB3).squeeze(-1) #(B x 256)
