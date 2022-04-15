@@ -115,6 +115,8 @@ class Model(nn.Module):
             self.conv5B = nn.Conv1d(2048, 256, 1, stride=1, bias=False)
             self.norm5B = nn.BatchNorm1d(256)
             
+            self.relu = nn.ReLU()
+            
             #Encoders for each feature vector
             encoder_layerA = nn.TransformerEncoderLayer(d_model=256, nhead=8)
             self.encoderA = nn.TransformerEncoder(encoder_layerA, 1) 
