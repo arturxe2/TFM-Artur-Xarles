@@ -102,17 +102,17 @@ class Model(nn.Module):
         
         elif self.pool == "final_model":
             #All features to 512 dimensionality
-            self.conv1A = nn.Conv1D(512, 256, 1, stride=1, bias=False)
+            self.conv1A = nn.Conv1d(512, 256, 1, stride=1, bias=False)
             self.normA = nn.BatchNorm1d(256)
-            self.conv1B = nn.Conv1D(2048, 256, 1, stride=1, bias=False)
+            self.conv1B = nn.Conv1d(2048, 256, 1, stride=1, bias=False)
             self.norm1B = nn.BatchNorm1d(256)
-            self.conv2B = nn.Conv1D(2048, 256, 1, stride=1, bias=False)
+            self.conv2B = nn.Conv1d(2048, 256, 1, stride=1, bias=False)
             self.norm2B = nn.BatchNorm1d(256)
-            self.conv3B = nn.Conv1D(384, 256, 1, stride=1, bias=False)
+            self.conv3B = nn.Conv1d(384, 256, 1, stride=1, bias=False)
             self.norm3B = nn.BatchNorm1d(256)
-            self.conv4B = nn.Conv1D(2048, 256, 1, stride=1, bias=False)
+            self.conv4B = nn.Conv1d(2048, 256, 1, stride=1, bias=False)
             self.norm4B = nn.BatchNorm1d(256)
-            self.conv5B = nn.Conv1D(2048, 256, 1, stride=1, bias=False)
+            self.conv5B = nn.Conv1d(2048, 256, 1, stride=1, bias=False)
             self.norm5B = nn.BatchNorm1d(256)
             
             #Encoders for each feature vector
