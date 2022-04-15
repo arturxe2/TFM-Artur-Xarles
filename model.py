@@ -265,6 +265,12 @@ class Model(nn.Module):
             inputsB4 = self.relu(self.norm4B(self.conv4B(inputsB4))) #(B x 256 x chunk_size)
             inputsB5 = self.relu(self.norm5B(self.conv5B(inputsB5))) #(B x 256 x chunk_size)
             
+            inputsA = inputsA.permute((0, 2, 1))
+            inputsB1 = inputsB1.permute((0, 2, 1))
+            inputsB2 = inputsB2.permute((0, 2, 1))
+            inputsB3 = inputsB3.permute((0, 2, 1))
+            inputsB4 = inputsB4.permute((0, 2, 1))
+            inputsB5 = inputsB5.permute((0, 2, 1))
             
             #Transformers
             inputsA = self.encoderA(inputsA)
