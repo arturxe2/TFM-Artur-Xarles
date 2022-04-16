@@ -131,6 +131,20 @@ class Model(nn.Module):
             encoder_layerB5 = nn.TransformerEncoderLayer(d_model=256, nhead=8)
             self.encoderB5 = nn.TransformerEncoder(encoder_layerB5, 1)
             
+            #Segons encoders
+            encoder_layerA_2 = nn.TransformerEncoderLayer(d_model=256, nhead=8)
+            self.encoderA_2 = nn.TransformerEncoder(encoder_layerA_2, 1) 
+            encoder_layerB1_2 = nn.TransformerEncoderLayer(d_model=256, nhead=8)
+            self.encoderB1_2 = nn.TransformerEncoder(encoder_layerB1_2, 1)
+            encoder_layerB2_2 = nn.TransformerEncoderLayer(d_model=256, nhead=8)
+            self.encoderB2_2 = nn.TransformerEncoder(encoder_layerB2_2, 1)
+            encoder_layerB3_2 = nn.TransformerEncoderLayer(d_model=256, nhead=8)
+            self.encoderB3_2 = nn.TransformerEncoder(encoder_layerB3_2, 1)
+            encoder_layerB4_2 = nn.TransformerEncoderLayer(d_model=256, nhead=8)
+            self.encoderB4_2 = nn.TransformerEncoder(encoder_layerB4_2, 1)
+            encoder_layerB5_2 = nn.TransformerEncoderLayer(d_model=256, nhead=8)
+            self.encoderB5_2 = nn.TransformerEncoder(encoder_layerB5_2, 1)
+            
             #Reduce for each feature vector to 18
             self.pool_layerA = nn.MaxPool1d(chunk_size * 2, stride = 1)
             self.fcA = nn.Linear(256, self.num_classes+1)
@@ -148,6 +162,8 @@ class Model(nn.Module):
             #Transformer mix
             encoder_layer_mix = nn.TransformerEncoderLayer(d_model=256, nhead=8)
             self.encoder_mix = nn.TransformerEncoder(encoder_layer_mix, 1)
+            encoder_layer_mix_2 = nn.TransformerEncoderLayer(d_model=256, nhead=8)
+            self.encoder_mix_2 = nn.TransformerEncoder(encoder_layer_mix_2, 1)
             
             #Reduce mix to 18
             self.pool_layer_mix = nn.MaxPool1d(chunk_size*(2+1*5), stride=1)
@@ -272,7 +288,7 @@ class Model(nn.Module):
             inputsB4 = inputsB4.permute((0, 2, 1))
             inputsB5 = inputsB5.permute((0, 2, 1))
             
-            #Transformers
+            #Transformers 1
             inputsA = self.encoderA(inputsA)
             inputsB1 = self.encoderB1(inputsB1)
             inputsB2 = self.encoderB2(inputsB2)
@@ -280,10 +296,20 @@ class Model(nn.Module):
             inputsB4 = self.encoderB4(inputsB4)
             inputsB5 = self.encoderB5(inputsB5)
             
+            #Transformers 2
+            inputsA = self.encoderA_2(inputsA)
+            inputsB1 = self.encoderB1_2(inputsB1)
+            inputsB2 = self.encoderB2_2(inputsB2)
+            inputsB3 = self.encoderB3_2(inputsB3)
+            inputsB4 = self.encoderB4_2(inputsB4)
+            inputsB5 = self.encoderB5_2(inputsB5)
+            
             inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
+            
             
             #Transformer mix
             inputs_mix = self.encoder_mix(inputs_mix) #(B x 256 x chunk_size * 7)
+            inputs_mix = self.encoder_mix_2(inputs_mix)
             
             inputsA = inputsA.permute((0, 2, 1))
             inputsB1 = inputsB1.permute((0, 2, 1))
