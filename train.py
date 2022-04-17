@@ -163,7 +163,14 @@ def train(path,
                 lossB5 = criterion(labels, outputsB5)
                 
                 loss = 0.7 * lossF + 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
-        
+                
+                print('Total loss: ' + str(lossF))
+                print('Audio loss: ' + str(lossA))
+                print('Baidu1 loss: ' + str(lossB1))
+                print('Baidu2 loss: ' + str(lossB2))
+                print('Baidu3 loss: ' + str(lossB3))
+                print('Baidu4 loss: ' + str(lossB4))
+                print('Baidu5 loss: ' + str(lossB5))
                 # measure accuracy and record loss
                 losses.update(loss.item(), feats1.size(0) + feats2.size(0))
         
