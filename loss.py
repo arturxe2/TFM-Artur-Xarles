@@ -9,7 +9,7 @@ class NLLLoss(torch.nn.Module):
         return torch.mean(torch.mean(labels * -torch.log(output) + (1 - labels) * -torch.log(1 - output)))
     
 class NLLLoss_weights(torch.nn.Module):
-    def __initi__(self, weights):
+    def __init__(self, weights):
         super(NLLLoss_weights, self).__init__()
         self.weights = weights
         
