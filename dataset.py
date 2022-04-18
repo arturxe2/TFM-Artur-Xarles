@@ -278,6 +278,7 @@ class SoccerNetClips(Dataset):
         print(self.dict_event)
         class_weights = len(self.game_labels) / self.game_labels.sum(axis = 0) 
         self.class_weights = class_weights
+        print(self.class_weights)
         #self.weights = (self.game_labels * class_weights).sum(axis = 1)
         #print(self.weights.shape)
 
