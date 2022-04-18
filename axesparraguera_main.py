@@ -90,7 +90,8 @@ def main(args):
 
     # training parameters
     if not args.test_only:
-        criterion = NLLLoss_weights()
+        class_weights = torch.from_numpy(dataset_Train.class_weights).type('torch.DoubleTensor').cuda()
+        criterion = NLLLoss_weights(class_weights)
         optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
                                     betas=(0.9, 0.999), eps=1e-08, 
                                     weight_decay=1e-5, amsgrad=True)

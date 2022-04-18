@@ -276,11 +276,10 @@ class SoccerNetClips(Dataset):
             self.game_labels = np.concatenate(self.game_labels)
         #self.game_labels = np.concatenate(self.game_labels)
         print(self.dict_event)
-        class_weights = self.game_labels.sum() / self.game_labels.sum(axis = 0) 
-        class_weights[class_weights >= 100] = 100
-        print(class_weights)
-        self.weights = (self.game_labels * class_weights).sum(axis = 1)
-        print(self.weights.shape)
+        class_weights = len(self.game_labels) / self.game_labels.sum(axis = 0) 
+        self.class_weights = class_weights
+        #self.weights = (self.game_labels * class_weights).sum(axis = 1)
+        #print(self.weights.shape)
 
 
 
