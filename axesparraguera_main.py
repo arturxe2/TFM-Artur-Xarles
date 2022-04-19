@@ -116,18 +116,21 @@ def main(args):
     
     NMS_windows = [5, 6, 7, 8, 9, 10, 11, 12, 15, 17, 20, 22, 25, 30]
     tresholds = [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.60]
-    for window in NMS_windows:
-        for treshold in tresholds:
-            print('NMS windos: ' + str(window))
-            print('treshold: ' + str(treshold))
-            for split in args.split_test:
-                dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                print('Test loader')
-                test_loader = torch.utils.data.DataLoader(dataset_Test,
-                    batch_size=1, shuffle=False,
-                    num_workers=1, pin_memory=True)
+    
+    for split in args.split_test:
+        dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+        print('Test loader')
+        test_loader = torch.utils.data.DataLoader(dataset_Test,
+            batch_size=1, shuffle=False,
+            num_workers=1, pin_memory=True)
         
-                results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=window, NMS_threshold=treshold)
+        for window in NMS_windows:
+            for treshold in tresholds:
+                print('---------------------------------------------------------')
+                print('NMS windos: ' + str(window))
+                print('treshold: ' + str(treshold))
+        
+                results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
                 if results is None:
                     continue
         
