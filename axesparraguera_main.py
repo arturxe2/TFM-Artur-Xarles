@@ -114,8 +114,8 @@ def main(args):
 
     # test on multiple splits [test/challenge]
     
-    NMS_windows = [5, 6, 7, 8, 9, 10, 11, 12, 15, 17, 20, 22, 25, 30]
-    tresholds = [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.60]
+    NMS_windows = [5, 7, 10, 12, 15, 17, 20, 22, 25, 30]
+    tresholds = [0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
     
     for split in args.split_test:
         dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
@@ -130,7 +130,7 @@ def main(args):
                 print('NMS windos: ' + str(window))
                 print('treshold: ' + str(treshold))
         
-                results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
+                results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=window, NMS_threshold=treshold)
                 if results is None:
                     continue
         
