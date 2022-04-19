@@ -144,10 +144,10 @@ def main(args):
                 logging.info("Best Performance at end of training ")
                 logging.info("a_mAP visibility all: " +  str(a_mAP))
                 logging.info("a_mAP visibility all per class: " +  str( a_mAP_per_class))
-                logging.info("a_mAP visibility visible: " +  str( a_mAP_visible))
-                logging.info("a_mAP visibility visible per class: " +  str( a_mAP_per_class_visible))
-                logging.info("a_mAP visibility unshown: " +  str( a_mAP_unshown))
-                logging.info("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
+                #logging.info("a_mAP visibility visible: " +  str( a_mAP_visible))
+                #logging.info("a_mAP visibility visible per class: " +  str( a_mAP_per_class_visible))
+                #logging.info("a_mAP visibility unshown: " +  str( a_mAP_unshown))
+                #logging.info("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
 
     return
 
