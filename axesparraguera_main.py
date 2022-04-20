@@ -113,41 +113,31 @@ def main(args):
     model.load_state_dict(checkpoint['state_dict'])
 
     # test on multiple splits [test/challenge]
-    
-    NMS_windows = [5, 7, 10, 12, 15, 17, 20, 22, 25, 30]
-    tresholds = [0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
-    
     for split in args.split_test:
         dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
         print('Test loader')
         test_loader = torch.utils.data.DataLoader(dataset_Test,
             batch_size=1, shuffle=False,
             num_workers=1, pin_memory=True)
-        
-        for window in NMS_windows:
-            for treshold in tresholds:
-                print('---------------------------------------------------------')
-                print('NMS windos: ' + str(window))
-                print('treshold: ' + str(treshold))
-        
-                results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=window, NMS_threshold=treshold)
-                if results is None:
-                    continue
-        
-                a_mAP = results["a_mAP"]
-                a_mAP_per_class = results["a_mAP_per_class"]
-                a_mAP_visible = results["a_mAP_visible"]
-                a_mAP_per_class_visible = results["a_mAP_per_class_visible"]
-                a_mAP_unshown = results["a_mAP_unshown"]
-                a_mAP_per_class_unshown = results["a_mAP_per_class_unshown"]
-        
-                logging.info("Best Performance at end of training ")
-                logging.info("a_mAP visibility all: " +  str(a_mAP))
-                logging.info("a_mAP visibility all per class: " +  str( a_mAP_per_class))
-                #logging.info("a_mAP visibility visible: " +  str( a_mAP_visible))
-                #logging.info("a_mAP visibility visible per class: " +  str( a_mAP_per_class_visible))
-                #logging.info("a_mAP visibility unshown: " +  str( a_mAP_unshown))
-                #logging.info("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
+
+        results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
+        if results is None:
+            continue
+
+        a_mAP = results["a_mAP"]
+        a_mAP_per_class = results["a_mAP_per_class"]
+        a_mAP_visible = results["a_mAP_visible"]
+        a_mAP_per_class_visible = results["a_mAP_per_class_visible"]
+        a_mAP_unshown = results["a_mAP_unshown"]
+        a_mAP_per_class_unshown = results["a_mAP_per_class_unshown"]
+
+        logging.info("Best Performance at end of training ")
+        logging.info("a_mAP visibility all: " +  str(a_mAP))
+        logging.info("a_mAP visibility all per class: " +  str( a_mAP_per_class))
+        logging.info("a_mAP visibility visible: " +  str( a_mAP_visible))
+        logging.info("a_mAP visibility visible per class: " +  str( a_mAP_per_class_visible))
+        logging.info("a_mAP visibility unshown: " +  str( a_mAP_unshown))
+        logging.info("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
 
     return
 
