@@ -23,7 +23,7 @@ def trainer(path, train_loader,
             val_metric_loader,
             model,
             optimizer,
-            scheduler,
+            #scheduler,
             criterion,
             model_name,
             max_epochs=1000,
@@ -33,7 +33,7 @@ def trainer(path, train_loader,
 
     best_loss = 9e99
 
-    for epoch in range(max_epochs):
+    for epoch in range(30):
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
@@ -72,17 +72,17 @@ def trainer(path, train_loader,
                          str(epoch+1) + " -> " + str(performance_validation))
 
         # Reduce LR on Plateau after patience reached
-        prevLR = optimizer.param_groups[0]['lr']
-        scheduler.step(loss_validation)
-        currLR = optimizer.param_groups[0]['lr']
-        if (currLR is not prevLR and scheduler.num_bad_epochs == 0):
-            logging.info("Plateau Reached!")
+        #prevLR = optimizer.param_groups[0]['lr']
+        #scheduler.step(loss_validation)
+        #currLR = optimizer.param_groups[0]['lr']
+        #if (currLR is not prevLR and scheduler.num_bad_epochs == 0):
+        #    logging.info("Plateau Reached!")
 
-        if (prevLR < 2 * scheduler.eps and
-                scheduler.num_bad_epochs >= scheduler.patience):
-            logging.info(
-                "Plateau Reached and no more reduction -> Exiting Loop")
-            break
+        #if (prevLR < 2 * scheduler.eps and
+        #        scheduler.num_bad_epochs >= scheduler.patience):
+        #    logging.info(
+        #        "Plateau Reached and no more reduction -> Exiting Loop")
+        #    break
 
     return
 
@@ -154,16 +154,18 @@ def train(path,
                 outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
         
                 # hand written NLL criterion
-                lossF = criterion(labels, outputs_mix)
-                lossA = criterion(labels, outputsA)
-                lossB1 = criterion(labels, outputsB1)
-                lossB2 = criterion(labels, outputsB2)
-                lossB3 = criterion(labels, outputsB3)
-                lossB4 = criterion(labels, outputsB4)
-                lossB5 = criterion(labels, outputsB5)
-                
-                loss = 0.7 * lossF + 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
-                
+                if epoch <= 20:
+                    lossF = criterion(labels, outputs_mix)
+                    lossA = criterion(labels, outputsA)
+                    lossB1 = criterion(labels, outputsB1)
+                    lossB2 = criterion(labels, outputsB2)
+                    lossB3 = criterion(labels, outputsB3)
+                    lossB4 = criterion(labels, outputsB4)
+                    lossB5 = criterion(labels, outputsB5)
+                    
+                    loss = 0.7 * lossF + 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
+                else:
+                    loss = criterion(labels, outputs_mix)
                 
                 # measure accuracy and record loss
                 losses.update(loss.item(), feats1.size(0) + feats2.size(0))
