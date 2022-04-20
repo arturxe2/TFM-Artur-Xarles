@@ -191,13 +191,14 @@ def train(path,
                 desc += f'(it:{data_time.val:.3f}s) '
                 desc += f'Loss {losses.avg:.4e} '
                 t.set_description(desc)
-    print('Total loss: ' + str(lossF))
-    print('Audio loss: ' + str(lossA))
-    print('Baidu1 loss: ' + str(lossB1))
-    print('Baidu2 loss: ' + str(lossB2))
-    print('Baidu3 loss: ' + str(lossB3))
-    print('Baidu4 loss: ' + str(lossB4))
-    print('Baidu5 loss: ' + str(lossB5))
+    if epoch <= 10:
+        print('Total loss: ' + str(lossF))
+        print('Audio loss: ' + str(lossA))
+        print('Baidu1 loss: ' + str(lossB1))
+        print('Baidu2 loss: ' + str(lossB2))
+        print('Baidu3 loss: ' + str(lossB3))
+        print('Baidu4 loss: ' + str(lossB4))
+        print('Baidu5 loss: ' + str(lossB5))
     return losses.avg
 
 
