@@ -33,7 +33,7 @@ def trainer(path, train_loader,
 
     best_loss = 9e99
 
-    for epoch in range(30):
+    for epoch in range(20):
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
@@ -154,7 +154,7 @@ def train(path,
                 outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
         
                 # hand written NLL criterion
-                if epoch <= 20:
+                if epoch <= 10:
                     lossF = criterion(labels, outputs_mix)
                     lossA = criterion(labels, outputsA)
                     lossB1 = criterion(labels, outputsB1)
