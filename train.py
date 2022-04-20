@@ -24,7 +24,7 @@ def trainer(path, train_loader,
             model,
             optimizer,
             #scheduler,
-            criterion,
+            criterion, criterion2,
             model_name,
             max_epochs=1000,
             evaluation_frequency=20):
@@ -33,11 +33,11 @@ def trainer(path, train_loader,
 
     best_loss = 9e99
 
-    for epoch in range(20):
+    for epoch in range(10):
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
-        loss_training = train(path, train_loader, model, criterion,
+        loss_training = train(path, train_loader, model, criterion, criterion2,
                               optimizer, epoch + 1, train=True)
 
         # evaluate on validation set
@@ -90,7 +90,7 @@ def trainer(path, train_loader,
 def train(path,
           dataloader,
           model,
-          criterion,
+          criterion, criterion2,
           optimizer,
           epoch,
           train=False):
@@ -154,7 +154,7 @@ def train(path,
                 outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
         
                 # hand written NLL criterion
-                if epoch <= 10:
+                if epoch <= 5:
                     lossF = criterion(labels, outputs_mix)
                     lossA = criterion(labels, outputsA)
                     lossB1 = criterion(labels, outputsB1)
@@ -165,7 +165,7 @@ def train(path,
                     
                     loss = 0.7 * lossF + 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
                 else:
-                    loss = criterion(labels, outputs_mix)
+                    loss = criterion2(labels, outputs_mix)
                 
                 # measure accuracy and record loss
                 losses.update(loss.item(), feats1.size(0) + feats2.size(0))

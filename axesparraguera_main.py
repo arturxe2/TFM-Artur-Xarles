@@ -93,6 +93,7 @@ def main(args):
         class_weights1 = torch.from_numpy(dataset_Train.class_weights1).type('torch.DoubleTensor').cuda()
         #class_weights2 = torch.from_numpy(dataset_Train.class_weights2).type('torch.DoubleTensor').cuda()
         criterion = NLLLoss_weights(class_weights1)
+        criterion2 = NLLLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
                                     betas=(0.9, 0.999), eps=1e-08, 
                                     weight_decay=1e-5, amsgrad=True)
@@ -104,7 +105,7 @@ def main(args):
         
         # start training
         trainer(args.SoccerNet_path, train_loader, val_loader, val_metric_loader, 
-                model, optimizer, criterion,
+                model, optimizer, criterion, criterion2,
                 model_name=args.model_name,
                 max_epochs=args.max_epochs, evaluation_frequency=args.evaluation_frequency)
 
