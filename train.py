@@ -33,7 +33,7 @@ def trainer(path, train_loader,
 
     best_loss = 9e99
 
-    for epoch in range(10):
+    for epoch in range(22):
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
@@ -154,7 +154,7 @@ def train(path,
                 outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
         
                 # hand written NLL criterion
-                if epoch <= 5:
+                if epoch <= 11:
                     lossF = criterion(labels, outputs_mix)
                     lossA = criterion(labels, outputsA)
                     lossB1 = criterion(labels, outputsB1)
@@ -191,7 +191,7 @@ def train(path,
                 desc += f'(it:{data_time.val:.3f}s) '
                 desc += f'Loss {losses.avg:.4e} '
                 t.set_description(desc)
-    if epoch <= 5:
+    if epoch <= 1:
         print('Total loss: ' + str(lossF))
         print('Audio loss: ' + str(lossA))
         print('Baidu1 loss: ' + str(lossB1))
