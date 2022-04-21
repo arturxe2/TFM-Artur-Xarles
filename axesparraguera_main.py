@@ -93,7 +93,6 @@ def main(args):
         class_weights1 = torch.from_numpy(dataset_Train.class_weights1).type('torch.DoubleTensor').cuda()
         #class_weights2 = torch.from_numpy(dataset_Train.class_weights2).type('torch.DoubleTensor').cuda()
         criterion = NLLLoss_weights(class_weights1)
-        criterion2 = NLLLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
                                     betas=(0.9, 0.999), eps=1e-08, 
                                     weight_decay=1e-5, amsgrad=True)
@@ -105,7 +104,7 @@ def main(args):
         
         # start training
         trainer(args.SoccerNet_path, train_loader, val_loader, val_metric_loader, 
-                model, optimizer, criterion, criterion2,
+                model, optimizer, criterion, patience=args.patience,
                 model_name=args.model_name,
                 max_epochs=args.max_epochs, evaluation_frequency=args.evaluation_frequency)
 
@@ -171,7 +170,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', required=False, type=int,   default=32,     help='Batch size' )
     parser.add_argument('--LR',       required=False, type=float,   default=1e-03, help='Learning Rate' )
     parser.add_argument('--LRe',       required=False, type=float,   default=1e-06, help='Learning Rate end' )
-    parser.add_argument('--patience', required=False, type=int,   default=10,     help='Patience before reducing LR (ReduceLROnPlateau)' )
+    parser.add_argument('--patience', required=False, type=int,   default=4,     help='Patience before reducing LR (ReduceLROnPlateau)' )
 
     parser.add_argument('--GPU',        required=False, type=int,   default=-1,     help='ID of the GPU to use' )
     parser.add_argument('--max_num_worker',   required=False, type=int,   default=4, help='number of worker to load data')

@@ -24,7 +24,8 @@ def trainer(path, train_loader,
             model,
             optimizer,
             #scheduler,
-            criterion, criterion2,
+            criterion,
+            patience,
             model_name,
             max_epochs=1000,
             evaluation_frequency=20):
@@ -35,18 +36,18 @@ def trainer(path, train_loader,
 
     n_bad_epochs = 0
     for epoch in range(22):
-        if n_bad_epochs >= 3:
+        if n_bad_epochs >= patience:
             break
         
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
-        loss_training = train(path, train_loader, model, criterion, criterion2,
+        loss_training = train(path, train_loader, model, criterion,
                               optimizer, epoch + 1, train=True)
 
         # evaluate on validation set
         loss_validation = train(
-            path, val_loader, model, criterion, criterion2, optimizer, epoch + 1, train=False)
+            path, val_loader, model, criterion, optimizer, epoch + 1, train=False)
 
         state = {
             'epoch': epoch + 1,
@@ -97,7 +98,7 @@ def trainer(path, train_loader,
 def train(path,
           dataloader,
           model,
-          criterion, criterion2,
+          criterion,
           optimizer,
           epoch,
           train=False):
