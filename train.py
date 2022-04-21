@@ -31,23 +31,30 @@ def trainer(path, train_loader,
             evaluation_frequency=20):
 
     logging.info("start training")
+    training_stage = 0
 
     best_loss = 9e99
 
     n_bad_epochs = 0
-    for epoch in range(22):
+    for epoch in range(max_epochs):
         if n_bad_epochs >= patience:
-            break
+            if training_stage == 0:
+                training_stage += 1
+            else:
+                break
+
         
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
-        loss_training = train(path, train_loader, model, criterion,
-                              optimizer, epoch + 1, train=True)
+        loss_training = train(path, train_loader, model, criterion, 
+                              optimizer, epoch + 1, training_stage = training_stage,
+                              train=True)
 
         # evaluate on validation set
         loss_validation = train(
-            path, val_loader, model, criterion, optimizer, epoch + 1, train=False)
+            path, val_loader, model, criterion, optimizer, epoch + 1, 
+            training_stage = training_stage, train=False)
 
         state = {
             'epoch': epoch + 1,
@@ -101,6 +108,7 @@ def train(path,
           criterion,
           optimizer,
           epoch,
+          training_stage = 0,
           train=False):
 
     batch_time = AverageMeter()
@@ -162,7 +170,7 @@ def train(path,
                 outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
         
                 # hand written NLL criterion
-                if epoch <= 10:
+                if training_stage == 0:
                     lossF = criterion(labels, outputs_mix)
                     lossA = criterion(labels, outputsA)
                     lossB1 = criterion(labels, outputsB1)
@@ -199,7 +207,7 @@ def train(path,
                 desc += f'(it:{data_time.val:.3f}s) '
                 desc += f'Loss {losses.avg:.4e} '
                 t.set_description(desc)
-    if epoch <= 10:
+    if training_stage == 0:
         print('Total loss: ' + str(lossF))
         print('Audio loss: ' + str(lossA))
         print('Baidu1 loss: ' + str(lossB1))
