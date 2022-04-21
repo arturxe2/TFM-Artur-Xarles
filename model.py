@@ -132,7 +132,7 @@ class Model(nn.Module):
             self.encoderB5 = nn.TransformerEncoder(encoder_layerB5, 1)
             
             #Segons encoders
-            '''
+            
             encoder_layerA_2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.encoderA_2 = nn.TransformerEncoder(encoder_layerA_2, 1) 
             encoder_layerB1_2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
@@ -145,7 +145,7 @@ class Model(nn.Module):
             self.encoderB4_2 = nn.TransformerEncoder(encoder_layerB4_2, 1)
             encoder_layerB5_2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.encoderB5_2 = nn.TransformerEncoder(encoder_layerB5_2, 1)
-            '''
+            
             
             #Reduce for each feature vector to 18
             self.pool_layerA = nn.MaxPool1d(chunk_size * 2, stride = 1)
@@ -299,14 +299,14 @@ class Model(nn.Module):
             inputsB5 = self.encoderB5(inputsB5)
             
             #Transformers 2
-            '''
+            
             inputsA = self.encoderA_2(inputsA)
             inputsB1 = self.encoderB1_2(inputsB1)
             inputsB2 = self.encoderB2_2(inputsB2)
             inputsB3 = self.encoderB3_2(inputsB3)
             inputsB4 = self.encoderB4_2(inputsB4)
             inputsB5 = self.encoderB5_2(inputsB5)
-            '''
+            
             inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
             
             
