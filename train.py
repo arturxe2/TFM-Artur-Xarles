@@ -33,7 +33,11 @@ def trainer(path, train_loader,
 
     best_loss = 9e99
 
+    n_bad_epochs = 0
     for epoch in range(22):
+        if n_bad_epochs >= 3:
+            break
+        
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
@@ -58,8 +62,11 @@ def trainer(path, train_loader,
 
         # Save the best model based on loss only if the evaluation frequency too long
         if is_better:
+            n_bad_epochs = 0
             torch.save(state, best_model_path)
-
+        
+        else:
+            n_bad_epochs += 1
         # Test the model on the validation set
         if epoch % evaluation_frequency == 0 and epoch != 0:
             performance_validation = test(
@@ -154,7 +161,7 @@ def train(path,
                 outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
         
                 # hand written NLL criterion
-                if epoch <= 11:
+                if epoch <= 10:
                     lossF = criterion(labels, outputs_mix)
                     lossA = criterion(labels, outputsA)
                     lossB1 = criterion(labels, outputsB1)
@@ -191,7 +198,7 @@ def train(path,
                 desc += f'(it:{data_time.val:.3f}s) '
                 desc += f'Loss {losses.avg:.4e} '
                 t.set_description(desc)
-    if epoch <= 1:
+    if epoch <= 10:
         print('Total loss: ' + str(lossF))
         print('Audio loss: ' + str(lossA))
         print('Baidu1 loss: ' + str(lossB1))
