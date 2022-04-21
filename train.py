@@ -165,7 +165,7 @@ def train(path,
                     
                     loss = 0.7 * lossF + 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
                 else:
-                    loss = criterion2(labels, outputs_mix)
+                    loss = criterion(labels, outputs_mix)
                 
                 # measure accuracy and record loss
                 losses.update(loss.item(), feats1.size(0) + feats2.size(0))
