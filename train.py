@@ -40,6 +40,7 @@ def trainer(path, train_loader,
         if n_bad_epochs >= patience:
             if training_stage == 0:
                 training_stage += 1
+                break
             else:
                 break
 
