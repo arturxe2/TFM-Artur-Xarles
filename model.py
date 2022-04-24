@@ -167,8 +167,6 @@ class Model(nn.Module):
             self.encoder_mix = nn.TransformerEncoder(encoder_layer_mix, 1)
             encoder_layer_mix_2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.encoder_mix_2 = nn.TransformerEncoder(encoder_layer_mix_2, 1)
-            encoder_layer_mix_3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoder_mix_3 = nn.TransformerEncoder(encoder_layer_mix_3, 1)
             
             #Reduce mix to 18
             self.pool_layer_mix = nn.MaxPool1d(chunk_size*(2+1*5), stride=1)
@@ -317,7 +315,6 @@ class Model(nn.Module):
             #Transformer mix
             inputs_mix = self.encoder_mix(inputs_mix) #(B x 256 x chunk_size * 7)
             inputs_mix = self.encoder_mix_2(inputs_mix)
-            inputs_mix = self.encoder_mix_3(inputs_mix)
             
             inputsA = inputsA.permute((0, 2, 1))
             inputsB1 = inputsB1.permute((0, 2, 1))
