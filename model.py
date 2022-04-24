@@ -146,20 +146,6 @@ class Model(nn.Module):
             encoder_layerB5_2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
             self.encoderB5_2 = nn.TransformerEncoder(encoder_layerB5_2, 1)
             
-            #Tercers encoders
-            
-            encoder_layerA_3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoderA_3 = nn.TransformerEncoder(encoder_layerA_3, 1) 
-            encoder_layerB1_3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoderB1_3 = nn.TransformerEncoder(encoder_layerB1_3, 1)
-            encoder_layerB2_3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoderB2_3 = nn.TransformerEncoder(encoder_layerB2_3, 1)
-            encoder_layerB3_3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoderB3_3 = nn.TransformerEncoder(encoder_layerB3_3, 1)
-            encoder_layerB4_3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoderB4_3 = nn.TransformerEncoder(encoder_layerB4_3, 1)
-            encoder_layerB5_3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoderB5_3 = nn.TransformerEncoder(encoder_layerB5_3, 1)
             
             
             #Reduce for each feature vector to 18
@@ -324,14 +310,6 @@ class Model(nn.Module):
             inputsB4 = self.encoderB4_2(inputsB4)
             inputsB5 = self.encoderB5_2(inputsB5)
             
-            #Transformers 3
-            
-            inputsA = self.encoderA_3(inputsA)
-            inputsB1 = self.encoderB1_3(inputsB1)
-            inputsB2 = self.encoderB2_3(inputsB2)
-            inputsB3 = self.encoderB3_3(inputsB3)
-            inputsB4 = self.encoderB4_3(inputsB4)
-            inputsB5 = self.encoderB5_3(inputsB5)
             
             inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
             
