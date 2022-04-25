@@ -169,7 +169,7 @@ class Model(nn.Module):
             self.encoder_mix_2 = nn.TransformerEncoder(encoder_layer_mix_2, 1)
             
             #Reduce mix to 18
-            self.pool_layer_mix = nn.MaxPool1d(chunk_size*(1*5), stride=1)
+            self.pool_layer_mix = nn.MaxPool1d(chunk_size*(2+1*5), stride=1)
             self.fc_mix = nn.Linear(512, self.num_classes+1)
             
 
@@ -292,29 +292,29 @@ class Model(nn.Module):
             inputsB5 = inputsB5.permute((0, 2, 1))
             
             #Transformers 1
-            inputsA = self.encoderA(inputsA)
-            inputsB1 = self.encoderB1(inputsB1)
-            inputsB2 = self.encoderB2(inputsB2)
-            inputsB3 = self.encoderB3(inputsB3)
-            inputsB4 = self.encoderB4(inputsB4)
-            inputsB5 = self.encoderB5(inputsB5)
+            inputsA = self.encoderA(self.drop(inputsA))
+            inputsB1 = self.encoderB1(self.drop(inputsB1))
+            inputsB2 = self.encoderB2(self.drop(inputsB2))
+            inputsB3 = self.encoderB3(self.drop(inputsB3))
+            inputsB4 = self.encoderB4(self.drop(inputsB4))
+            inputsB5 = self.encoderB5(self.drop(inputsB5))
             
             #Transformers 2
             
-            inputsA = self.encoderA_2(inputsA)
-            inputsB1 = self.encoderB1_2(inputsB1)
-            inputsB2 = self.encoderB2_2(inputsB2)
-            inputsB3 = self.encoderB3_2(inputsB3)
-            inputsB4 = self.encoderB4_2(inputsB4)
-            inputsB5 = self.encoderB5_2(inputsB5)
+            inputsA = self.encoderA_2(self.drop(inputsA))
+            inputsB1 = self.encoderB1_2(self.drop(inputsB1))
+            inputsB2 = self.encoderB2_2(self.drop(inputsB2))
+            inputsB3 = self.encoderB3_2(self.drop(inputsB3))
+            inputsB4 = self.encoderB4_2(self.drop(inputsB4))
+            inputsB5 = self.encoderB5_2(self.drop(inputsB5))
             
             
-            inputs_mix = torch.cat((inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
+            inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
             
             
             #Transformer mix
-            inputs_mix = self.encoder_mix(inputs_mix) #(B x 256 x chunk_size * 7)
-            inputs_mix = self.encoder_mix_2(inputs_mix)
+            inputs_mix = self.encoder_mix(self.drop(inputs_mix)) #(B x 256 x chunk_size * 7)
+            inputs_mix = self.encoder_mix_2(self.drop(inputs_mix))
             
             inputsA = inputsA.permute((0, 2, 1))
             inputsB1 = inputsB1.permute((0, 2, 1))
