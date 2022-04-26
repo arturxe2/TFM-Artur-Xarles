@@ -548,8 +548,14 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
         
                             nms_from = int(np.maximum(-(window/2)+max_index,0))
                             nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
+                            
+                            print(nms_from)
+                            print(nms_to)
+                            
                             best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
-        
+                            
+                            print(best_index)
+                            
                             indexes.append(round(best_index))
                             detections_tmp[nms_from:nms_to] = -1
                         return np.transpose([indexes, MaxValues])
