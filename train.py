@@ -557,7 +557,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                             print(best_index)
                             
                             indexes.append(round(best_index))
-                            detections_tmp[nms_from:nms_to] = -1
+                            detections_tmp[nms_from:nms_to] = 0
                         return np.transpose([indexes, MaxValues])
                     
                     def get_spot_from_BNMS2(Input, window, thresh= 0.0, min_window = 0):
