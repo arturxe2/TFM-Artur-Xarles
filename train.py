@@ -516,7 +516,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
     
     
     
-                    def get_spot_from_NMS(Input, window, thresh=0.0):
+                    def get_spot_from_NMS(Input, window, thresh=0.0, min_window=3):
     
                         detections_tmp = np.copy(Input)
                         # res = np.empty(np.size(Input), dtype=bool)
@@ -527,12 +527,15 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                             # Get the max remaining index and value
                             max_value = np.max(detections_tmp)
                             max_index = np.argmax(detections_tmp)
-                            MaxValues.append(max_value)
-                            indexes.append(max_index)
+                            
                             # detections_NMS[max_index,i] = max_value
     
                             nms_from = int(np.maximum(-(window/2)+max_index,0))
                             nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
+                            
+                            if (detections_tmp[nms_from:nms_to] >= thresh).sum() > min_window:
+                                MaxValues.append(max_value)
+                                indexes.append(max_index)
                             detections_tmp[nms_from:nms_to] = -1
     
                         return np.transpose([indexes, MaxValues])
@@ -585,7 +588,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                         return np.transpose([indexes, MaxValues])
     
                     framerate = dataloader.dataset.framerate
-                    get_spot = get_spot_from_BNMS2
+                    get_spot = get_spot_from_NMS
     
                     json_data = dict()
                     json_data["UrlLocal"] = game_ID
@@ -594,7 +597,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
                         for l in range(dataloader.dataset.num_classes):
                             spots = get_spot(
-                                timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window = 0)
+                                timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window = 3)
                             for spot in spots:
                                 # print("spot", int(spot[0]), spot[1], spot)
                                 frame_index = int(spot[0])
