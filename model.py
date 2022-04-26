@@ -301,20 +301,20 @@ class Model(nn.Module):
             
             #Transformers 2
             
-            inputsA = self.encoderA_2(self.drop(inputsA))
-            inputsB1 = self.encoderB1_2(self.drop(inputsB1))
-            inputsB2 = self.encoderB2_2(self.drop(inputsB2))
-            inputsB3 = self.encoderB3_2(self.drop(inputsB3))
-            inputsB4 = self.encoderB4_2(self.drop(inputsB4))
-            inputsB5 = self.encoderB5_2(self.drop(inputsB5))
+            inputsA = self.encoderA_2(inputsA)
+            inputsB1 = self.encoderB1_2(inputsB1)
+            inputsB2 = self.encoderB2_2(inputsB2)
+            inputsB3 = self.encoderB3_2(inputsB3)
+            inputsB4 = self.encoderB4_2(inputsB4)
+            inputsB5 = self.encoderB5_2(inputsB5)
             
             
             inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
             
             
             #Transformer mix
-            inputs_mix = self.encoder_mix(self.drop(inputs_mix)) #(B x 256 x chunk_size * 7)
-            inputs_mix = self.encoder_mix_2(self.drop(inputs_mix))
+            inputs_mix = self.encoder_mix(inputs_mix) #(B x 256 x chunk_size * 7)
+            inputs_mix = self.encoder_mix_2(inputs_mix)
             
             inputsA = inputsA.permute((0, 2, 1))
             inputsB1 = inputsB1.permute((0, 2, 1))
