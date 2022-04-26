@@ -406,9 +406,26 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                             detections_tmp[nms_from:nms_to] = -1
     
                         return np.transpose([indexes, MaxValues])
+                    
+                    def get_spot_from_BNMS(Input, window, thresh= 0.0):
+                        detections_tmp = np.copy(Input)
+                        indexes = []
+                        MaxValues = []
+                        while(np.max(detections_tmp) >= thresh):
+                            max_value = np.max(detections_tmp)
+                            max_index = np.argmax(detections_tmp)
+                            MaxValues.append(max_value)
+        
+                            nms_from = int(np.maximum(-(window/2)+max_index,0))
+                            nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
+                            best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
+        
+                            indexes.append(round(best_index))
+                            detections_tmp[nms_from:nms_to] = -1
+                        return np.transpose([indexes, MaxValues])
     
                     framerate = dataloader.dataset.framerate
-                    get_spot = get_spot_from_NMS
+                    get_spot = get_spot_from_BNMS
     
                     json_data = dict()
                     json_data["UrlLocal"] = game_ID
