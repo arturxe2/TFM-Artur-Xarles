@@ -583,7 +583,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
                         for l in range(dataloader.dataset.num_classes):
                             spots = get_spot(
-                                timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window = 3)
+                                timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window = 0)
                             for spot in spots:
                                 # print("spot", int(spot[0]), spot[1], spot)
                                 frame_index = int(spot[0])
