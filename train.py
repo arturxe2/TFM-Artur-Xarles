@@ -7,7 +7,7 @@ import time
 from tqdm import tqdm
 import torch
 import numpy as np
-
+import math
 import sklearn
 import sklearn.metrics
 from sklearn.metrics import average_precision_score
@@ -555,7 +555,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                             detections_tmp[nms_from:nms_to] = 0
                         return np.transpose([indexes, MaxValues])
                     
-                    def get_spot_from_BNMS2(Input, window, thresh= 0.0, min_window = 0):
+                    def get_spot_from_BNMS2(Input, window, thresh= 0.0, min_window = 0, max_window = 20):
                         detections_tmp = np.copy(Input)
                         not_indexes = ([i for i, x in enumerate(detections_tmp < thresh) if x])
                         if len(not_indexes) == 0:
@@ -563,13 +563,24 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                         indexes = []
                         MaxValues = []
                         for i in range(len(not_indexes)-1):
-                            if (not_indexes[i+1] - not_indexes[i]) > (min_window+1):
-                                nms_from = not_indexes[i] +1
-                                nms_to = not_indexes[i+1]
-                                max_value = np.mean(detections_tmp[nms_from:nms_to])
-                                best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
-                                indexes.append(round(best_index))
-                                MaxValues.append(max_value)
+                            action_length = not_indexes[i+1] - not_indexes[i] -1
+                            if (action_length) > (min_window):
+                                if action_length > max_window:
+                                    splits = (math.ceil(action_length / max_window))
+                                    for j in range(splits):
+                                        nms_from = not_indexes[i]+1+j*max_window
+                                        nms_to = np.minimum(not_indexes[i]+(j+1)*max_window, len(detections_tmp))
+                                        max_value = np.mean(detections_tmp[nms_from:nms_to])
+                                        best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
+                                        indexes.append(round(best_index))
+                                        MaxValues.append(max_value)
+                                else:
+                                    nms_from = not_indexes[i] +1
+                                    nms_to = not_indexes[i+1]
+                                    max_value = np.mean(detections_tmp[nms_from:nms_to])
+                                    best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
+                                    indexes.append(round(best_index))
+                                    MaxValues.append(max_value)
             
                         return np.transpose([indexes, MaxValues])
     
