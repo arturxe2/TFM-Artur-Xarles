@@ -31,12 +31,12 @@ print('starting program')
 class GenerateWav(Dataset):
     def __init__(self, path, features="224p.mkv", split = ["train", "valid", "test", "challenge"]):
         self.path = path
+        self.features = features
         self.listGames = getListGames(split)
         for game in tqdm(self.listGames):
             print(game)
 
             # Load wav audio file
-            print(os.path.join(self.path, game, "1_", self.features))
             
             my_clip_1 = mp.VideoFileClip(os.path.join(self.path, game, "1_", self.features))
             my_clip_1.audio.write_audiofile(os.path.join(self.path, game, "1_audio.wav"))
