@@ -33,6 +33,7 @@ class GenerateWav(Dataset):
         self.path = path
         self.listGames = getListGames(split)
         for game in tqdm(self.listGames):
+            print(game)
 
             # Load wav audio file
             my_clip_1 = mp.VideoFileClip(os.path.join(self.path, game, "1_" + self.features))
