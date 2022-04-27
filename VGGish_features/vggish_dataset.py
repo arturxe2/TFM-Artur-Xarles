@@ -36,6 +36,7 @@ class GenerateWav(Dataset):
             print(game)
 
             # Load wav audio file
+            print(os.path.join(self.path, game, "1_" + self.features))
             my_clip_1 = mp.VideoFileClip(os.path.join(self.path, game, "1_" + self.features))
             my_clip_1.audio.write_audiofile(os.path.join(self.path, game, "1_audio.wav"))
             
