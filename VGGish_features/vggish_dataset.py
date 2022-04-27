@@ -28,8 +28,22 @@ from vggish_input import *
 
 print('starting program')
 
+class GenerateWav(Dataset):
+    def __init__(self, path, features="224p.mkv"):
+        self.path = path
+        self.listGames = getListGames(split)
+        for game in tqdm(self.listGames):
 
+            # Load wav audio file
+            my_clip_1 = mp.VideoFileClip(os.path.join(self.path, game, "1_" + self.features))
+            my_clip_1.audio.write_audiofile(os.path.join(self.path, game, "1_audio.wav"))
+            
+            my_clip_2 = mp.VideoFileClip(os.path.join(self.path, game, "2_" + self.features))
+            my_clip_2.audio.write_audiofile(os.path.join(self.path, game, "2_audio.wav"))
 
+        
+        
+        
 class AudioFeatures(Dataset):
     def __init__(self, path, features="224p.wav", split=["train"], version=2, 
                 framerate=44100, chunk_size=42336, augment = False):
@@ -138,5 +152,7 @@ class AudioFeatures(Dataset):
         
         print(self.feats.shape)
         print(self.game_labels.shape)
+        
+GenerateWav('/data-net/datasets/SoccerNetv2/videos_lowres')
 
-audios = AudioFeatures('/data-net/datasets/SoccerNetv2/videos_lowres', )
+#audios = AudioFeatures('/data-net/datasets/SoccerNetv2/videos_lowres')
