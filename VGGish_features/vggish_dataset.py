@@ -26,6 +26,8 @@ from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIO
 from mel_features import *
 from vggish_input import *
 
+print('starting program')
+
 
 
 class AudioFeatures(Dataset):
@@ -133,5 +135,5 @@ class AudioFeatures(Dataset):
         
         print(self.feats.shape)
         print(self.game_labels.shape)
-            
+
 audios = AudioFeatures('/data-net/datasets/SoccerNetv2/videos_lowres', )
