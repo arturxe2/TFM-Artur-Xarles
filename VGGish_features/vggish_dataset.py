@@ -29,7 +29,7 @@ from vggish_input import *
 print('starting program')
 
 class GenerateWav(Dataset):
-    def __init__(self, path, features="224p.mkv"):
+    def __init__(self, path, features="224p.mkv", split = ["train", "valid", "test", "challenge"]):
         self.path = path
         self.listGames = getListGames(split)
         for game in tqdm(self.listGames):
