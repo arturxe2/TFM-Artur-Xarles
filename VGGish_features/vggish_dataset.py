@@ -15,7 +15,7 @@ import torch
 import logging
 import json
 import random
-import moviepy.editor
+import moviepy.editor as mp
 import soundfile as sf
 import json
 import random
