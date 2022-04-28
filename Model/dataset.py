@@ -5,6 +5,7 @@ import random
 # import pandas as pd
 import os
 import time
+import pickle
 
 
 from tqdm import tqdm
@@ -315,13 +316,15 @@ class SoccerNetClipsTrain(Dataset):
     def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
                  path_audio = '/home-net/axesparraguera/data/VGGFeatures', 
                  path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
-                 features_baidu = 'baidu_soccer_embeddings.npy', 
+                 path_store = "/data-local/data3-ssd/axesparraguera",
+                 features_baidu = 'baidu_soccer_embeddings.npy',
                  features_audio = 'VGGish.npy', stride = 1, split=["train"], version=2, 
                 framerate=1, chunk_size=7, augment = False):
         
         self.path_baidu = path_baidu
         self.path_audio = path_audio
         self.path_labels = path_labels
+        self.path_store = path_store
         self.features_baidu = features_baidu
         self.features_audio = features_audio
         
@@ -436,21 +439,30 @@ class SoccerNetClipsTrain(Dataset):
                     continue
                 if half == 2 and frame//stride>=label_half2.shape[0]:
                     continue
-                print('------------------------------------------')
-                print(frame)
                 a = frame // stride
-                print(a)
+
                 if half == 1:
                     for i in range(self.chunk_size // stride):
                         print(max(a - self.chunk_size // stride + 1 + i, 0))
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
                     #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
-                continue
+
                 if half == 2:
                     for i in range(self.chunk_size // stride):
                         label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
                         label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
+            
+            path = os.path.join(self.path_store, game)
+            exists = os.path.exists(path)
+            if not exists:
+                os.makedirs(path)
+            
+            for i in range(feat_half1B.shape[0]):
+                with open(path + '/featuresB_chunk' + str(i) + '.pickle', 'wb') as handle:
+                    pickle.dump(feat_half1B[i, :, :], handle)
+                print('got it')
+                break;
             
             if self.path != 'Baidu+ResNet':
                 self.game_feats.append(feat_half1)
