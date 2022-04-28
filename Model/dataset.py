@@ -40,7 +40,7 @@ def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
         print("afterpadding", feats.shape)
         # nn.ZeroPad2d(2)
 
-    idx = torch.arange(start=0, end=feats.shape[0]-1, step=stride)
+    idx = torch.arange(start=0, end=feats.shape[0], step=stride)
     idxs = []
     for i in torch.arange(-off, clip_length-off):
     # for i in torch.arange(0, clip_length):
