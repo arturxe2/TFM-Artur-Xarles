@@ -461,6 +461,7 @@ class SoccerNetClipsTrain(Dataset):
                 os.makedirs(path)
             
             #Half1
+            print('Storing 1st half chunks...')
             for i in range(feat_half1B.shape[0]):
                 
                 with open(path + '/half1_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
@@ -473,6 +474,7 @@ class SoccerNetClipsTrain(Dataset):
                 self.path_list.append(path + '/half1_chunk' + str(i) + '_')
                 
             #Half2
+            print('Storing 2nd half chunks...')
             for i in range(feat_half2B.shape[0]):
                 
                 with open(path + '/half2_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
@@ -484,7 +486,8 @@ class SoccerNetClipsTrain(Dataset):
                 
                 self.path_list.append(path + '/half2_chunk' + str(i) + '_')
                 
-            
+        with open(path + '/chunk_list.pkl', 'wb') as f:
+            pickle.dump(self.path_list, f)    
         #self.weights = (self.game_labels * class_weights).sum(axis = 1)
         #print(self.weights.shape)
 
