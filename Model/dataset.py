@@ -39,8 +39,8 @@ def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
         feats = m(feats)
         print("afterpadding", feats.shape)
         # nn.ZeroPad2d(2)
-    #there was a -1 after feats.shape[0]
-    idx = torch.arange(start=0, end=feats.shape[0], step=stride)
+
+    idx = torch.arange(start=0, end=feats.shape[0]-1, step=stride)
     idxs = []
     for i in torch.arange(-off, clip_length-off):
     # for i in torch.arange(0, clip_length):
@@ -400,14 +400,7 @@ class SoccerNetClipsTrain(Dataset):
             feat_half1A = feats2clip(torch.from_numpy(feat_half1A), stride=stride * 2, clip_length=self.chunk_size * 2) 
             feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
             feat_half2A = feats2clip(torch.from_numpy(feat_half2A), stride=stride * 2, clip_length=self.chunk_size * 2) 
-            
-            print(feat_half1B.shape)
-            print(feat_half1A.shape)
-            print(feat_half2B.shape)
-            print(feat_half2A.shape)
-            break;
-
-            
+                       
 
             # Load labels
             labels = json.load(open(os.path.join(self.path_labels, game, self.labels)))
@@ -443,13 +436,16 @@ class SoccerNetClipsTrain(Dataset):
                     continue
                 if half == 2 and frame//stride>=label_half2.shape[0]:
                     continue
+                print(frame)
                 a = frame // stride
+                print(a)
                 if half == 1:
                     for i in range(self.chunk_size // stride):
+                        print(max(a - self.chunk_size // stride + 1 + i, 0))
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
                     #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
-
+                break;
                 if half == 2:
                     for i in range(self.chunk_size // stride):
                         label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
