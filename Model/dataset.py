@@ -460,67 +460,31 @@ class SoccerNetClipsTrain(Dataset):
             if not exists:
                 os.makedirs(path)
             
+            #Half1
             for i in range(feat_half1B.shape[0]):
-                with open(path + '/featuresB_chunk' + str(i) + '.pickle', 'wb') as handle:
+                
+                with open(path + '/half1_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
                     pickle.dump(feat_half1B[i, :, :], handle)
-                self.path_list.append(path + '/featuresB_chunk' + str(i) + '.pickle')    
-                print(self.path_list)
-                print('got it')
-                break;
-            
-            if self.path != 'Baidu+ResNet':
-                self.game_feats.append(feat_half1)
-                self.game_feats.append(feat_half2)
-            else:
-                self.game_feats1.append(feat_half1B)
-                self.game_feats2.append(feat_half1R)
-                self.game_feats1.append(feat_half2B)
-                self.game_feats2.append(feat_half2R)
-           
-            self.game_labels.append(label_half1)
-            self.game_labels.append(label_half2)
-            
-        if self.path != 'Baidu+ResNet':
-            self.game_feats = np.concatenate(self.game_feats)
-            self.game_labels = np.concatenate(self.game_labels)
-            
-            if augment == True:
-                n_aug = 10000
-                weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
-                                    1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
-                                    1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])**2
-                prob_ind = self.game_labels.dot(weights)
+                with open(path + '/half1_chunk' + str(i) + 'featuresA.pickle', 'wb') as handle:
+                    pickle.dump(feat_half1A[i, :, :], handle)
+                with open(path + '/half1_chunk' + str(i) + 'labels.pickle', 'wb') as handle:
+                    pickle.dump(label_half1[i, :], handle)    
                 
-                i=0
-                feat_aug_list = []
-                y_aug_list = []
-                while(i < n_aug):
-                    i+=1
-                    id1 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    while(id1 == id2):
-                        id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    feat_aug, y_aug = mix_up(self.game_feats[id1], self.game_feats[id2], self.game_labels[id1], self.game_labels[id2])
-                    feat_aug_list.append(feat_aug)
-                    y_aug_list.append(y_aug)
-                feat_aug_list = np.concatenate(feat_aug_list)
-                y_aug_list = np.concatenate(y_aug_list)
-                self.game_feats = np.concatenate((self.game_feats, feat_aug_list))
-                self.game_labels = np.concatenate((self.game_labels, y_aug_list))
+                self.path_list.append(path + '/half1_chunk' + str(i) + '_')
                 
-        else:
-            self.game_feats1 = np.concatenate(self.game_feats1)
-            self.game_feats2 = np.concatenate(self.game_feats2)
-            self.game_labels = np.concatenate(self.game_labels)
-        #self.game_labels = np.concatenate(self.game_labels)
-        print(self.dict_event)
-        class_weights1 = len(self.game_labels) / (self.game_labels.sum(axis = 0) * 2) 
-        self.class_weights1 = class_weights1
-        self.class_weights1[self.class_weights1 <= 100] = 10
-        self.class_weights1[(self.class_weights1 > 100) & (self.class_weights1 < 200)] = 15
-        self.class_weights1[self.class_weights1 >= 200] = 20
-        self.class_weights1[0] = 1.
-        print(self.class_weights1)
+            #Half2
+            for i in range(feat_half2B.shape[0]):
+                
+                with open(path + '/half2_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
+                    pickle.dump(feat_half2B[i, :, :], handle)
+                with open(path + '/half2_chunk' + str(i) + 'featuresA.pickle', 'wb') as handle:
+                    pickle.dump(feat_half2A[i, :, :], handle)
+                with open(path + '/half2_chunk' + str(i) + 'labels.pickle', 'wb') as handle:
+                    pickle.dump(label_half2[i, :], handle)    
+                
+                self.path_list.append(path + '/half2_chunk' + str(i) + '_')
+                
+            
         #self.weights = (self.game_labels * class_weights).sum(axis = 1)
         #print(self.weights.shape)
 
