@@ -352,6 +352,9 @@ class SoccerNetClipsTrain(Dataset):
 
 
         self.stride = stride
+        
+        self.path_list = []
+        
         for game in tqdm(self.listGames):
             # Load features
             feat_half1B = np.load(os.path.join(self.path_baidu, game, "1_" + self.features_baidu))
@@ -443,7 +446,6 @@ class SoccerNetClipsTrain(Dataset):
 
                 if half == 1:
                     for i in range(self.chunk_size // stride):
-                        print(max(a - self.chunk_size // stride + 1 + i, 0))
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
                     #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
@@ -461,6 +463,8 @@ class SoccerNetClipsTrain(Dataset):
             for i in range(feat_half1B.shape[0]):
                 with open(path + '/featuresB_chunk' + str(i) + '.pickle', 'wb') as handle:
                     pickle.dump(feat_half1B[i, :, :], handle)
+                self.path_list.append(path + '/featuresB_chunk' + str(i) + '.pickle')    
+                print(self.path_list)
                 print('got it')
                 break;
             
