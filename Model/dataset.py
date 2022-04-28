@@ -317,7 +317,7 @@ class SoccerNetClipsTrain(Dataset):
                  path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
                  features_baidu = 'baidu_soccer_embeddings.npy', 
                  features_audio = 'VGGish.npy', stride = 1, split=["train"], version=1, 
-                framerate=2, chunk_size=240, augment = False):
+                framerate=1, chunk_size=7, augment = False):
         
         self.path_baidu = path_baidu
         self.path_audio = path_audio
