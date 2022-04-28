@@ -25,11 +25,12 @@ from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERS
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
 from mel_features import *
 from vggish_input import *
+from pydub import AudioSegment
 
 print('starting program')
 
 class GenerateWav(Dataset):
-    def __init__(self, path, features="224p.mkv", split = ["train", "valid", "test", "challenge"]):
+    def __init__(self, path, features="224p.mp3", split = ["train", "valid", "test", "challenge"]):
         self.path = path
         self.features = features
         self.listGames = getListGames(split)
@@ -39,8 +40,11 @@ class GenerateWav(Dataset):
             # Load wav audio file
             if not os.path.exists(os.path.join(self.path, game, "1_audio.wav")):
                 try:
-                    my_clip_1 = mp.VideoFileClip(os.path.join(self.path, game, "1_" + self.features))
-                    my_clip_1.audio.write_audiofile(os.path.join(self.path, game, "1_audio.wav"))
+                    sound = AudioSegment.from_mp3(os.path.join(self.path, game, "1_" + self.features))
+                    sound.export(os.path.join(self.path, game, "1_audio.wav"), format="wav")
+                    
+                    #my_clip_1 = mp.VideoFileClip(os.path.join(self.path, game, "1_" + self.features))
+                    #my_clip_1.audio.write_audiofile(os.path.join(self.path, game, "1_audio.wav"))
                 
                 except:
                     print('Problem with following file:\n')
@@ -48,8 +52,11 @@ class GenerateWav(Dataset):
             
             if not os.path.exists(os.path.join(self.path, game, "2_audio.wav")):
                 try:
-                    my_clip_2 = mp.VideoFileClip(os.path.join(self.path, game, "2_" + self.features))
-                    my_clip_2.audio.write_audiofile(os.path.join(self.path, game, "2_audio.wav"))
+                    sound = AudioSegment.from_mp3(os.path.join(self.path, game, "2_" + self.features))
+                    sound.export(os.path.join(self.path, game, "2_audio.wav"), format="wav")
+                    
+                    #my_clip_2 = mp.VideoFileClip(os.path.join(self.path, game, "2_" + self.features))
+                    #my_clip_2.audio.write_audiofile(os.path.join(self.path, game, "2_audio.wav"))
                 
                 except:
                     print('Problem with following file:\n')
