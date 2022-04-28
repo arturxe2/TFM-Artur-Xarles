@@ -436,6 +436,7 @@ class SoccerNetClipsTrain(Dataset):
                     continue
                 if half == 2 and frame//stride>=label_half2.shape[0]:
                     continue
+                print('------------------------------------------')
                 print(frame)
                 a = frame // stride
                 print(a)
@@ -445,7 +446,7 @@ class SoccerNetClipsTrain(Dataset):
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
                         label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
                     #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
-                break;
+                continue
                 if half == 2:
                     for i in range(self.chunk_size // stride):
                         label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
