@@ -307,6 +307,229 @@ class SoccerNetClips(Dataset):
             return len(self.game_feats)
         else:
             return len(self.game_feats1)
+        
+        
+        
+
+class SoccerNetClipsTrain(Dataset):
+    def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
+                 path_audio = '/home-net/axesparraguera/data/VGGFeatures', 
+                 path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
+                 features_baidu = 'baidu_soccer_embeddings.npy', 
+                 features_audio = 'VGGish.npy', stride = 1, split=["train"], version=1, 
+                framerate=2, chunk_size=240, augment = False):
+        
+        self.path_baidu = path_baidu
+        self.path_audio = path_audio
+        self.path_labels = path_labels
+        self.features_baidu = features_baidu
+        self.features_audio = features_audio
+        
+        self.listGames = getListGames(split)
+        self.chunk_size = chunk_size
+        self.version = version
+        if version == 1:
+            self.num_classes = 3
+            self.labels="Labels.json"
+        elif version == 2:
+            self.dict_event = EVENT_DICTIONARY_V2
+            self.num_classes = 17
+            self.labels="Labels-v2.json"
+
+        logging.info("Checking/Download features and labels locally")
+        #downloader = SoccerNetDownloader(path)
+        #downloader.downloadGames(files=[self.labels, f"1_{self.features}", f"2_{self.features}"], split=split, verbose=False)
+
+
+        logging.info("Pre-compute clips")
+        
+        self.game_feats1 = list()
+        self.game_feats2 = list()
+        self.game_labels = list()
+
+
+        self.stride = stride
+        for game in tqdm(self.listGames):
+            # Load features
+            feat_half1B = np.load(os.path.join(self.path_baidu, game, "1_" + self.features_baidu))
+            feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
+            feat_half1A = np.load(os.path.join(self.path_audio, game, "1_" + self.features_audio))
+            feat_half1A = feat_half1A.reshape(-1, feat_half1A.shape[-1])
+            feat_half2B = np.load(os.path.join(self.path_baidu, game, "2_" + self.features_baidu))
+            feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
+            feat_half2A = np.load(os.path.join(self.path_audio, game, "2_" + self.features_audio))
+            feat_half2A = feat_half2A.reshape(-1, feat_half2A.shape[-1])
+                
+            if feat_half1B.shape[0]*2 > feat_half1A.shape[0]:
+                print('Different shape')
+                print('Previous shape: ' + str(feat_half1A.shape))
+                feat_half1A_aux = np.zeros((feat_half1B.shape[0] * 2, feat_half1A.shape[1]))
+                feat_half1A_aux[:feat_half1A.shape[0]] = feat_half1A
+                feat_half1A_aux[feat_half1A.shape[0]:] = feat_half1A[feat_half1A.shape[0]-1]
+                feat_half1A = feat_half1A_aux
+                print('Resized to: ' + str(feat_half1A.shape))
+                    
+            if feat_half2B.shape[0]*2 > feat_half2A.shape[0]:
+                print('Different shape')
+                print('Previous shape: ' + str(feat_half2A.shape))
+                feat_half2A_aux = np.zeros((feat_half2B.shape[0] * 2, feat_half2A.shape[1]))
+                feat_half2A_aux[:feat_half2A.shape[0]] = feat_half2A
+                feat_half2A_aux[feat_half2A.shape[0]:] = feat_half2A[feat_half2A.shape[0]-1]
+                feat_half2A = feat_half2A_aux
+                print('Resized to: ' + str(feat_half2A.shape))
+                    
+            if feat_half1B.shape[0]*2 < feat_half1A.shape[0]:
+                print('Different shape')
+                print('Previous shape: ' + str(feat_half1B.shape))
+                feat_half1B_aux = np.zeros((feat_half1A.shape[0] // 2, feat_half1B.shape[1]))
+                feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
+                feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
+                feat_half1B = feat_half1B_aux
+                print('Resized to: ' + str(feat_half1B.shape))
+                    
+            if feat_half2B.shape[0]*2 < feat_half2A.shape[0]:
+                print('Different shape')
+                print('Previous shape: ' + str(feat_half2B.shape))
+                feat_half2B_aux = np.zeros((feat_half2A.shape[0] // 2, feat_half2B.shape[1]))
+                feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
+                feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
+                feat_half2B = feat_half2B_aux
+                print('Resized to: ' + str(feat_half2B.shape))
+                
+            print(feat_half1B.shape)
+            feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
+            print(feat_half1B.shape)
+            break;
+            feat_half1A = feats2clip(torch.from_numpy(feat_half1A), stride=stride * 2, clip_length=self.chunk_size * 2) 
+            feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
+            feat_half2A = feats2clip(torch.from_numpy(feat_half2A), stride=stride * 2, clip_length=self.chunk_size * 2) 
+
+
+            
+
+            # Load labels
+            labels = json.load(open(os.path.join(self.path_labels, game, self.labels)))
+
+            label_half1 = np.zeros((feat_half1B.shape[0], self.num_classes+1))
+            label_half1[:,0]=1 # those are BG classes
+            label_half2 = np.zeros((feat_half2B.shape[0], self.num_classes+1))
+            label_half2[:,0]=1 # those are BG classes
+
+            for annotation in labels["annotations"]:
+
+                time = annotation["gameTime"]
+                event = annotation["label"]
+
+                half = int(time[0])
+
+                minutes = int(time[-5:-3])
+                seconds = int(time[-2::])
+                frame = framerate * ( seconds + 60 * minutes ) 
+
+                if version == 1:
+                    if "card" in event: label = 0
+                    elif "subs" in event: label = 1
+                    elif "soccer" in event: label = 2
+                    else: continue
+                elif version == 2:
+                    if event not in self.dict_event:
+                        continue
+                    label = self.dict_event[event]
+
+                # if label outside temporal of view
+                if half == 1 and frame//stride>=label_half1.shape[0]:
+                    continue
+                if half == 2 and frame//stride>=label_half2.shape[0]:
+                    continue
+                a = frame // stride
+                if half == 1:
+                    for i in range(self.chunk_size // stride):
+                        label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
+                        label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
+                    #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
+
+                if half == 2:
+                    for i in range(self.chunk_size // stride):
+                        label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
+                        label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
+            
+            if self.path != 'Baidu+ResNet':
+                self.game_feats.append(feat_half1)
+                self.game_feats.append(feat_half2)
+            else:
+                self.game_feats1.append(feat_half1B)
+                self.game_feats2.append(feat_half1R)
+                self.game_feats1.append(feat_half2B)
+                self.game_feats2.append(feat_half2R)
+           
+            self.game_labels.append(label_half1)
+            self.game_labels.append(label_half2)
+            
+        if self.path != 'Baidu+ResNet':
+            self.game_feats = np.concatenate(self.game_feats)
+            self.game_labels = np.concatenate(self.game_labels)
+            
+            if augment == True:
+                n_aug = 10000
+                weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
+                                    1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
+                                    1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])**2
+                prob_ind = self.game_labels.dot(weights)
+                
+                i=0
+                feat_aug_list = []
+                y_aug_list = []
+                while(i < n_aug):
+                    i+=1
+                    id1 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
+                    id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
+                    while(id1 == id2):
+                        id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
+                    feat_aug, y_aug = mix_up(self.game_feats[id1], self.game_feats[id2], self.game_labels[id1], self.game_labels[id2])
+                    feat_aug_list.append(feat_aug)
+                    y_aug_list.append(y_aug)
+                feat_aug_list = np.concatenate(feat_aug_list)
+                y_aug_list = np.concatenate(y_aug_list)
+                self.game_feats = np.concatenate((self.game_feats, feat_aug_list))
+                self.game_labels = np.concatenate((self.game_labels, y_aug_list))
+                
+        else:
+            self.game_feats1 = np.concatenate(self.game_feats1)
+            self.game_feats2 = np.concatenate(self.game_feats2)
+            self.game_labels = np.concatenate(self.game_labels)
+        #self.game_labels = np.concatenate(self.game_labels)
+        print(self.dict_event)
+        class_weights1 = len(self.game_labels) / (self.game_labels.sum(axis = 0) * 2) 
+        self.class_weights1 = class_weights1
+        self.class_weights1[self.class_weights1 <= 100] = 10
+        self.class_weights1[(self.class_weights1 > 100) & (self.class_weights1 < 200)] = 15
+        self.class_weights1[self.class_weights1 >= 200] = 20
+        self.class_weights1[0] = 1.
+        print(self.class_weights1)
+        #self.weights = (self.game_labels * class_weights).sum(axis = 1)
+        #print(self.weights.shape)
+
+
+
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+        Returns:
+            clip_feat (np.array): clip of features.
+            clip_labels (np.array): clip of labels for the segmentation.
+            clip_targets (np.array): clip of targets for the spotting.
+        """
+        if self.path != 'Baidu+ResNet':
+            return self.game_feats[index,:,:], self.game_labels[index,:]
+        else:
+            return self.game_feats1[index,:,:], self.game_feats2[index,:,:], self.game_labels[index,:]
+
+    def __len__(self):
+        if self.path != 'Baidu+ResNet':
+            return len(self.game_feats)
+        else:
+            return len(self.game_feats1)
 
 
 class SoccerNetClipsTesting(Dataset):
