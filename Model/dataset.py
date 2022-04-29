@@ -506,10 +506,7 @@ class SoccerNetClipsTrain(Dataset):
             j = (i >= cumsum).sum()
             path = self.path_list[j]
             idx2 = i - (j > 0).astype(int) * cumsum[j-1] #index inside match
-            self.idx2path[i] = [path, idx2]
-
-        print(self.idx2path[0])
-        print(self.idx2path[100000])            
+            self.idx2path[i] = [path, idx2]          
 
 
 
@@ -524,13 +521,13 @@ class SoccerNetClipsTrain(Dataset):
         """
         
         if isinstance(index, int):
-            path = self.path_list[index]
+            path, idx = self.idx2path[index]
             with open(path + 'featuresB.dat', "rb") as f:
-                featB = pickle.loads(blosc.decompress(f.read()))  
+                featB = pickle.loads(blosc.decompress(f.read()))[idx, :, :]  
             with open(path + 'featuresA.dat', "rb") as f:
-                featA = pickle.loads(blosc.decompress(f.read())) 
+                featA = pickle.loads(blosc.decompress(f.read()))[idx, :, :] 
             with open(path + 'labels.dat', "rb") as f:
-                labels = pickle.loads(blosc.decompress(f.read())) 
+                labels = pickle.loads(blosc.decompress(f.read()))[idx, :, :] 
             
                 
             return featB, featA, labels
