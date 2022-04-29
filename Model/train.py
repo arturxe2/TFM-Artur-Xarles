@@ -118,13 +118,15 @@ def train(path,
 
     # switch to train mode
     if train:
+        print('asdfasdf')
         model.train()
+        print('asdfkaljsdf')
     else:
         model.eval()
 
     end = time.time()
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
-        print(t)
+
         
         if path != 'Baidu+ResNet':
             for i, (feats, labels) in t:
