@@ -355,7 +355,7 @@ class SoccerNetClipsTrain(Dataset):
         
         self.path_list = []
         print(self.listGames[0])
-        return 0
+        
         for game in tqdm(self.listGames):
             # Load features
             feat_half1B = np.load(os.path.join(self.path_baidu, game, "1_" + self.features_baidu))
