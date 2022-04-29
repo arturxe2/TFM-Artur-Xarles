@@ -490,7 +490,7 @@ class SoccerNetClipsTrain(Dataset):
                 
                 self.path_list.append(path + '/half2_chunk' + str(i) + '_')
                 
-        with open(path + '/chunk_list.pkl', 'wb') as f:
+        with open(self.path_store + '/chunk_list.pkl', 'wb') as f:
             pickle.dump(self.path_list, f)    
         #self.weights = (self.game_labels * class_weights).sum(axis = 1)
         #print(self.weights.shape)
