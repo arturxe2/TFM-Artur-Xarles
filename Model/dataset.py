@@ -354,7 +354,8 @@ class SoccerNetClipsTrain(Dataset):
         self.stride = stride
         
         self.path_list = []
-        
+        print(self.listGames[0])
+        break;
         for game in tqdm(self.listGames):
             # Load features
             feat_half1B = np.load(os.path.join(self.path_baidu, game, "1_" + self.features_baidu))
@@ -466,9 +467,9 @@ class SoccerNetClipsTrain(Dataset):
                 
                 with open(path + '/half1_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
                     pickle.dump(feat_half1B[i, :, :], handle)
-                with open(path + '/half1_chunk' + str(i) + 'featuresA.pickle', 'wb') as handle:
+                with open(path + '/half1_chunk' + str(i) + '_featuresA.pickle', 'wb') as handle:
                     pickle.dump(feat_half1A[i, :, :], handle)
-                with open(path + '/half1_chunk' + str(i) + 'labels.pickle', 'wb') as handle:
+                with open(path + '/half1_chunk' + str(i) + '_labels.pickle', 'wb') as handle:
                     pickle.dump(label_half1[i, :], handle)    
                 
                 self.path_list.append(path + '/half1_chunk' + str(i) + '_')
@@ -479,9 +480,9 @@ class SoccerNetClipsTrain(Dataset):
                 
                 with open(path + '/half2_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
                     pickle.dump(feat_half2B[i, :, :], handle)
-                with open(path + '/half2_chunk' + str(i) + 'featuresA.pickle', 'wb') as handle:
+                with open(path + '/half2_chunk' + str(i) + '_featuresA.pickle', 'wb') as handle:
                     pickle.dump(feat_half2A[i, :, :], handle)
-                with open(path + '/half2_chunk' + str(i) + 'labels.pickle', 'wb') as handle:
+                with open(path + '/half2_chunk' + str(i) + '_labels.pickle', 'wb') as handle:
                     pickle.dump(label_half2[i, :], handle)    
                 
                 self.path_list.append(path + '/half2_chunk' + str(i) + '_')
