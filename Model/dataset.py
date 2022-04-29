@@ -532,32 +532,36 @@ class SoccerNetClipsTrain(Dataset):
                 
             return featB, featA, labels
         else:
+            #Create dictionary with all the indexes for each path
+            path_id = dict()
+            for ind in index:
+                path, idx = self.idx2path[index]
+                if path not in path_id.keys():
+                    path_id[path] = [idx]
+                else:
+                    path_id[path].append(idx)
+                    
+            #For each different path read all different samples            
+            
             i = 0
-            for idx in index:                 
-                path = self.path_list[idx]
+            for path in path_id.keys():                 
                 with open(path + 'featuresB.dat', "rb") as f:
-                    featBidx = pickle.loads(blosc.decompress(f.read()))  
+                    featBidx = pickle.loads(blosc.decompress(f.read()))[path_id[path], :, :]  
                 with open(path + 'featuresA.dat', "rb") as f:
-                    featAidx = pickle.loads(blosc.decompress(f.read())) 
+                    featAidx = pickle.loads(blosc.decompress(f.read()))[path_id[path], :, :] 
                 with open(path + 'labels.dat', "rb") as f:
-                    labelsidx = pickle.loads(blosc.decompress(f.read())) 
+                    labelsidx = pickle.loads(blosc.decompress(f.read()))[path_id[path], :] 
                     
                 if i == 0:
                     featB = featBidx
                     featA = featAidx
                     labels = labelsidx
-                    i += 1                    
-                
-                elif i == 1:
-                    featB = torch.stack((featB, featBidx))
-                    featA = torch.stack((featA, featAidx))
-                    labels = np.stack((labels, labelsidx))
-                    i += 1
+                    i += 1     
 
                 else:
-                    featB = torch.cat((featB, torch.unsqueeze(featBidx, 0)))
-                    featA = torch.cat((featA, torch.unsqueeze(featAidx, 0)))
-                    labels = np.concatenate((labels, np.expand_dims(labelsidx, 0)))
+                    featB = torch.cat((featB, featBidx, 0))
+                    featA = torch.cat((featA, featAidx, 0))
+                    labels = np.concatenate((labels, labelsidx, 0))
 
 
         
