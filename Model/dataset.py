@@ -549,15 +549,13 @@ class SoccerNetClipsTrain(Dataset):
                     print(labels.shape)
                 
                 else:
-                    featB = torch.cat((featB, featBidx))
-                    featA = torch.cat((featA, featAidx))
-                    labels = np.cat((labels, labelsidx))
+                    featB = torch.cat((featB, torch.unsqueeze(featBidx, 0)))
+                    featA = torch.cat((featA, torch.unsqueeze(featAidx, 0)))
+                    labels = np.cat((labels, np.unsqueeze(labelsidx, 0)))
                     print(featB.shape)
                     print(featA.shape)
                     print(labels.shape)
-                print(featB.shape)
-                print(featA.shape)
-                print(labels.shape)
+
         
         if self.path != 'Baidu+ResNet':
             return self.game_feats[index,:,:], self.game_labels[index,:]
