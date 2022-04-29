@@ -6,6 +6,7 @@ import random
 import os
 import time
 import pickle
+import blosc
 
 
 from tqdm import tqdm
@@ -461,12 +462,12 @@ class SoccerNetClipsTrain(Dataset):
                 print('Storing 1st half chunks...')
                 for i in range(feat_half1B.shape[0]):
                     
-                    with open(path + '/half1_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
-                        pickle.dump(feat_half1B[i, :, :], handle)
-                    with open(path + '/half1_chunk' + str(i) + '_featuresA.pickle', 'wb') as handle:
-                        pickle.dump(feat_half1A[i, :, :], handle)
-                    with open(path + '/half1_chunk' + str(i) + '_labels.pickle', 'wb') as handle:
-                        pickle.dump(label_half1[i, :], handle)    
+                    with open(path + '/half1_chunk' + str(i) + '_featuresB.dat', 'wb') as f:
+                        f.write(blosc.compress(pickle.dumps(feat_half1B[i, :, :])))    
+                    with open(path + '/half1_chunk' + str(i) + '_featuresA.dat', 'wb') as f:
+                        f.write(blosc.compress(pickle.dumps(feat_half1A[i, :, :])))             
+                    with open(path + '/half1_chunk' + str(i) + '_labels.dat', 'wb') as f:
+                        f.write(blosc.compress(pickle.dumps(label_half1[i, :])))
                     
                     self.path_list.append(path + '/half1_chunk' + str(i) + '_')
                     
@@ -474,12 +475,12 @@ class SoccerNetClipsTrain(Dataset):
                 print('Storing 2nd half chunks...')
                 for i in range(feat_half2B.shape[0]):
                     
-                    with open(path + '/half2_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
-                        pickle.dump(feat_half2B[i, :, :], handle)
-                    with open(path + '/half2_chunk' + str(i) + '_featuresA.pickle', 'wb') as handle:
-                        pickle.dump(feat_half2A[i, :, :], handle)
-                    with open(path + '/half2_chunk' + str(i) + '_labels.pickle', 'wb') as handle:
-                        pickle.dump(label_half2[i, :], handle)    
+                    with open(path + '/half2_chunk' + str(i) + '_featuresB.dat', 'wb') as f:
+                        f.write(blosc.compress(pickle.dumps(feat_half2B[i, :, :])))    
+                    with open(path + '/half2_chunk' + str(i) + '_featuresA.dat', 'wb') as f:
+                        f.write(blosc.compress(pickle.dumps(feat_half2A[i, :, :])))             
+                    with open(path + '/half2_chunk' + str(i) + '_labels.dat', 'wb') as f:
+                        f.write(blosc.compress(pickle.dumps(label_half2[i, :])))   
                     
                     self.path_list.append(path + '/half2_chunk' + str(i) + '_')
                     
@@ -506,24 +507,25 @@ class SoccerNetClipsTrain(Dataset):
         
         if isinstance(index, int):
             path = self.path_list[index]
-            with open(path + 'featuresB.pickle', 'rb') as f:
-                featB = pickle.load(f)
-            with open(path + 'featuresA.pickle', 'rb') as f:
-                featA = pickle.load(f)
-            with open(path + 'labels.pickle', 'rb') as f:
-                labels = pickle.load(f)
+            with open(path + 'featuresB.dat', "rb") as f:
+                featB = pickle.loads(blosc.decompress(f.read()))  
+            with open(path + 'featuresA.dat', "rb") as f:
+                featA = pickle.loads(blosc.decompress(f.read())) 
+            with open(path + 'labels.dat', "rb") as f:
+                labels = pickle.loads(blosc.decompress(f.read())) 
+            
                 
             return featB, featA, labels
         else:
             i = 0
             for idx in index:                 
                 path = self.path_list[idx]
-                with open(path + 'featuresB.pickle', 'rb') as f:
-                    featBidx = pickle.load(f)
-                with open(path + 'featuresA.pickle', 'rb') as f:
-                    featAidx = pickle.load(f)
-                with open(path + 'labels.pickle', 'rb') as f:
-                    labelsidx = pickle.load(f)
+                with open(path + 'featuresB.dat', "rb") as f:
+                    featBidx = pickle.loads(blosc.decompress(f.read()))  
+                with open(path + 'featuresA.dat', "rb") as f:
+                    featAidx = pickle.loads(blosc.decompress(f.read())) 
+                with open(path + 'labels.dat', "rb") as f:
+                    labelsidx = pickle.loads(blosc.decompress(f.read())) 
                     
                 if i == 0:
                     featB = featBidx
