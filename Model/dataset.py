@@ -498,6 +498,18 @@ class SoccerNetClipsTrain(Dataset):
                 self.path_list = pickle.load(f)
             with open(self.path_store + '/n_samples.pkl', 'rb') as f:
                 self.n_samples = pickle.load(f)
+                
+        self.idx2path = dict()
+        cumsum = np.array(np.cumsum(self.n_samples))
+        for i in range(np.array(self.n_samples).sum()):
+            #Index of the match
+            j = (i >= cumsum).sum()
+            path = self.path_list[j]
+            idx2 = i - (j > 0).astype(int) * cumsum[j-1] #index inside match
+            self.idx2path[i] = [path, idx2]
+
+        print(self.idx2path[0])
+        print(self.idx2path[100000])            
 
 
 

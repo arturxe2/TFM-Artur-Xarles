@@ -1,5 +1,5 @@
 from dataset import SoccerNetClips, SoccerNetClipsTesting, SoccerNetClipsTrain
 
-a = SoccerNetClipsTrain(store = True)
+a = SoccerNetClipsTrain(store = False)
 print(a.__len__())
 
