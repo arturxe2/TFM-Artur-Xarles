@@ -124,6 +124,8 @@ def train(path,
 
     end = time.time()
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
+        print(t)
+        
         if path != 'Baidu+ResNet':
             for i, (feats, labels) in t:
                 # measure data loading time
