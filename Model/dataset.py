@@ -519,17 +519,45 @@ class SoccerNetClipsTrain(Dataset):
                 
             return featB, featA, labels
         else:
-            for idx in index:
+            i = 0
+            for idx in index:                 
                 path = self.path_list[idx]
                 with open(path + 'featuresB.pickle', 'rb') as f:
-                    featB = pickle.load(f)
+                    featBidx = pickle.load(f)
                 with open(path + 'featuresA.pickle', 'rb') as f:
-                    featA = pickle.load(f)
+                    featAidx = pickle.load(f)
                 with open(path + 'labels.pickle', 'rb') as f:
-                    labels = pickle.load(f)
+                    labelsidx = pickle.load(f)
+                    
+                if i == 0:
+                    featB = featBidx
+                    featA = featAidx
+                    labels = labelsidx
+                    i += 1
+                    print(featB.shape)
+                    print(featA.shape)
+                    print(labels.shape)
+                    
+                
+                elif i == 1:
+                    featB = torch.stack((featB, featBidx))
+                    featA = torch.stack((featA, featAidx))
+                    labels = np.stack((labels, labelsidx))
+                    i += 1
+                    print(featB.shape)
+                    print(featA.shape)
+                    print(labels.shape)
+                
+                else:
+                    featB = torch.cat((featB, featBidx))
+                    featA = torch.cat((featA, featAidx))
+                    labels = np.cat((labels, labelsidx))
+                    print(featB.shape)
+                    print(featA.shape)
+                    print(labels.shape)
                 print(featB.shape)
                 print(featA.shape)
-                print(labels)
+                print(labels.shape)
         
         if self.path != 'Baidu+ResNet':
             return self.game_feats[index,:,:], self.game_labels[index,:]
