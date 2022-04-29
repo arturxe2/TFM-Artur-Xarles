@@ -533,34 +533,22 @@ class SoccerNetClipsTrain(Dataset):
                     featB = featBidx
                     featA = featAidx
                     labels = labelsidx
-                    i += 1
-                    print(featB.shape)
-                    print(featA.shape)
-                    print(labels.shape)
-                    
+                    i += 1                    
                 
                 elif i == 1:
                     featB = torch.stack((featB, featBidx))
                     featA = torch.stack((featA, featAidx))
                     labels = np.stack((labels, labelsidx))
                     i += 1
-                    print(featB.shape)
-                    print(featA.shape)
-                    print(labels.shape)
-                
+
                 else:
                     featB = torch.cat((featB, torch.unsqueeze(featBidx, 0)))
                     featA = torch.cat((featA, torch.unsqueeze(featAidx, 0)))
                     labels = np.concatenate((labels, np.expand_dims(labelsidx, 0)))
-                    print(featB.shape)
-                    print(featA.shape)
-                    print(labels.shape)
+
 
         
-        if self.path != 'Baidu+ResNet':
-            return self.game_feats[index,:,:], self.game_labels[index,:]
-        else:
-            return self.game_feats1[index,:,:], self.game_feats2[index,:,:], self.game_labels[index,:]
+        return featB, featA, labels
 
     def __len__(self):
         
