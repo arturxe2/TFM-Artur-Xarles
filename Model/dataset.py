@@ -519,7 +519,7 @@ class SoccerNetClipsTrain(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
-        
+        index = index[0]
         if isinstance(index, int):
             path, idx = self.idx2path[index]
             with open(path + 'featuresB.dat', "rb") as f:
