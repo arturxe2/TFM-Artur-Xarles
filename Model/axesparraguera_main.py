@@ -9,7 +9,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import torch
 from torch.utils.data import WeightedRandomSampler
 
-from dataset import SoccerNetClips, SoccerNetClipsTesting #,SoccerNetClipsOld
+from dataset import SoccerNetClips, SoccerNetClipsTrain, SoccerNetClipsTesting #,SoccerNetClipsOld
 from model import Model
 from train import trainer, test, testSpotting
 from loss import NLLLoss
@@ -36,7 +36,13 @@ def main(args):
         if args.version == 2:
             saved_loader = False
             if saved_loader == False:
-                dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate, augment = False)
+                dataset_Train = SoccerNetClipsTrain(path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
+                             path_audio = '/home-net/axesparraguera/data/VGGFeatures', 
+                             path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
+                             path_store = "/data-local/data3-ssd/axesparraguera",
+                             features_baidu = 'baidu_soccer_embeddings.npy',
+                             features_audio = 'VGGish.npy', stride = 1, split=["train"], version=2, 
+                            framerate=1, chunk_size=7, augment = False, store = False)
                 dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
                 dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
     dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
