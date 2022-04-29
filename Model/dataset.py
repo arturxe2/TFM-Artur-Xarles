@@ -508,7 +508,7 @@ class SoccerNetClipsTrain(Dataset):
             clip_targets (np.array): clip of targets for the spotting.
         """
         
-        if type(index) == 'int':
+        if isinstance(index, int):
             path = self.path_list[index]
             with open(path + 'featuresB.pickle', 'rb') as f:
                 featB = pickle.load(f)
