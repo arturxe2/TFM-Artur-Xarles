@@ -559,9 +559,9 @@ class SoccerNetClipsTrain(Dataset):
                     i += 1     
 
                 else:
-                    featB = torch.cat((featB, featBidx, 0))
-                    featA = torch.cat((featA, featAidx, 0))
-                    labels = np.concatenate((labels, labelsidx, 0))
+                    featB = torch.cat((featB, featBidx))
+                    featA = torch.cat((featA, featAidx))
+                    labels = np.concatenate((labels, labelsidx))
 
 
         
