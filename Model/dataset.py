@@ -507,6 +507,18 @@ class SoccerNetClipsTrain(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
+        for idx in index:
+            path = self.path_list[idx]
+            with open(path + 'featuresB.pickle', 'rb') as f:
+                featB = pickle.load(f)
+            with open(path + 'featuresA.pickle', 'rb') as f:
+                featA = pickle.load(f)
+            with open(path + 'labels.pickle', 'rb') as f:
+                labels = pickle.load(f)
+            print(featB.shape)
+            print(featA.shape)
+            print(labels)
+        
         if self.path != 'Baidu+ResNet':
             return self.game_feats[index,:,:], self.game_labels[index,:]
         else:
