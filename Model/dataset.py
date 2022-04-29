@@ -354,8 +354,9 @@ class SoccerNetClipsTrain(Dataset):
         self.stride = stride
         
         self.path_list = []
-        
-        for game in tqdm(list(self.listGames[0])):
+        game = self.listGames[0]
+        #for game in tqdm(list(self.listGames[0])):
+        for asdflñj in range(1):
         #for game in tqdm(self.listGames):
             # Load features
             feat_half1B = np.load(os.path.join(self.path_baidu, game, "1_" + self.features_baidu))
