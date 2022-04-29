@@ -1,6 +1,5 @@
 from dataset import SoccerNetClips, SoccerNetClipsTesting, SoccerNetClipsTrain
 
-a = SoccerNetClipsTrain(store = False)
+a = SoccerNetClipsTrain(store = True)
 print(a.__len__())
-print(a.__getitem__([0, 2, 4, 6]))
 
