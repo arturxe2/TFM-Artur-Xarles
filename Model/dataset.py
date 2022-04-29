@@ -527,7 +527,7 @@ class SoccerNetClipsTrain(Dataset):
             with open(path + 'featuresA.dat', "rb") as f:
                 featA = pickle.loads(blosc.decompress(f.read()))[idx, :, :] 
             with open(path + 'labels.dat', "rb") as f:
-                labels = pickle.loads(blosc.decompress(f.read()))[idx, :, :] 
+                labels = pickle.loads(blosc.decompress(f.read()))[idx, :] 
             
                 
             return featB, featA, labels
