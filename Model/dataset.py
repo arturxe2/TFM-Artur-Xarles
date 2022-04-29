@@ -551,7 +551,7 @@ class SoccerNetClipsTrain(Dataset):
                 else:
                     featB = torch.cat((featB, torch.unsqueeze(featBidx, 0)))
                     featA = torch.cat((featA, torch.unsqueeze(featAidx, 0)))
-                    labels = np.cat((labels, np.unsqueeze(labelsidx, 0)))
+                    labels = np.concatenate((labels, np.unsqueeze(labelsidx, 0)))
                     print(featB.shape)
                     print(featA.shape)
                     print(labels.shape)
