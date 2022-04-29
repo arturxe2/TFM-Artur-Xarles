@@ -535,7 +535,7 @@ class SoccerNetClipsTrain(Dataset):
             #Create dictionary with all the indexes for each path
             path_id = dict()
             for ind in index:
-                path, idx = self.idx2path[index]
+                path, idx = self.idx2path[ind]
                 if path not in path_id.keys():
                     path_id[path] = [idx]
                 else:
