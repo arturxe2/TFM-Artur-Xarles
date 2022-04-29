@@ -352,6 +352,7 @@ class SoccerNetClipsTrain(Dataset):
         if store:
         
             self.path_list = []
+            self.n_samples = []
 
             for game in tqdm(self.listGames):
                 # Load features
@@ -460,38 +461,43 @@ class SoccerNetClipsTrain(Dataset):
                 
                 #Half1
                 print('Storing 1st half chunks...')
-                for i in range(feat_half1B.shape[0]):
+                
+                with open(path + '/half1_chunk' + '_featuresB.dat', 'wb') as f:
+                    f.write(blosc.compress(pickle.dumps(feat_half1B)))    
+                with open(path + '/half1_chunk' + '_featuresA.dat', 'wb') as f:
+                    f.write(blosc.compress(pickle.dumps(feat_half1A)))             
+                with open(path + '/half1_chunk' + '_labels.dat', 'wb') as f:
+                    f.write(blosc.compress(pickle.dumps(label_half1)))
                     
-                    with open(path + '/half1_chunk' + str(i) + '_featuresB.dat', 'wb') as f:
-                        f.write(blosc.compress(pickle.dumps(feat_half1B[i, :, :])))    
-                    with open(path + '/half1_chunk' + str(i) + '_featuresA.dat', 'wb') as f:
-                        f.write(blosc.compress(pickle.dumps(feat_half1A[i, :, :])))             
-                    with open(path + '/half1_chunk' + str(i) + '_labels.dat', 'wb') as f:
-                        f.write(blosc.compress(pickle.dumps(label_half1[i, :])))
                     
-                    self.path_list.append(path + '/half1_chunk' + str(i) + '_')
+                self.path_list.append(path + '/half1_chunk' + '_')
+                self.n_samples.append(feat_half1B.shape[0])
                     
                 #Half2
                 print('Storing 2nd half chunks...')
-                for i in range(feat_half2B.shape[0]):
-                    
-                    with open(path + '/half2_chunk' + str(i) + '_featuresB.dat', 'wb') as f:
-                        f.write(blosc.compress(pickle.dumps(feat_half2B[i, :, :])))    
-                    with open(path + '/half2_chunk' + str(i) + '_featuresA.dat', 'wb') as f:
-                        f.write(blosc.compress(pickle.dumps(feat_half2A[i, :, :])))             
-                    with open(path + '/half2_chunk' + str(i) + '_labels.dat', 'wb') as f:
-                        f.write(blosc.compress(pickle.dumps(label_half2[i, :])))   
-                    
-                    self.path_list.append(path + '/half2_chunk' + str(i) + '_')
+                
+                with open(path + '/half2_chunk' + '_featuresB.dat', 'wb') as f:
+                    f.write(blosc.compress(pickle.dumps(feat_half2B)))    
+                with open(path + '/half2_chunk' + '_featuresA.dat', 'wb') as f:
+                    f.write(blosc.compress(pickle.dumps(feat_half2A)))             
+                with open(path + '/half2_chunk' + '_labels.dat', 'wb') as f:
+                    f.write(blosc.compress(pickle.dumps(label_half2)))  
+                               
+                self.path_list.append(path + '/half2_chunk' + '_')
+                self.n_samples.append(feat_half2B.shape[0])
                     
             with open(self.path_store + '/chunk_list.pkl', 'wb') as f:
-                pickle.dump(self.path_list, f)    
+                pickle.dump(self.path_list, f)  
+            with open(self.path_store + '/n_samples.pkl', 'wb') as f:
+                pickle.dump(self.n_samples, f)
             #self.weights = (self.game_labels * class_weights).sum(axis = 1)
             #print(self.weights.shape)
         
         else:
             with open(self.path_store + '/chunk_list.pkl', 'rb') as f:
                 self.path_list = pickle.load(f)
+            with open(self.path_store + '/n_samples.pkl', 'rb') as f:
+                self.n_samples = pickle.load(f)
 
 
 
@@ -550,7 +556,7 @@ class SoccerNetClipsTrain(Dataset):
 
     def __len__(self):
         
-        return len(self.path_list)
+        return np.array(self.n_samples).sum()
 
 
 
