@@ -519,19 +519,19 @@ class SoccerNetClipsTrain(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
-        
-        if isinstance(index, int):
-            path, idx = self.idx2path[index]
-            print(path, idx)
-            with open(path + 'featuresB.dat', "rb") as f:
-                featB = pickle.loads(blosc.decompress(f.read()))[idx, :, :]  
-            with open(path + 'featuresA.dat', "rb") as f:
-                featA = pickle.loads(blosc.decompress(f.read()))[idx, :, :] 
-            with open(path + 'labels.dat', "rb") as f:
-                labels = pickle.loads(blosc.decompress(f.read()))[idx, :] 
+        #path, idx = self.idx2path[index]
+        path = self.path_list[index]
+        idx = 0
+        with open(path + 'featuresB.dat', "rb") as f:
+            featB = pickle.loads(blosc.decompress(f.read()))[idx, :, :]  
+        with open(path + 'featuresA.dat', "rb") as f:
+            featA = pickle.loads(blosc.decompress(f.read()))[idx, :, :] 
+        with open(path + 'labels.dat', "rb") as f:
+            labels = pickle.loads(blosc.decompress(f.read()))[idx, :] 
             
                 
-            return featB, featA, labels
+        return featB, featA, labels
+        '''
         else:
             #Create dictionary with all the indexes for each path
             path_id = dict()
@@ -567,10 +567,10 @@ class SoccerNetClipsTrain(Dataset):
 
         
         return featB, featA, labels
-
+        '''
     def __len__(self):
         
-        return np.array(self.n_samples).sum()
+        return len(self.path_list)
 
 
 
