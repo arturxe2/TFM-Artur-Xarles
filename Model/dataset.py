@@ -354,9 +354,8 @@ class SoccerNetClipsTrain(Dataset):
         self.stride = stride
         
         self.path_list = []
-        print(self.listGames[0])
         
-        for game in tqdm(self.listGames):
+        for game in tqdm(self.listGames[0]):
             # Load features
             feat_half1B = np.load(os.path.join(self.path_baidu, game, "1_" + self.features_baidu))
             feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
@@ -463,7 +462,8 @@ class SoccerNetClipsTrain(Dataset):
             
             #Half1
             print('Storing 1st half chunks...')
-            for i in range(feat_half1B.shape[0]):
+            #for i in range(feat_half1B.shape[0]):
+            for i in range(10):
                 
                 with open(path + '/half1_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
                     pickle.dump(feat_half1B[i, :, :], handle)
@@ -476,7 +476,8 @@ class SoccerNetClipsTrain(Dataset):
                 
             #Half2
             print('Storing 2nd half chunks...')
-            for i in range(feat_half2B.shape[0]):
+            #for i in range(feat_half2B.shape[0]):
+            for i in range(10):
                 
                 with open(path + '/half2_chunk' + str(i) + '_featuresB.pickle', 'wb') as handle:
                     pickle.dump(feat_half2B[i, :, :], handle)
