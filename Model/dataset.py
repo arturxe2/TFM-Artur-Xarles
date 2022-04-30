@@ -520,6 +520,7 @@ class SoccerNetClipsTrain(Dataset):
             clip_targets (np.array): clip of targets for the spotting.
         """
         #path, idx = self.idx2path[index]
+        print('getting item')
         path = self.path_list[index]
         idx = 0
         with open(path + 'featuresB.dat', "rb") as f:
