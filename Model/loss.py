@@ -15,4 +15,4 @@ class NLLLoss_weights(torch.nn.Module):
         
     def forward(self, labels, output):
         weights = torch.tensor([1, 20, 10, 15, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15, 20, 20]).cuda()
-        return torch.mean(torch.mean(self.weights1 * labels * -torch.log(output) + (1 - labels) * -torch.log(1 - output), dim=0))
+        return torch.mean(torch.mean(weights * labels * -torch.log(output) + (1 - labels) * -torch.log(1 - output), dim=0))
