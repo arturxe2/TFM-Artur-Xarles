@@ -127,11 +127,8 @@ def train(path,
     end = time.time()
     
     #Potser al fer cuda() hi ha el problema
-    print('asdflkjañsdf')
-    print(enumerate(dataloader))
-    print(len(dataloader))
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
-
+        print('asdfasdf')
         
         if path != 'Baidu+ResNet':
             for i, (feats, labels) in t:
@@ -170,7 +167,11 @@ def train(path,
                 desc += f'Loss {losses.avg:.4e} '
                 t.set_description(desc)
         else:
+            print('asdfasdf')
             for i, (feats1, feats2, labels) in t:
+                
+                print(i)
+                print(feats1.shape)
                 # measure data loading time
                 data_time.update(time.time() - end)
                 feats1 = feats1.cuda()
