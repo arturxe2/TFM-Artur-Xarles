@@ -118,13 +118,18 @@ def train(path,
 
     # switch to train mode
     if train:
-        print('asdfasdf')
+
         model.train()
-        print('asdfkaljsdf')
+
     else:
         model.eval()
 
     end = time.time()
+    
+    #Potser al fer cuda() hi ha el problema
+    print('asdflkjañsdf')
+    print(enumerate(dataloader))
+    print(len(dataloader))
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
 
         
