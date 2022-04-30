@@ -519,10 +519,7 @@ class SoccerNetClipsTrain(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
-        #path, idx = self.idx2path[index]
-        print('getting item')
-        path = self.path_list[index]
-        idx = 0
+        path, idx = self.idx2path[index]
         with open(path + 'featuresB.dat', "rb") as f:
             featB = pickle.loads(blosc.decompress(f.read())) 
         f.close()
@@ -581,7 +578,8 @@ class SoccerNetClipsTrain(Dataset):
         '''
     def __len__(self):
         
-        return len(self.path_list)
+        return(np.array(self.n_samples).sum())
+        #return len(self.path_list)
 
 
 
