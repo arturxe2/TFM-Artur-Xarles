@@ -531,9 +531,16 @@ class SoccerNetClipsTrain(Dataset):
         with open(path + 'labels.dat', "rb") as f:
             labels = pickle.loads(blosc.decompress(f.read()))[idx, :] 
         f.close()
-            
+        
+        featBret = featB[idx, :, :]
+        featAret = featA[idx, :, :]
+        labelsret = labels[idx, :]
+        
+        del featB
+        del featA
+        del labels
                 
-        return featB, featA, labels
+        return featBret, featAret, labelsret
         '''
         else:
             #Create dictionary with all the indexes for each path
