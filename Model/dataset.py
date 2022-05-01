@@ -319,7 +319,7 @@ class SoccerNetClipsTrain(Dataset):
                  path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
                  path_store = "/data-local/data3-ssd/axesparraguera",
                  features_baidu = 'baidu_soccer_embeddings.npy',
-                 features_audio = 'VGGish.npy', stride = 1, split=["train"], version=2, 
+                 features_audio = 'VGGish.npy', stride = 2, split=["train"], version=2, 
                 framerate=1, chunk_size=7, augment = False, store = True):
         
         self.path_baidu = path_baidu
@@ -539,7 +539,10 @@ class SoccerNetClipsTrain(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
-        np.load(self.path_list[index])
+        featB = np.load(self.path_list[index] + 'featuresB.npy')
+        featA = np.load(self.path_list[index] + 'featuresA.npy')
+        labels = np.load(self.path_list[index] + 'labels.npy')
+        '''
         path, idx = self.idx2path[index]
         with open(path + 'featuresB.dat', "rb") as f:
             featB = pickle.loads(blosc.decompress(f.read())) 
@@ -554,12 +557,9 @@ class SoccerNetClipsTrain(Dataset):
         featBret = featB[idx, :, :]
         featAret = featA[idx, :, :]
         labelsret = labels[idx, :]
-        
-        del featB
-        del featA
-        del labels
+        '''
                 
-        return featBret, featAret, labelsret
+        return featB, featA, labels
         '''
         else:
             #Create dictionary with all the indexes for each path
