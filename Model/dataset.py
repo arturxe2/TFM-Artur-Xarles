@@ -599,7 +599,7 @@ class SoccerNetClipsTrain(Dataset):
         '''
     def __len__(self):
         
-        return(len(self.n_samples))
+        return(len(self.path_list))
         #return len(self.path_list)
 
 
