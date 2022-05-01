@@ -539,9 +539,9 @@ class SoccerNetClipsTrain(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
-        featB = np.load(self.path_list[index] + 'featuresB.npy')
-        featA = np.load(self.path_list[index] + 'featuresA.npy')
-        labels = np.load(self.path_list[index] + 'labels.npy')
+        #featB = np.load(self.path_list[index] + 'featuresB.npy')
+        #featA = np.load(self.path_list[index] + 'featuresA.npy')
+        #labels = np.load(self.path_list[index] + 'labels.npy')
         '''
         path, idx = self.idx2path[index]
         with open(path + 'featuresB.dat', "rb") as f:
@@ -559,7 +559,7 @@ class SoccerNetClipsTrain(Dataset):
         labelsret = labels[idx, :]
         '''
                 
-        return featB, featA, labels
+        return np.load(self.path_list[index] + 'featuresB.npy'), np.load(self.path_list[index] + 'featuresA.npy'), np.load(self.path_list[index] + 'labels.npy')
         '''
         else:
             #Create dictionary with all the indexes for each path
