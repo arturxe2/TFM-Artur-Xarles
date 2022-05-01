@@ -461,21 +461,34 @@ class SoccerNetClipsTrain(Dataset):
                 
                 #Half1
                 print('Storing 1st half chunks...')
-                
+                for i in range(feat_half1B.shape[0]):
+                    torch.save(feat_half1B[i, :, :], path + '/half1_chunk' + str(i) + '_featuresB.pt')
+                    torch.save(feat_half1A[i, :, :], path + '/half1_chunk' + str(i) + '_featuresA.pt')
+                    np.save(path + '/half1_chunk' + str(i) + '_labels.pt', label_half1[i, :])
+                    self.path_list.append(path + '/half1_chunk' + str(i) + '_')
+                '''
                 with open(path + '/half1_chunk' + '_featuresB.dat', 'wb') as f:
                     f.write(blosc.compress(pickle.dumps(feat_half1B)))    
                 with open(path + '/half1_chunk' + '_featuresA.dat', 'wb') as f:
                     f.write(blosc.compress(pickle.dumps(feat_half1A)))             
                 with open(path + '/half1_chunk' + '_labels.dat', 'wb') as f:
                     f.write(blosc.compress(pickle.dumps(label_half1)))
-                    
+                
                     
                 self.path_list.append(path + '/half1_chunk' + '_')
                 self.n_samples.append(feat_half1B.shape[0])
+                
+                '''
                     
                 #Half2
                 print('Storing 2nd half chunks...')
                 
+                for i in range(feat_half2B.shape[0]):
+                    torch.save(feat_half2B[i, :, :], path + '/half2_chunk' + str(i) + '_featuresB.pt')
+                    torch.save(feat_half2A[i, :, :], path + '/half2_chunk' + str(i) + '_featuresA.pt')
+                    np.save(path + '/half2_chunk' + str(i) + '_labels.pt', label_half2[i, :])
+                    self.path_list.append(path + '/half2_chunk' + str(i) + '_')
+                '''
                 with open(path + '/half2_chunk' + '_featuresB.dat', 'wb') as f:
                     f.write(blosc.compress(pickle.dumps(feat_half2B)))    
                 with open(path + '/half2_chunk' + '_featuresA.dat', 'wb') as f:
@@ -485,11 +498,14 @@ class SoccerNetClipsTrain(Dataset):
                                
                 self.path_list.append(path + '/half2_chunk' + '_')
                 self.n_samples.append(feat_half2B.shape[0])
+                
+                '''
                     
             with open(self.path_store + '/chunk_list.pkl', 'wb') as f:
                 pickle.dump(self.path_list, f)  
-            with open(self.path_store + '/n_samples.pkl', 'wb') as f:
-                pickle.dump(self.n_samples, f)
+            
+            #with open(self.path_store + '/n_samples.pkl', 'wb') as f:
+            #    pickle.dump(self.n_samples, f)
             #self.weights = (self.game_labels * class_weights).sum(axis = 1)
             #print(self.weights.shape)
         
@@ -578,7 +594,7 @@ class SoccerNetClipsTrain(Dataset):
         '''
     def __len__(self):
         
-        return(np.array(self.n_samples).sum())
+        return(len(self.n_samples))
         #return len(self.path_list)
 
 
