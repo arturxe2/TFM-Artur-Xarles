@@ -460,11 +460,13 @@ class SoccerNetClipsTrain(Dataset):
                     os.makedirs(path)
                 
                 #Half1
+                feat_half1B = feat_half1B.numpy()
+                feat_half1A = feat_half1A.numpy()
                 print('Storing 1st half chunks...')
                 for i in range(feat_half1B.shape[0]):
-                    torch.save(feat_half1B[i, :, :], path + '/half1_chunk' + str(i) + '_featuresB.pt')
-                    torch.save(feat_half1A[i, :, :], path + '/half1_chunk' + str(i) + '_featuresA.pt')
-                    np.save(path + '/half1_chunk' + str(i) + '_labels.pt', label_half1[i, :])
+                    np.save(path + '/half1_chunk' + str(i) + '_featuresB.npy', feat_half1B[i, :, :])
+                    np.save(path + '/half1_chunk' + str(i) + '_featuresB.npy', feat_half1B[i, :, :])
+                    np.save(path + '/half1_chunk' + str(i) + '_labels.npy', label_half1[i, :])
                     self.path_list.append(path + '/half1_chunk' + str(i) + '_')
                 '''
                 with open(path + '/half1_chunk' + '_featuresB.dat', 'wb') as f:
@@ -483,10 +485,12 @@ class SoccerNetClipsTrain(Dataset):
                 #Half2
                 print('Storing 2nd half chunks...')
                 
+                feat_half2B = feat_half2B.numpy()
+                feat_half2A = feat_half2A.numpy()
                 for i in range(feat_half2B.shape[0]):
-                    torch.save(feat_half2B[i, :, :], path + '/half2_chunk' + str(i) + '_featuresB.pt')
-                    torch.save(feat_half2A[i, :, :], path + '/half2_chunk' + str(i) + '_featuresA.pt')
-                    np.save(path + '/half2_chunk' + str(i) + '_labels.pt', label_half2[i, :])
+                    np.save(path + '/half2_chunk' + str(i) + '_featuresB.npy', feat_half2B[i, :, :])
+                    np.save(path + '/half2_chunk' + str(i) + '_featuresB.npy', feat_half2B[i, :, :])
+                    np.save(path + '/half2_chunk' + str(i) + '_labels.npy', label_half2[i, :])
                     self.path_list.append(path + '/half2_chunk' + str(i) + '_')
                 '''
                 with open(path + '/half2_chunk' + '_featuresB.dat', 'wb') as f:
