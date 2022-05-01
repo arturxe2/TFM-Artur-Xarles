@@ -465,7 +465,7 @@ class SoccerNetClipsTrain(Dataset):
                 print('Storing 1st half chunks...')
                 for i in range(feat_half1B.shape[0]):
                     np.save(path + '/half1_chunk' + str(i) + '_featuresB.npy', feat_half1B[i, :, :])
-                    np.save(path + '/half1_chunk' + str(i) + '_featuresB.npy', feat_half1B[i, :, :])
+                    np.save(path + '/half1_chunk' + str(i) + '_featuresA.npy', feat_half1A[i, :, :])
                     np.save(path + '/half1_chunk' + str(i) + '_labels.npy', label_half1[i, :])
                     self.path_list.append(path + '/half1_chunk' + str(i) + '_')
                 '''
@@ -489,7 +489,7 @@ class SoccerNetClipsTrain(Dataset):
                 feat_half2A = feat_half2A.numpy()
                 for i in range(feat_half2B.shape[0]):
                     np.save(path + '/half2_chunk' + str(i) + '_featuresB.npy', feat_half2B[i, :, :])
-                    np.save(path + '/half2_chunk' + str(i) + '_featuresB.npy', feat_half2B[i, :, :])
+                    np.save(path + '/half2_chunk' + str(i) + '_featuresA.npy', feat_half2A[i, :, :])
                     np.save(path + '/half2_chunk' + str(i) + '_labels.npy', label_half2[i, :])
                     self.path_list.append(path + '/half2_chunk' + str(i) + '_')
                 '''
@@ -516,9 +516,9 @@ class SoccerNetClipsTrain(Dataset):
         else:
             with open(self.path_store + '/chunk_list.pkl', 'rb') as f:
                 self.path_list = pickle.load(f)
-            with open(self.path_store + '/n_samples.pkl', 'rb') as f:
-                self.n_samples = pickle.load(f)
-                
+            #with open(self.path_store + '/n_samples.pkl', 'rb') as f:
+            #    self.n_samples = pickle.load(f)
+        '''       
         self.idx2path = dict()
         cumsum = np.array(np.cumsum(self.n_samples))
         for i in range(np.array(self.n_samples).sum()):
@@ -527,7 +527,7 @@ class SoccerNetClipsTrain(Dataset):
             path = self.path_list[j]
             idx2 = i - (j > 0).astype(int) * cumsum[j-1] #index inside match
             self.idx2path[i] = [path, idx2]          
-
+        '''
 
 
     def __getitem__(self, index):
@@ -539,6 +539,7 @@ class SoccerNetClipsTrain(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
+        np.load(self.path_list[index])
         path, idx = self.idx2path[index]
         with open(path + 'featuresB.dat', "rb") as f:
             featB = pickle.loads(blosc.decompress(f.read())) 
