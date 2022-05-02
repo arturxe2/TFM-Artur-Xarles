@@ -559,7 +559,7 @@ class SoccerNetClipsTrain(Dataset):
         labelsret = labels[idx, :]
         '''
                 
-        return np.load(self.path_list[index] + 'featuresB.npy'), np.load(self.path_list[index] + 'featuresA.npy'), np.load(self.path_list[index] + 'labels.npy')
+        return torch.from_numpy(np.load(self.path_list[index] + 'featuresB.npy')), torch.from_numpy(np.load(self.path_list[index] + 'featuresA.npy')), torch.from_numpy(np.load(self.path_list[index] + 'labels.npy'))
         '''
         else:
             #Create dictionary with all the indexes for each path
