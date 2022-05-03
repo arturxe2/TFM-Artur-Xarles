@@ -127,9 +127,9 @@ class AudioFeatures(Dataset):
                             elif "soccer" in event: label = 2
                             else: continue
                         elif version == 2:
-                            if event not in dict_event:
+                            if event not in self.dict_event:
                                 continue
-                            label = dict_event[event]
+                            label = self.dict_event[event]
         
                         # if label outside temporal of view
                         if half == 1 and frame//stride>=label_half1.shape[0]:
