@@ -50,6 +50,7 @@ class GenerateWav(Dataset):
                     print('Problem with following file:\n')
                     print(os.path.join(self.path, game, "1_" + self.features))
             
+            
             if not os.path.exists(os.path.join(self.path, game, "2_audio.wav")):
                 try:
                     sound = AudioSegment.from_mp3(os.path.join(self.path, game, "2_" + self.features))
@@ -65,7 +66,7 @@ class GenerateWav(Dataset):
         
         
 class AudioFeatures(Dataset):
-    def __init__(self, path, features="audio.wav", split=["train"], version=2, 
+    def __init__(self, path, features="audio.mp3", split=["train"], version=2, 
                 framerate=44100, chunk_size=42336, augment = False):
         self.path = path
         labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
@@ -96,20 +97,55 @@ class AudioFeatures(Dataset):
         
         
         for game in tqdm(self.listGames):
+            #From mp3 to wav
+            
+            self.features = "224p.mp3"
+            
+            if not os.path.exists(os.path.join(self.path, game, "1_audio.wav")):
+                try:
+                    print('Converting from mp3 to wav')
+                    sound = AudioSegment.from_mp3(os.path.join(self.path, game, "1_" + self.features))
+                    sound.export(os.path.join(self.path, game, "1_audio.wav"), format="wav")
+                    
+                    #my_clip_1 = mp.VideoFileClip(os.path.join(self.path, game, "1_" + self.features))
+                    #my_clip_1.audio.write_audiofile(os.path.join(self.path, game, "1_audio.wav"))
+                
+                except:
+                    print('Problem with following file:\n')
+                    print(os.path.join(self.path, game, "1_" + self.features))
+            
+            
+            if not os.path.exists(os.path.join(self.path, game, "2_audio.wav")):
+                try:
+                    sound = AudioSegment.from_mp3(os.path.join(self.path, game, "2_" + self.features))
+                    sound.export(os.path.join(self.path, game, "2_audio.wav"), format="wav")
+                    
+                    #my_clip_2 = mp.VideoFileClip(os.path.join(self.path, game, "2_" + self.features))
+                    #my_clip_2.audio.write_audiofile(os.path.join(self.path, game, "2_audio.wav"))
+                
+                except:
+                    print('Problem with following file:\n')
+                    print(os.path.join(self.path, game, "2_" + self.features))
+            
+            
+            #From wav to npy           
+            
+            self.features = "audio.wav"
             
             if os.path.exists(os.path.join(self.path, game, "1_" + self.features)):
                 try:
                     # Load wav audio file
-                    print('s')
+                    print('1st half wav to npy...')
                     feat_half1 = wavfile_to_examples(os.path.join(self.path, game, "1_" + self.features))
-                    print('w')
+                    print('2nd half wav to npy...')
                     feat_half2 = wavfile_to_examples(os.path.join(self.path, game, "2_" + self.features))
-                    print('j')
         
                     # Load labels
                     labels = json.load(open(os.path.join(labels_path, game, self.labels)))
-                    label_half1 = np.zeros((feat_half1.shape[0]))
-                    label_half2 = np.zeros((feat_half2.shape[0]))      
+                    label_half1 = np.zeros((feat_half1.shape[0], self.num_classes+1))
+                    label_half1[:,0]=1 # those are BG classes
+                    label_half2 = np.zeros((feat_half2.shape[0], self.num_classes+1))
+                    label_half2[:,0]=1 # those are BG classes     
         
                     for annotation in labels["annotations"]:
                         time = annotation["gameTime"]
@@ -139,30 +175,47 @@ class AudioFeatures(Dataset):
                         a = frame // stride
                         if half == 1:
                             for i in range(self.chunk_size // stride):
-                                label_half1[max(a - self.chunk_size // stride + 1 + i, 0)] = label+1
+                                label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
+                                label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
                                 #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
         
                         if half == 2:
                             for i in range(self.chunk_size // stride):
-                                label_half2[max(a - self.chunk_size // stride + 1 + i, 0)] = label+1 # that's my class
+                                label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
+                                label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
                                 
-                    idx1 = (1 - (label_half1 == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(label_half1))).astype('bool')
-                    idx2 = (1 - (label_half2 == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(label_half2))).astype('bool')
+                    #idx1 = (1 - (label_half1 == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(label_half1))).astype('bool')
+                    #idx2 = (1 - (label_half2 == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(label_half2))).astype('bool')
         
-                    feat_half1 = feat_half1[idx1, :, :]
-                    label_half1 = label_half1[idx1]
-                    feat_half2 = feat_half2[idx2, :, :]
-                    label_half2 = label_half2[idx2]
+                    #feat_half1 = feat_half1[idx1, :, :]
+                    #label_half1 = label_half1[idx1]
+                    #feat_half2 = feat_half2[idx2, :, :]
+                    #label_half2 = label_half2[idx2]
                     
                     print(feat_half1.shape)
                     print(label_half1.shape)
                     print(feat_half2.shape)
                     print(label_half2.shape)
                     
+                    print('Deleting .wav file...')
+                    os.remove(os.path.join(self.path, game, "1_" + self.features))
+                    os.remove(os.path.join(self.path, game, "2_" + self.features))
+                    
+                    
+                    print('Storing npy files...')
+                    np.save(os.path.join(self.path, game, "1_audio.npy"), feat_half1)
+                    np.save(os.path.join(self.path, game, "2_audio.npy"), feat_half2)
+                    np.save(os.path.join(self.path, game, "1_labels.npy"), label_half1)
+                    np.save(os.path.join(self.path, game, "2_labels.npy"), label_half2)
+                    
+                    
+                    
+                    '''
                     self.feats.append(feat_half1)
                     self.feats.append(feat_half2)
                     self.game_labels.append(label_half1)
                     self.game_labels.append(label_half2)
+                    '''
                     
                 except:
                     print('Not correct wav file')
@@ -170,11 +223,11 @@ class AudioFeatures(Dataset):
             else:
                 print('Match without audio features')
             
-        self.feats = np.concatenate(self.feats)
-        self.game_labels = np.concatenate(self.game_labels)
+        #self.feats = np.concatenate(self.feats)
+        #self.game_labels = np.concatenate(self.game_labels)
         
-        print(self.feats.shape)
-        print(self.game_labels.shape)
+        #print(self.feats.shape)
+        #print(self.game_labels.shape)
         
 #GenerateWav('/data-net/datasets/SoccerNetv2/videos_lowres')
 
