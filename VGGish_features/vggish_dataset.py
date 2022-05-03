@@ -65,7 +65,7 @@ class GenerateWav(Dataset):
         
         
 class AudioFeatures(Dataset):
-    def __init__(self, path, features="224p.wav", split=["train"], version=2, 
+    def __init__(self, path, features="audio.wav", split=["train"], version=2, 
                 framerate=44100, chunk_size=42336, augment = False):
         self.path = path
         labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
