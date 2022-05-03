@@ -451,9 +451,9 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
                         json.dump(json_data, output_file, indent=4)
             else:
-                n_spots_match = []
+
                 for i, (game_ID, feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2) in t:
-                    n_spots = []
+
                     data_time.update(time.time() - end)
     
                     # Batch size of 1
@@ -506,10 +506,10 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     # segmentation_predictions.append(segmentation_long_half_1)
                     # segmentation_predictions.append(segmentation_long_half_2)
     
-                    count_all = count_all + torch.sum(torch.abs(label_half1), dim=0)
+                    # count_all = count_all + torch.sum(torch.abs(label_half1), dim=0)
                     # count_visible = count_visible + torch.sum((torch.abs(label_half1)+label_half1)/2, dim=0)
                     # count_unshown = count_unshown + torch.sum((torch.abs(label_half1)-label_half1)/2, dim=0)
-                    count_all = count_all + torch.sum(torch.abs(label_half2), dim=0)
+                    # count_all = count_all + torch.sum(torch.abs(label_half2), dim=0)
                     # count_visible = count_visible + torch.sum((torch.abs(label_half2)+label_half2)/2, dim=0)
                     # count_unshown = count_unshown + torch.sum((torch.abs(label_half2)-label_half2)/2, dim=0)
     
@@ -607,7 +607,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                         for l in range(dataloader.dataset.num_classes):
                             spots = get_spot(
                                 timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window = 0)
-                            n_spots.append(spots.shape[0])
+
                             for spot in spots:
                                 # print("spot", int(spot[0]), spot[1], spot)
                                 frame_index = int(spot[0])
@@ -631,11 +631,8 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
                     with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
                         json.dump(json_data, output_file, indent=4)
-                    print('Number of spots match: ' + str(np.array(n_spots).sum()))
-                    n_spots_match.append(np.array(n_spots).sum())
-                    print('Number of real actions: ' + str(count_all))
-                print('Mean number of spots per match: ' + str(np.array(n_spots_match).mean()))
-                print('Mean number of real actions: ' + str(count_all / 100))
+
+
 
         def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
             zipobj = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
