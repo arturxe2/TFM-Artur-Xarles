@@ -100,8 +100,11 @@ class AudioFeatures(Dataset):
             if os.path.exists(os.path.join(self.path, game, "1_" + self.features)):
                 try:
                     # Load wav audio file
+                    print('s')
                     feat_half1 = wavfile_to_examples(os.path.join(self.path, game, "1_" + self.features))
+                    print('w')
                     feat_half2 = wavfile_to_examples(os.path.join(self.path, game, "2_" + self.features))
+                    print('j')
         
                     # Load labels
                     labels = json.load(open(os.path.join(labels_path, game, self.labels)))
