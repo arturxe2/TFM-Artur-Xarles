@@ -451,8 +451,9 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
                         json.dump(json_data, output_file, indent=4)
             else:
-                n_spots = []
+                n_spots_match = []
                 for i, (game_ID, feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2) in t:
+                    n_spots = []
                     data_time.update(time.time() - end)
     
                     # Batch size of 1
@@ -631,6 +632,8 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
                         json.dump(json_data, output_file, indent=4)
                     print('Number of spots match: ' + str(np.array(n_spots).sum()))
+                    n_spots_match.append(np.array(n_spots).sum())
+                print('Mean number of spots per match: ' + str(np.array(n_spots_match).mean()))
 
         def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
             zipobj = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
