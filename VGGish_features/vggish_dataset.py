@@ -173,6 +173,6 @@ class AudioFeatures(Dataset):
         print(self.feats.shape)
         print(self.game_labels.shape)
         
-GenerateWav('/data-net/datasets/SoccerNetv2/videos_lowres')
+#GenerateWav('/data-net/datasets/SoccerNetv2/videos_lowres')
 
-#audios = AudioFeatures('/data-net/datasets/SoccerNetv2/videos_lowres')
+audios = AudioFeatures('/data-net/datasets/SoccerNetv2/videos_lowres')
