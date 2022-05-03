@@ -506,10 +506,10 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     # segmentation_predictions.append(segmentation_long_half_1)
                     # segmentation_predictions.append(segmentation_long_half_2)
     
-                    # count_all = count_all + torch.sum(torch.abs(label_half1), dim=0)
+                    count_all = count_all + torch.sum(torch.abs(label_half1), dim=0)
                     # count_visible = count_visible + torch.sum((torch.abs(label_half1)+label_half1)/2, dim=0)
                     # count_unshown = count_unshown + torch.sum((torch.abs(label_half1)-label_half1)/2, dim=0)
-                    # count_all = count_all + torch.sum(torch.abs(label_half2), dim=0)
+                    count_all = count_all + torch.sum(torch.abs(label_half2), dim=0)
                     # count_visible = count_visible + torch.sum((torch.abs(label_half2)+label_half2)/2, dim=0)
                     # count_unshown = count_unshown + torch.sum((torch.abs(label_half2)-label_half2)/2, dim=0)
     
@@ -633,7 +633,9 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                         json.dump(json_data, output_file, indent=4)
                     print('Number of spots match: ' + str(np.array(n_spots).sum()))
                     n_spots_match.append(np.array(n_spots).sum())
+                    print('Number of real actions: ' + str(count_all))
                 print('Mean number of spots per match: ' + str(np.array(n_spots_match).mean()))
+                print('Mean number of real actions: ' + str(count_all / 100))
 
         def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
             zipobj = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
