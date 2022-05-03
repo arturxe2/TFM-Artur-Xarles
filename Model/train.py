@@ -606,9 +606,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                         for l in range(dataloader.dataset.num_classes):
                             spots = get_spot(
                                 timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window = 0)
-                            print(spots)
                             n_spots.append(spots.shape[0])
-                            print(spots.shape)
                             for spot in spots:
                                 # print("spot", int(spot[0]), spot[1], spot)
                                 frame_index = int(spot[0])
@@ -632,6 +630,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
                     with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
                         json.dump(json_data, output_file, indent=4)
+                    print('Number of spots match: ' + str(np.array(n_spots).sum()))
 
         def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
             zipobj = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
