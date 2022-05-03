@@ -451,6 +451,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
                         json.dump(json_data, output_file, indent=4)
             else:
+                n_spots = []
                 for i, (game_ID, feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2) in t:
                     data_time.update(time.time() - end)
     
@@ -600,11 +601,13 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     json_data = dict()
                     json_data["UrlLocal"] = game_ID
                     json_data["predictions"] = list()
-    
+                    
                     for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
                         for l in range(dataloader.dataset.num_classes):
                             spots = get_spot(
                                 timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window = 0)
+                            print(spots[0])
+                            n_spots.append(spots.shape[0])
                             print(spots.shape)
                             for spot in spots:
                                 # print("spot", int(spot[0]), spot[1], spot)
