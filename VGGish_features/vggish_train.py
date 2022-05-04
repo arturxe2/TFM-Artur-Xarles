@@ -79,7 +79,7 @@ FLAGS = flags.FLAGS
 _NUM_CLASSES = 3
 
 class SoccerNetClips(Dataset):
-    def __init__(self, path="/data-net/datasets/SoccerNetv2/videos_lowres", features="audio.npy", labels="labels", 
+    def __init__(self, path="/data-net/datasets/SoccerNetv2/videos_lowres", features="audio.npy", labels="labels.npy", 
                  split=["train", "valid", "test"], version=2):
         self.path = path
         self.features = features
