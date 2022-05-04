@@ -253,7 +253,7 @@ def main(_):
     features_input = sess.graph.get_tensor_by_name(
         vggish_params.INPUT_TENSOR_NAME)
     for _ in range(FLAGS.num_batches):
-      (features_train, labels_train) = a.__get_sample__(200)
+      (features_train, labels_train) = a.__get_sample__(50)
       (features_val, labels_val) = a.__get_val__()
       [num_steps, loss_value, _] = sess.run(
           [global_step, loss, train_op],
