@@ -109,8 +109,8 @@ def _get_examples_batch():
 def main(_):
     
   features, labels = _get_examples_batch()
-  print(features.shape)
-  print(labels.shape)
+  print(np.array(features).shape)
+  print(np.array(labels).shape)
     
   with tf.Graph().as_default(), tf.Session() as sess:
     # Define VGGish.
