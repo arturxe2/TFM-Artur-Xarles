@@ -236,13 +236,14 @@ def main(_):
     features_input = sess.graph.get_tensor_by_name(
         vggish_params.INPUT_TENSOR_NAME)
     for _ in range(FLAGS.num_batches):
-      (features, labels) = _get_examples_batch()
+      (features, labels) = a.__get_sample__(30)
       [num_steps, loss_value, _] = sess.run(
           [global_step, loss, train_op],
           feed_dict={features_input: features, labels_input: labels})
       print('Step %d: loss %g' % (num_steps, loss_value))
 
 if __name__ == '__main__':
+    print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
     features, labels = _get_examples_batch()
     print('Hola: ' + str(np.array(features).shape))
     print(np.array(labels).shape)
