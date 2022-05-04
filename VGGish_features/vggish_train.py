@@ -129,7 +129,7 @@ class SoccerNetClips(Dataset):
         self.game_labels = np.concatenate(self.game_labels)
         
     def __get_sample__(self, n_samples):
-        return self.game_feats[0:n_samples, :, :], self.game_labels[0:n_samples, :, :]
+        return self.game_feats[0:n_samples, :, :], self.game_labels[0:n_samples, :]
         
         
 
