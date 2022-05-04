@@ -166,6 +166,6 @@ def main(_):
 
 if __name__ == '__main__':
     features, labels = _get_examples_batch()
-    print(np.array(features).shape)
+    print('Hola: ' + str(np.array(features).shape))
     print(np.array(labels).shape)
     tf.app.run()
