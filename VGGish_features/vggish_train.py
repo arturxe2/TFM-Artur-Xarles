@@ -105,7 +105,7 @@ class SoccerNetClips(Dataset):
         i = 0
         for game in tqdm(self.listGames):
             i += 1
-            if i < 10:
+            if i < 100:
 
                 # Load features
                 feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
@@ -128,7 +128,6 @@ class SoccerNetClips(Dataset):
         self.game_feats = np.concatenate(self.game_feats)
         self.game_labels = np.concatenate(self.game_labels)
         self.n = self.game_feats.shape[0]
-        print(self.n)
         
     def __get_sample__(self, n_samples):
         b = np.arange(0, self.n)
