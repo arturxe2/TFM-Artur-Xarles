@@ -133,7 +133,7 @@ class SoccerNetClips(Dataset):
     def __get_sample__(self, n_samples):
         b = np.arange(0, self.n)
         indexes = np.random.choice(b, size = n_samples)
-        print(len(indexes))
+
         return self.game_feats[indexes, :, :], self.game_labels[indexes, :]
         
         
@@ -241,7 +241,7 @@ def main(_):
     features_input = sess.graph.get_tensor_by_name(
         vggish_params.INPUT_TENSOR_NAME)
     for _ in range(FLAGS.num_batches):
-      (features, labels) = a.__get_sample__(30)
+      (features, labels) = a.__get_sample__(1000)
       [num_steps, loss_value, _] = sess.run(
           [global_step, loss, train_op],
           feed_dict={features_input: features, labels_input: labels})
