@@ -105,7 +105,7 @@ class SoccerNetClips(Dataset):
         i = 0
         for game in tqdm(self.listGames):
             i += 1
-            if i < 20:
+            if i < 10:
 
                 # Load features
                 feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
@@ -126,27 +126,24 @@ class SoccerNetClips(Dataset):
 
         self.n = self.game_feats.shape[0]
         indexes = np.random.rand(self.n)
-        train_indexes = np.arange(0, self.n)[indexes <= val_split]
-        val_indexes = np.arange(0, self.n)[indexes > val_split]
+        self.train_indexes = np.arange(0, self.n)[indexes <= val_split]
+        self.val_indexes = np.arange(0, self.n)[indexes > val_split]
 
-        self.train_feats = self.game_feats[train_indexes, :, :]
-        self.train_labels = self.game_labels[train_indexes, :]
-        self.val_feats = self.game_feats[val_indexes, :, :]
-        self.val_labels = self.game_labels[val_indexes, :]
-        self.n_train = self.train_feats.shape[0]
+
+        self.n_train = len(self.train_indexes)
         
         del self.game_feats
         del self.game_labels
         
         
     def __get_sample__(self, n_samples):
-        b = np.arange(0, self.n_train)
-        indexes = np.random.choice(b, size = n_samples)
 
-        return self.train_feats[indexes, :, :], self.train_labels[indexes, :]
+        indexes = np.random.choice(self.train_indexes, size = n_samples)
+
+        return self.game_feats[indexes, :, :], self.game_labels[indexes, :]
     
     def __get_val__(self):
-        return self.val_feats, self.val_labels
+        return self.game_feats[self.val_indexes, :, :], self.game_labels[self.val_indexes, :]
         
         
 
