@@ -123,6 +123,8 @@ class SoccerNetClips(Dataset):
                 
         self.game_feats = np.concatenate(self.game_feats)
         self.game_labels = np.concatenate(self.game_labels)
+        print(self.game_feats.shape)
+        print(self.game_labels.shape)
         self.n = self.game_feats.shape[0]
         indexes = np.random.rand(self.n)
         train_indexes = np.arange(0, self.n)[indexes <= val_split]
