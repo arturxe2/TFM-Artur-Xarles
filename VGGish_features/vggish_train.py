@@ -76,7 +76,7 @@ flags.DEFINE_string(
 
 FLAGS = flags.FLAGS
 
-_NUM_CLASSES = 3
+_NUM_CLASSES = 18
 
 class SoccerNetClips(Dataset):
     def __init__(self, path="/data-net/datasets/SoccerNetv2/videos_lowres", features="audio.npy", labels="labels.npy", 
@@ -251,4 +251,4 @@ if __name__ == '__main__':
     feats, labels = a.__get_sample__(10)
     print(feats.shape)
     print(labels.shape)
-    #tf.app.run()
+    tf.app.run()
