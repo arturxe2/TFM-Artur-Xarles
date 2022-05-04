@@ -107,24 +107,24 @@ class SoccerNetClips(Dataset):
         for game in tqdm(self.listGames):
             i += 1
             if i < 10:
-                try:
-                    # Load features
-                    feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
-                    feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
-                    labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
-                    labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
-                    print('Features half 1 shape: ' + str(feat_half1.shape))
-                    print('Features half 2 shape: ' + str(feat_half2.shape))
-                    print('Labels half 1 shape: ' + str(labels_half1.shape))
-                    print('labels half 2 shape: ' + str(labels_half2.shape))
+
+                # Load features
+                feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
+                feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
+                labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
+                labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
+                print('Features half 1 shape: ' + str(feat_half1.shape))
+                print('Features half 2 shape: ' + str(feat_half2.shape))
+                print('Labels half 1 shape: ' + str(labels_half1.shape))
+                print('labels half 2 shape: ' + str(labels_half2.shape))
         
-                    self.game_feats.append(feat_half1)
-                    self.game_feats.append(feat_half2)
-                    self.game_labels.append(labels_half1)
-                    self.game_labels.append(labels_half2)
+                self.game_feats.append(feat_half1)
+                self.game_feats.append(feat_half2)
+                self.game_labels.append(labels_half1)
+                self.game_labels.append(labels_half2)
                 
-                except:
-                    print('Not npy file')
+                #except:
+                    #print('Not npy file')
                 
         self.game_feats = np.concatenate(self.game_feats)
         self.game_labels = np.concatenate(self.game_labels)
