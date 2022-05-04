@@ -37,6 +37,26 @@ import vggish_input
 import vggish_params
 import vggish_slim
 
+from torch.utils.data import Dataset
+
+import random
+# import pandas as pd
+import os
+
+
+
+from tqdm import tqdm
+# import utils
+
+import torch
+
+import logging
+import json
+from SoccerNet.Downloader import getListGames
+from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V2
+
+
+
 flags = tf.app.flags
 
 flags.DEFINE_integer(
@@ -57,6 +77,65 @@ flags.DEFINE_string(
 FLAGS = flags.FLAGS
 
 _NUM_CLASSES = 3
+
+class SoccerNetClips(Dataset):
+    def __init__(self, path="/data-net/datasets/SoccerNetv2/videos_lowres", features="audio.npy", labels="labels", 
+                 split=["train", "valid", "test"], version=2):
+        self.path = path
+        self.features = features
+        self.labels = labels
+        self.listGames = getListGames(split)
+        self.version = version
+        if version == 1:
+            self.num_classes = 3
+            self.labels="Labels.json"
+        elif version == 2:
+            self.dict_event = EVENT_DICTIONARY_V2
+            self.num_classes = 17
+            self.labels="Labels-v2.json"
+
+        logging.info("Checking/Download features and labels locally")
+        #downloader = SoccerNetDownloader(path)
+        #downloader.downloadGames(files=[self.labels, f"1_{self.features}", f"2_{self.features}"], split=split, verbose=False)
+
+
+        logging.info("Read examples")
+        
+        self.game_feats = list()
+        self.game_labels = list()
+        i = 0
+        for game in tqdm(self.listGames):
+            i += 1
+            if i < 10:
+                try:
+                    # Load features
+                    feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
+                    feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
+                    labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
+                    labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
+                    print('Features half 1 shape: ' + str(feat_half1.shape))
+                    print('Features half 2 shape: ' + str(feat_half2.shape))
+                    print('Labels half 1 shape: ' + str(labels_half1.shape))
+                    print('labels half 2 shape: ' + str(labels_half2.shape))
+        
+                    self.game_feats.append(feat_half1)
+                    self.game_feats.append(feat_half2)
+                    self.game_labels.append(labels_half1)
+                    self.game_labels.append(labels_half2)
+                
+                except:
+                    print('Not npy file')
+                
+        self.game_feats = np.concatenate(self.game_feats)
+        self.game_labels = np.concatenate(self.game_labels)
+        
+    def __get_sample__(self, n_samples):
+        return self.game_feats[0:n_samples, :, :], self.game_labels[0:n_samples, :, :]
+        
+        
+
+
+
 
 
 def _get_examples_batch():
@@ -168,4 +247,6 @@ if __name__ == '__main__':
     features, labels = _get_examples_batch()
     print('Hola: ' + str(np.array(features).shape))
     print(np.array(labels).shape)
+    a = SoccerNetClips()
+    print(a.__get_sample__(10).shape)
     #tf.app.run()
