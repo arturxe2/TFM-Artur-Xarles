@@ -80,7 +80,7 @@ _NUM_CLASSES = 18
 
 class SoccerNetClips(Dataset):
     def __init__(self, path="/data-net/datasets/SoccerNetv2/videos_lowres", features="audio.npy", labels="labels.npy", 
-                 split=["train", "valid", "test"], version=2):
+                 split=["train", "valid", "test"], version=2, val_split = 0.8):
         self.path = path
         self.features = features
         self.labels = labels
@@ -105,17 +105,13 @@ class SoccerNetClips(Dataset):
         i = 0
         for game in tqdm(self.listGames):
             i += 1
-            if i < 100:
+            if i < 10:
 
                 # Load features
                 feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
                 feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
                 labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
                 labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
-                print('Features half 1 shape: ' + str(feat_half1.shape))
-                print('Features half 2 shape: ' + str(feat_half2.shape))
-                print('Labels half 1 shape: ' + str(labels_half1.shape))
-                print('labels half 2 shape: ' + str(labels_half2.shape))
         
                 self.game_feats.append(feat_half1)
                 self.game_feats.append(feat_half2)
@@ -128,12 +124,26 @@ class SoccerNetClips(Dataset):
         self.game_feats = np.concatenate(self.game_feats)
         self.game_labels = np.concatenate(self.game_labels)
         self.n = self.game_feats.shape[0]
+        indexes = np.random.rand(self.n)
+        train_indexes = np.arange(0, self.n)[indexes <= val_split]
+        val_indexes = np.arange(0, self.n)[indexes > val_split]
+        self.train_feats = self.game_feats[train_indexes, :, :]
+        self.train_labels = self.game_labels[train_indexes, :]
+        self.val_feats = self.game_feats[val_indexes, :, :]
+        self.val_labels = self.game_labels[val_indexes, :]
+        
+        del self.game_feats
+        del self.game_labels
+        
         
     def __get_sample__(self, n_samples):
         b = np.arange(0, self.n)
         indexes = np.random.choice(b, size = n_samples)
 
-        return self.game_feats[indexes, :, :], self.game_labels[indexes, :]
+        return self.train_feats[indexes, :, :], self.train_labels[indexes, :]
+    
+    def __get_val__(self):
+        return self.val_feats, self.val_labels
         
         
 
@@ -240,19 +250,17 @@ def main(_):
     features_input = sess.graph.get_tensor_by_name(
         vggish_params.INPUT_TENSOR_NAME)
     for _ in range(FLAGS.num_batches):
-      (features, labels) = a.__get_sample__(1000)
+      (features_train, labels_train) = a.__get_sample__(200)
+      (features_val, labels_val) = a.__get_val__()
       [num_steps, loss_value, _] = sess.run(
           [global_step, loss, train_op],
-          feed_dict={features_input: features, labels_input: labels})
+          feed_dict={features_input: features_train, labels_input: labels_train})
+      loss_val = sess.run(loss, feed_dict={features_input: features_val, labels_input: labels_val})
       print('Step %d: loss %g' % (num_steps, loss_value))
+      print('Step %d: val loss %g' % (num_steps, loss_val))
 
 if __name__ == '__main__':
-    print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-    features, labels = _get_examples_batch()
-    print('Hola: ' + str(np.array(features).shape))
-    print(np.array(labels).shape)
+
     a = SoccerNetClips()
     feats, labels = a.__get_sample__(10)
-    print(feats.shape)
-    print(labels.shape)
     tf.app.run()
