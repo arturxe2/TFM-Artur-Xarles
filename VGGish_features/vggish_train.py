@@ -145,52 +145,6 @@ class SoccerNetClips(Dataset):
 
 
 
-def _get_examples_batch():
-  """Returns a shuffled batch of examples of all audio classes.
-  Note that this is just a toy function because this is a simple demo intended
-  to illustrate how the training code might work.
-  Returns:
-    a tuple (features, labels) where features is a NumPy array of shape
-    [batch_size, num_frames, num_bands] where the batch_size is variable and
-    each row is a log mel spectrogram patch of shape [num_frames, num_bands]
-    suitable for feeding VGGish, while labels is a NumPy array of shape
-    [batch_size, num_classes] where each row is a multi-hot label vector that
-    provides the labels for corresponding rows in features.
-  """
-  # Make a waveform for each class.
-  num_seconds = 5
-  sr = 44100  # Sampling rate.
-  t = np.arange(0, num_seconds, 1 / sr)  # Time axis
-  # Random sine wave.
-  freq = np.random.uniform(100, 1000)
-  sine = np.sin(2 * np.pi * freq * t)
-  # Random constant signal.
-  magnitude = np.random.uniform(-1, 1)
-  const = magnitude * t
-  # White noise.
-  noise = np.random.normal(-1, 1, size=t.shape)
-
-  # Make examples of each signal and corresponding labels.
-  # Sine is class index 0, Const class index 1, Noise class index 2.
-  sine_examples = vggish_input.waveform_to_examples(sine, sr)
-  sine_labels = np.array([[1, 0, 0]] * sine_examples.shape[0])
-  const_examples = vggish_input.waveform_to_examples(const, sr)
-  const_labels = np.array([[0, 1, 0]] * const_examples.shape[0])
-  noise_examples = vggish_input.waveform_to_examples(noise, sr)
-  noise_labels = np.array([[0, 0, 1]] * noise_examples.shape[0])
-
-  # Shuffle (example, label) pairs across all classes.
-  all_examples = np.concatenate((sine_examples, const_examples, noise_examples))
-  all_labels = np.concatenate((sine_labels, const_labels, noise_labels))
-  labeled_examples = list(zip(all_examples, all_labels))
-  shuffle(labeled_examples)
-
-  # Separate and return the features and labels.
-  features = [example for (example, _) in labeled_examples]
-  labels = [label for (_, label) in labeled_examples]
-  return (features, labels)
-
-
 
 def main(_):
     
@@ -199,7 +153,7 @@ def main(_):
   with tf.Graph().as_default(), tf.Session() as sess:
     # Define VGGish.
     embeddings = vggish_slim.define_vggish_slim(training=FLAGS.train_vggish)
-
+    saver = tf.train.Saver()
     # Define a shallow classification model and associated training ops on top
     # of VGGish.
     with tf.variable_scope('mymodel'):
@@ -244,7 +198,7 @@ def main(_):
     features_input = sess.graph.get_tensor_by_name(
         vggish_params.INPUT_TENSOR_NAME)
     for _ in range(FLAGS.num_batches):
-      (features_train, labels_train) = a.__get_sample__(50)
+      (features_train, labels_train) = a.__get_sample__(10)
       (features_val, labels_val) = a.__get_val__()
       [num_steps, loss_value, _] = sess.run(
           [global_step, loss, train_op],
@@ -252,6 +206,8 @@ def main(_):
       loss_val = sess.run(loss, feed_dict={features_input: features_val, labels_input: labels_val})
       print('Step %d: loss %g' % (num_steps, loss_value))
       print('Step %d: val loss %g' % (num_steps, loss_val))
+    save_path = saver.save(sess, 'fine_tunned_vggish.ckpt')
+    print("Model saved in path: %s" % save_path)
 
 if __name__ == '__main__':
 
