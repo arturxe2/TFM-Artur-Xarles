@@ -247,5 +247,7 @@ if __name__ == '__main__':
     print('Hola: ' + str(np.array(features).shape))
     print(np.array(labels).shape)
     a = SoccerNetClips()
-    print(a.__get_sample__(10).shape)
+    feats, labels = a.__get_sample__(10)
+    print(feats.shape)
+    print(labels.shape)
     #tf.app.run()
