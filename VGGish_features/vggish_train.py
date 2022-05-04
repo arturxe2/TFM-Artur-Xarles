@@ -92,7 +92,6 @@ class SoccerNetClips(Dataset):
         elif version == 2:
             self.dict_event = EVENT_DICTIONARY_V2
             self.num_classes = 17
-            self.labels="Labels-v2.json"
 
         logging.info("Checking/Download features and labels locally")
         #downloader = SoccerNetDownloader(path)
