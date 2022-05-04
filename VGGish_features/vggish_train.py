@@ -127,9 +127,14 @@ class SoccerNetClips(Dataset):
                 
         self.game_feats = np.concatenate(self.game_feats)
         self.game_labels = np.concatenate(self.game_labels)
+        self.n = self.game_feats.shape[0]
+        print(self.n)
         
     def __get_sample__(self, n_samples):
-        return self.game_feats[0:n_samples, :, :], self.game_labels[0:n_samples, :]
+        b = np.arange(0, self.n)
+        indexes = np.random.choice(b, size = n_samples)
+        print(len(indexes))
+        return self.game_feats[indexes, :, :], self.game_labels[indexes, :]
         
         
 
