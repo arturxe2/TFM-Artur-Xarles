@@ -129,6 +129,7 @@ class SoccerNetClips(Dataset):
         indexes = np.random.rand(self.n)
         train_indexes = np.arange(0, self.n)[indexes <= val_split]
         val_indexes = np.arange(0, self.n)[indexes > val_split]
+        print(train_indexes)
         self.train_feats = self.game_feats[train_indexes, :, :]
         self.train_labels = self.game_labels[train_indexes, :]
         self.val_feats = self.game_feats[val_indexes, :, :]
