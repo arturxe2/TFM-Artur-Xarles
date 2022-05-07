@@ -65,7 +65,7 @@ class VGGishClassify(VGGish):
     '''
     Beware that this is a multi-label, not multi-class classifer.
     '''
-    def __init__(self, num_hidden_units=100, num_classes=527):
+    def __init__(self, num_hidden_units=100, num_classes=18):
         super().__init__()
         self.classifier = nn.Sequential(
             nn.Linear(128, num_hidden_units),
@@ -93,4 +93,5 @@ def get_vggish(with_classifier=False, pretrained=True):
 
     return model
 
-model = get_vggish(with_classifier=False, pretrained=True)
+model = get_vggish(with_classifier=True, pretrained=True)
+print(model)
