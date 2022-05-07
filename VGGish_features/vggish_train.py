@@ -223,7 +223,7 @@ def train(path,
     
     #Potser al fer cuda() hi ha el problema
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
-        
+        print(t)
         for i, (feats, labels) in t:
             # measure data loading time
             data_time.update(time.time() - end)
