@@ -27,6 +27,7 @@ Usage:
 
 from __future__ import print_function
 from SoccerNet.Evaluation.utils import AverageMeter
+import time
 
 from random import shuffle
 
