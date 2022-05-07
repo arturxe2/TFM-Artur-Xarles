@@ -1,5 +1,4 @@
 import os.path as osp
-import yaml
 import torch.nn as nn
 from torch import hub
 
