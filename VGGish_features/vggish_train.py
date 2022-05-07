@@ -198,7 +198,7 @@ def main(_):
     features_input = sess.graph.get_tensor_by_name(
         vggish_params.INPUT_TENSOR_NAME)
     for _ in range(FLAGS.num_batches):
-      (features_train, labels_train) = a.__get_sample__(10)
+      (features_train, labels_train) = a.__get_sample__(50)
       (features_val, labels_val) = a.__get_val__()
       [num_steps, loss_value, _] = sess.run(
           [global_step, loss, train_op],
@@ -207,10 +207,11 @@ def main(_):
       print('Step %d: loss %g' % (num_steps, loss_value))
       print('Step %d: val loss %g' % (num_steps, loss_val))
     save_path = saver.save(sess, 'fine_tunned_vggish.ckpt')
-    print("Model saved in path: %s" % save_path)
+    print('Saved finetunned model in : ' + save_path)
 
 if __name__ == '__main__':
 
-    a = SoccerNetClips()
-    feats, labels = a.__get_sample__(10)
-    tf.app.run()
+    #a = SoccerNetClips()
+    #feats, labels = a.__get_sample__(10)
+    #tf.app.run()
+    tf.config.list_physical_devices('GPU')
