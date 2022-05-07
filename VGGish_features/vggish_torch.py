@@ -23,11 +23,7 @@ class VGG(nn.Module):
             nn.ReLU(True),
             nn.Linear(4096, 128),
             nn.ReLU(True))
-        self.classifier = nn.Sequential(
-            nn.Linear(128, 100),
-            nn.ReLU(True),
-            nn.Linear(100, 18),
-            nn.Sigmoid())
+        
 
     def forward(self, x):
         x = self.features(x)
@@ -39,7 +35,7 @@ class VGG(nn.Module):
         x = x.contiguous()
         x = x.view(x.size(0), -1)
 
-        return self.classifier(self.embeddings(x))
+        return self.embeddings(x)
 
 
 class Postprocessor(nn.Module):
@@ -174,12 +170,18 @@ class VGGish(VGG):
 
                 self.pproc.load_state_dict(state_dict)
         self.to(self.device)
+        self.classifier = nn.Sequential(
+            nn.Linear(128, 100),
+            nn.ReLU(True),
+            nn.Linear(100, 18),
+            nn.Sigmoid())
 
     def forward(self, x, fs=None):
         if self.preprocess:
             x = self._preprocess(x, fs)
         x = x.to(self.device)
         x = VGG.forward(self, x)
+        x = self.classifier(x)
         if self.postprocess:
             x = self._postprocess(x)
         return x
