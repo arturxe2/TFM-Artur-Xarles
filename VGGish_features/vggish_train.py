@@ -26,6 +26,7 @@ Usage:
 """
 
 from __future__ import print_function
+from SoccerNet.Evaluation.utils import AverageMeter
 
 from random import shuffle
 
