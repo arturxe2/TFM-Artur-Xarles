@@ -222,8 +222,9 @@ def train(path,
     end = time.time()
     
     #Potser al fer cuda() hi ha el problema
-    print(enumerate(dataloader))
-    print(len(dataloader))
+
+    for a in enumerate(dataloader):
+        print(a)
     
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
         print(t)
