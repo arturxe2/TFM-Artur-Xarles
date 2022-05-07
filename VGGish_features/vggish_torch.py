@@ -193,5 +193,5 @@ class VGGish(VGG):
 
 model = VGGish(urls = model_urls, pretrained = True, preprocess = False)
 print(model)
-model.classifier._modules['2'] = nn.Linear(100, 18)
-print(model)
+#model.classifier._modules['2'] = nn.Linear(100, 18)
+#print(model)
