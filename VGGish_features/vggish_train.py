@@ -116,7 +116,149 @@ class TrainVGGish(Dataset):
         return self.n
 
         
+def trainer(path, train_loader,
+            val_loader,
+            val_metric_loader,
+            model,
+            optimizer,
+            #scheduler,
+            criterion,
+            patience,
+            model_name,
+            max_epochs=1000,
+            evaluation_frequency=20):
+
+    logging.info("start training")
+    training_stage = 0
+
+    best_loss = 9e99
+
+    n_bad_epochs = 0
+    for epoch in range(max_epochs):
+        if n_bad_epochs >= patience:
+            break
+
         
+        best_model_path = os.path.join("models", model_name, "model.pth.tar")
+
+        # train for one epoch
+        loss_training = train(path, train_loader, model, criterion, 
+                              optimizer, epoch + 1, training_stage = training_stage,
+                              train=True)
+
+        # evaluate on validation set
+        loss_validation = train(
+            path, val_loader, model, criterion, optimizer, epoch + 1, 
+            training_stage = training_stage, train=False)
+
+        state = {
+            'epoch': epoch + 1,
+            'state_dict': model.state_dict(),
+            'best_loss': best_loss,
+            'optimizer': optimizer.state_dict(),
+        }
+        os.makedirs(os.path.join("models", model_name), exist_ok=True)
+
+        # remember best prec@1 and save checkpoint
+        is_better = loss_validation < best_loss
+        best_loss = min(loss_validation, best_loss)
+
+        # Save the best model based on loss only if the evaluation frequency too long
+        if is_better:
+            n_bad_epochs = 0
+            torch.save(state, best_model_path)
+        
+        else:
+            n_bad_epochs += 1
+        # Test the model on the validation set
+        if epoch % evaluation_frequency == 0 and epoch != 0:
+            performance_validation = test(
+                path,
+                val_metric_loader,
+                model,
+                model_name)
+
+            logging.info("Validation performance at epoch " +
+                         str(epoch+1) + " -> " + str(performance_validation))
+
+        # Reduce LR on Plateau after patience reached
+        #prevLR = optimizer.param_groups[0]['lr']
+        #scheduler.step(loss_validation)
+        #currLR = optimizer.param_groups[0]['lr']
+        #if (currLR is not prevLR and scheduler.num_bad_epochs == 0):
+        #    logging.info("Plateau Reached!")
+
+        #if (prevLR < 2 * scheduler.eps and
+        #        scheduler.num_bad_epochs >= scheduler.patience):
+        #    logging.info(
+        #        "Plateau Reached and no more reduction -> Exiting Loop")
+        #    break
+
+    return     
+
+def train(path,
+          dataloader,
+          model,
+          criterion,
+          optimizer,
+          epoch,
+          training_stage = 0,
+          train=False):
+
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+
+    # switch to train mode
+    if train:
+
+        model.train()
+
+    else:
+        model.eval()
+
+    end = time.time()
+    
+    #Potser al fer cuda() hi ha el problema
+    with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
+        
+        for i, (feats, labels) in t:
+            # measure data loading time
+            data_time.update(time.time() - end)
+            feats = feats.cuda()
+            labels = labels.cuda()
+            # compute output
+            output = model(feats)
+    
+            # hand written NLL criterion
+            loss = criterion(labels, output)
+    
+            # measure accuracy and record loss
+            losses.update(loss.item(), feats.size(0))
+    
+            if train:
+                # compute gradient and do SGD step
+                optimizer.zero_grad()
+                loss.backward()
+                #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
+                optimizer.step()
+    
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
+    
+            if train:
+                desc = f'Train {epoch}: '
+            else:
+                desc = f'Evaluate {epoch}: '
+            desc += f'Time {batch_time.avg:.3f}s '
+            desc += f'(it:{batch_time.val:.3f}s) '
+            desc += f'Data:{data_time.avg:.3f}s '
+            desc += f'(it:{data_time.val:.3f}s) '
+            desc += f'Loss {losses.avg:.4e} '
+            t.set_description(desc)
+        
+    return loss
 
 
 
@@ -129,31 +271,17 @@ if __name__ == '__main__':
                                 weight_decay=1e-5, amsgrad=True)
     criterion = NLLLoss_weights()
     dataset_Train = TrainVGGish()
+    dataset_val = TrainVGGish(split=["test"])
     train_loader = torch.utils.data.DataLoader(dataset_Train,
         batch_size=128, pin_memory=True)
+    val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=1, shuffle=False,
+                                             num_workers=1, pin_memory=True)
     print(model)
     
-    for epoch in range(2):  # loop over the dataset multiple times
-
-        running_loss = 0.0
-        for i, data in enumerate(train_loader, 0):
-            # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = data
-    
-            # zero the parameter gradients
-            optimizer.zero_grad()
-    
-            # forward + backward + optimize
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-    
-            # print statistics
-            running_loss += loss.item()
-            if i % 2000 == 1999:    # print every 2000 mini-batches
-                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
-                running_loss = 0.0
+    trainer('', train_loader, val_loader, val_loader, 
+            model, optimizer, criterion, patience=5,
+            model_name='model',
+            max_epochs=5, evaluation_frequency=2)
 
 print('Finished Training')
     
