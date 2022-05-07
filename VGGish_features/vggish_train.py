@@ -36,6 +36,7 @@ import tf_slim as slim
 import vggish_input
 import vggish_params
 import vggish_slim
+from vggish_torch import *
 
 from torch.utils.data import Dataset
 
@@ -149,7 +150,7 @@ class SoccerNetClips(Dataset):
 def main(_):
     
   
-    
+    '''
   with tf.Graph().as_default(), tf.Session() as sess:
     # Define VGGish.
     embeddings = vggish_slim.define_vggish_slim(training=FLAGS.train_vggish)
@@ -208,10 +209,12 @@ def main(_):
       print('Step %d: val loss %g' % (num_steps, loss_val))
     save_path = saver.save(sess, 'fine_tunned_vggish.ckpt')
     print('Saved finetunned model in : ' + save_path)
+    
+    '''
 
 if __name__ == '__main__':
 
-    #a = SoccerNetClips()
-    #feats, labels = a.__get_sample__(10)
-    #tf.app.run()
-    tf.config.list_physical_devices('GPU')
+    model = get_vggish(with_classifier=True, pretrained=True)
+    model.classifier._modules['2'] = nn.Linear(100, 18)
+    print(model)
+    
