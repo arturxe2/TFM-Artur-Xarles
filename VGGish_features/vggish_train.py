@@ -267,7 +267,7 @@ def train(path,
 if __name__ == '__main__':
 
     model = model = VGGish(urls = model_urls, pretrained = True, preprocess = False)
-    model.classifier._modules['2'] = nn.Linear(100, 18)
+    #model.classifier._modules['2'] = nn.Linear(100, 18)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
                                 betas=(0.9, 0.999), eps=1e-08, 
                                 weight_decay=1e-5, amsgrad=True)
