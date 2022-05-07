@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from torch import hub
 
-from . import vggish_input, vggish_params
+import vggish_input, vggish_params
 
 model_urls = {
     'vggish': 'https://github.com/harritaylor/torchvggish/'
