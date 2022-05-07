@@ -274,8 +274,8 @@ if __name__ == '__main__':
     dataset_Train = TrainVGGish()
     dataset_val = TrainVGGish(split=["test"])
     train_loader = torch.utils.data.DataLoader(dataset_Train,
-        batch_size=128, num_workers=4, shuffle=True, pin_memory=True)
-    val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=1, shuffle=False,
+        batch_size=256, num_workers=4, shuffle=True, pin_memory=True)
+    val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=256, shuffle=False,
                                              num_workers=1, pin_memory=True)
     print(model)
     
