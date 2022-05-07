@@ -59,26 +59,6 @@ from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V2
 
 
 
-flags = tf.app.flags
-
-flags.DEFINE_integer(
-    'num_batches', 30,
-    'Number of batches of examples to feed into the model. Each batch is of '
-    'variable size and contains shuffled examples of each class of audio.')
-
-flags.DEFINE_boolean(
-    'train_vggish', True,
-    'If True, allow VGGish parameters to change during training, thus '
-    'fine-tuning VGGish. If False, VGGish parameters are fixed, thus using '
-    'VGGish as a fixed feature extractor.')
-
-flags.DEFINE_string(
-    'checkpoint', 'vggish_model.ckpt',
-    'Path to the VGGish checkpoint file.')
-
-FLAGS = flags.FLAGS
-
-_NUM_CLASSES = 18
 
 class SoccerNetClips(Dataset):
     def __init__(self, path="/data-net/datasets/SoccerNetv2/videos_lowres", features="audio.npy", labels="labels.npy", 
@@ -144,74 +124,6 @@ class SoccerNetClips(Dataset):
         
 
 
-
-
-
-
-def main(_):
-    
-  
-    '''
-  with tf.Graph().as_default(), tf.Session() as sess:
-    # Define VGGish.
-    embeddings = vggish_slim.define_vggish_slim(training=FLAGS.train_vggish)
-    saver = tf.train.Saver()
-    # Define a shallow classification model and associated training ops on top
-    # of VGGish.
-    with tf.variable_scope('mymodel'):
-      # Add a fully connected layer with 100 units. Add an activation function
-      # to the embeddings since they are pre-activation.
-      num_units = 100
-      fc = slim.fully_connected(tf.nn.relu(embeddings), num_units)
-
-      # Add a classifier layer at the end, consisting of parallel logistic
-      # classifiers, one per class. This allows for multi-class tasks.
-      logits = slim.fully_connected(
-          fc, _NUM_CLASSES, activation_fn=None, scope='logits')
-      tf.sigmoid(logits, name='prediction')
-
-      # Add training ops.
-      with tf.variable_scope('train'):
-        global_step = tf.train.create_global_step()
-
-        # Labels are assumed to be fed as a batch multi-hot vectors, with
-        # a 1 in the position of each positive class label, and 0 elsewhere.
-        labels_input = tf.placeholder(
-            tf.float32, shape=(None, _NUM_CLASSES), name='labels')
-
-        # Cross-entropy label loss.
-        xent = tf.nn.sigmoid_cross_entropy_with_logits(
-            logits=logits, labels=labels_input, name='xent')
-        loss = tf.reduce_mean(xent, name='loss_op')
-        tf.summary.scalar('loss', loss)
-
-        # We use the same optimizer and hyperparameters as used to train VGGish.
-        optimizer = tf.train.AdamOptimizer(
-            learning_rate=vggish_params.LEARNING_RATE,
-            epsilon=vggish_params.ADAM_EPSILON)
-        train_op = optimizer.minimize(loss, global_step=global_step)
-
-    # Initialize all variables in the model, and then load the pre-trained
-    # VGGish checkpoint.
-    sess.run(tf.global_variables_initializer())
-    vggish_slim.load_vggish_slim_checkpoint(sess, FLAGS.checkpoint)
-
-    # The training loop.
-    features_input = sess.graph.get_tensor_by_name(
-        vggish_params.INPUT_TENSOR_NAME)
-    for _ in range(FLAGS.num_batches):
-      (features_train, labels_train) = a.__get_sample__(50)
-      (features_val, labels_val) = a.__get_val__()
-      [num_steps, loss_value, _] = sess.run(
-          [global_step, loss, train_op],
-          feed_dict={features_input: features_train, labels_input: labels_train})
-      loss_val = sess.run(loss, feed_dict={features_input: features_val, labels_input: labels_val})
-      print('Step %d: loss %g' % (num_steps, loss_value))
-      print('Step %d: val loss %g' % (num_steps, loss_val))
-    save_path = saver.save(sess, 'fine_tunned_vggish.ckpt')
-    print('Saved finetunned model in : ' + save_path)
-    
-    '''
 
 if __name__ == '__main__':
 
