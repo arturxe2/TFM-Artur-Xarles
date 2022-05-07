@@ -112,6 +112,7 @@ class TrainVGGish(Dataset):
         
         
     def __getitem__(self, index):
+        print('jasdkfjlñas')
         return self.game_feats[index, :, :], self.game_lables[index, :]
     
     def __len__(self):
