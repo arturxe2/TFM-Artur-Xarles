@@ -92,3 +92,5 @@ def get_vggish(with_classifier=False, pretrained=True):
         model.load_state_dict(state_dict)
 
     return model
+
+model = get_vggish(with_classifier=False, pretrained=True)
