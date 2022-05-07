@@ -96,11 +96,13 @@ class TrainVGGish(Dataset):
                 feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
                 labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
                 labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
+                
+                if feat_half1.shape[0] > 0:
         
-                self.game_feats.append(feat_half1)
-                self.game_feats.append(feat_half2)
-                self.game_labels.append(labels_half1)
-                self.game_labels.append(labels_half2)
+                    self.game_feats.append(feat_half1)
+                    self.game_feats.append(feat_half2)
+                    self.game_labels.append(labels_half1)
+                    self.game_labels.append(labels_half2)
                 
                 #except:
                     #print('Not npy file')
@@ -113,6 +115,8 @@ class TrainVGGish(Dataset):
         
     def __getitem__(self, index):
         print('jasdkfjlñas')
+        print(self.game_feats[index, :, :])
+        print(self.game_lables[index, :])
         return self.game_feats[index, :, :], self.game_lables[index, :]
     
     def __len__(self):
