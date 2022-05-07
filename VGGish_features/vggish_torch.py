@@ -152,9 +152,9 @@ class VGGish(VGG):
             state_dict = hub.load_state_dict_from_url(urls['vggish'], progress=progress)
             super().load_state_dict(state_dict)
 
-        if device is None:
-            device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.device = device
+        #if device is None:
+        #    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        #self.device = device
         self.preprocess = preprocess
         self.postprocess = postprocess
         if self.postprocess:
@@ -170,7 +170,7 @@ class VGGish(VGG):
                 )
 
                 self.pproc.load_state_dict(state_dict)
-        self.to(self.device)
+        #self.to(self.device)
         self.classifier = nn.Sequential(
             nn.Linear(128, 100),
             nn.ReLU(True),
@@ -180,7 +180,7 @@ class VGGish(VGG):
     def forward(self, x, fs=None):
         if self.preprocess:
             x = self._preprocess(x, fs)
-        x = x.to(self.device)
+        #x = x.to(self.device)
         x = VGG.forward(self, x)
         x = self.classifier(x)
         if self.postprocess:
