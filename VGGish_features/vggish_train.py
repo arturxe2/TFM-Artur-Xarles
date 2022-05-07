@@ -97,12 +97,10 @@ class TrainVGGish(Dataset):
                 labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
                 labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
                 
-                if feat_half1.shape[0] > 0:
-        
-                    self.game_feats.append(feat_half1)
-                    self.game_feats.append(feat_half2)
-                    self.game_labels.append(labels_half1)
-                    self.game_labels.append(labels_half2)
+                self.game_feats.append(feat_half1)
+                self.game_feats.append(feat_half2)
+                self.game_labels.append(labels_half1)
+                self.game_labels.append(labels_half2)
                 
                 #except:
                     #print('Not npy file')
@@ -114,9 +112,6 @@ class TrainVGGish(Dataset):
         
         
     def __getitem__(self, index):
-        print('jasdkfjlñas')
-        print(self.game_feats[index, :, :])
-        print(self.game_labels[index, :])
         return self.game_feats[index, :, :], self.game_labels[index, :]
     
     def __len__(self):
@@ -227,12 +222,8 @@ def train(path,
     end = time.time()
     
     #Potser al fer cuda() hi ha el problema
-    print('aasdflkasjdfñas')
-    for a in enumerate(dataloader):
-        print(a)
     
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
-        print(t)
         for i, (feats, labels) in t:
             # measure data loading time
             data_time.update(time.time() - end)
