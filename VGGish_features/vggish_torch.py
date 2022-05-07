@@ -94,4 +94,5 @@ def get_vggish(with_classifier=False, pretrained=True):
     return model
 
 model = get_vggish(with_classifier=True, pretrained=True)
+model.classifier['2'] = nn.Linear(100, 18)
 print(model)
