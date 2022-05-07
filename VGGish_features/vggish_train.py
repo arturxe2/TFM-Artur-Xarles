@@ -89,7 +89,7 @@ class TrainVGGish(Dataset):
         i = 0
         for game in tqdm(self.listGames):
             i += 1
-            if i < 10:
+            if i < 1000:
 
                 # Load features
                 feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
