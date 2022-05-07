@@ -26,6 +26,7 @@ class VGG(nn.Module):
         
 
     def forward(self, x):
+        x = x.unsqueeze(1)
         x = self.features(x)
 
         # Transpose the output from features to
