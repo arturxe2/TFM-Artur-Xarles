@@ -214,4 +214,5 @@ if __name__ == '__main__':
     #a = SoccerNetClips()
     #feats, labels = a.__get_sample__(10)
     #tf.app.run()
+    import tensorflow as tf
     tf.config.list_physical_devices('GPU')
