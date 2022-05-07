@@ -178,6 +178,7 @@ class VGGish(VGG):
             nn.Sigmoid())
 
     def forward(self, x, fs=None):
+        x = x.float()
         if self.preprocess:
             x = self._preprocess(x, fs)
         #x = x.to(self.device)
