@@ -30,8 +30,7 @@ from __future__ import print_function
 from random import shuffle
 
 import numpy as np
-import tensorflow.compat.v1 as tf
-import tf_slim as slim
+
 
 import vggish_input
 import vggish_params
@@ -125,7 +124,7 @@ if __name__ == '__main__':
 
     model = get_vggish(with_classifier=True, pretrained=True)
     model.classifier._modules['2'] = nn.Linear(100, 18)
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
                                 betas=(0.9, 0.999), eps=1e-08, 
                                 weight_decay=1e-5, amsgrad=True)
     criterion = NLLLoss_weights()
