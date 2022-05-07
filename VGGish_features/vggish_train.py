@@ -116,8 +116,8 @@ class TrainVGGish(Dataset):
     def __getitem__(self, index):
         print('jasdkfjlñas')
         print(self.game_feats[index, :, :])
-        print(self.game_lables[index, :])
-        return self.game_feats[index, :, :], self.game_lables[index, :]
+        print(self.game_labels[index, :])
+        return self.game_feats[index, :, :], self.game_labels[index, :]
     
     def __len__(self):
         return self.n
