@@ -222,7 +222,7 @@ def train(path,
     end = time.time()
     
     #Potser al fer cuda() hi ha el problema
-
+    print('aasdflkasjdfñas')
     for a in enumerate(dataloader):
         print(a)
     
@@ -279,7 +279,7 @@ if __name__ == '__main__':
     dataset_Train = TrainVGGish()
     dataset_val = TrainVGGish(split=["test"])
     train_loader = torch.utils.data.DataLoader(dataset_Train,
-        batch_size=128, pin_memory=True)
+        batch_size=128, num_workers=4, shuffle=True, pin_memory=True)
     val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=1, shuffle=False,
                                              num_workers=1, pin_memory=True)
     print(model)
