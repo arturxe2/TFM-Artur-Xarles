@@ -56,13 +56,14 @@ import logging
 import json
 from SoccerNet.Downloader import getListGames
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V2
+from loss import NLLLoss_weights
 
 
 
 
-class SoccerNetClips(Dataset):
+class TrainVGGish(Dataset):
     def __init__(self, path="/data-net/datasets/SoccerNetv2/videos_lowres", features="audio.npy", labels="labels.npy", 
-                 split=["train", "valid", "test"], version=2, val_split = 0.8):
+                 split=["train", "valid"], version=2, val_split = 0.8):
         self.path = path
         self.features = features
         self.labels = labels
@@ -107,19 +108,14 @@ class SoccerNetClips(Dataset):
         self.game_labels = np.concatenate(self.game_labels)
 
         self.n = self.game_feats.shape[0]
-        indexes = np.random.rand(self.n)
-        self.train_indexes = np.arange(0, self.n)[indexes <= val_split]
-        self.val_indexes = np.arange(0, self.n)[indexes > val_split]
         
         
-    def __get_sample__(self, n_samples):
-
-        indexes = np.random.choice(self.train_indexes, size = n_samples)
-
-        return self.game_feats[indexes, :, :], self.game_labels[indexes, :]
+    def __getitem__(self, index):
+        return self.game_feats[index, :, :], self.game_lables[index, :]
     
-    def __get_val__(self):
-        return self.game_feats[self.val_indexes, :, :], self.game_labels[self.val_indexes, :]
+    def __len__(self):
+        return self.n
+
         
         
 
@@ -129,5 +125,12 @@ if __name__ == '__main__':
 
     model = get_vggish(with_classifier=True, pretrained=True)
     model.classifier._modules['2'] = nn.Linear(100, 18)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
+                                betas=(0.9, 0.999), eps=1e-08, 
+                                weight_decay=1e-5, amsgrad=True)
+    criterion = NLLLoss_weights()
+    dataset_Train = TrainVGGish()
+    train_loader = torch.utils.data.DataLoader(dataset_Train,
+        batch_size=128, pin_memory=True)
     print(model)
     
