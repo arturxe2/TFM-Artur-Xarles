@@ -287,7 +287,7 @@ if __name__ == '__main__':
     trainer('', train_loader, val_loader, val_loader, 
             model, optimizer, criterion, patience=5,
             model_name='final_model',
-            max_epochs=5, evaluation_frequency=2)
+            max_epochs=100, evaluation_frequency=2)
     
     
 
