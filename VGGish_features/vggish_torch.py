@@ -200,7 +200,7 @@ class VGGish(VGG):
     def _postprocess(self, x):
         return self.pproc(x)
 
-model = VGGish(urls = model_urls, pretrained = True, preprocess = False)
-print(model)
+#model = VGGish(urls = model_urls, pretrained = True, preprocess = False)
+#print(model)
 #model.classifier._modules['2'] = nn.Linear(100, 18)
 #print(model)
