@@ -70,11 +70,18 @@ for game in tqdm(listGames):
     # Load features
     feat_half1 = torch.from_numpy(np.load(os.path.join(path, game, "1_" + features))).cuda()
     feat_half2 = torch.from_numpy(np.load(os.path.join(path, game, "2_" + features))).cuda()
+    embed_half1 = []
+    embed_half2 = []
     
     activation = {}
     for j in range(0, math.ceil(feat_half1.shape[0] // 100) + 1):
         output = model(feat_half1[(j * 100): np.minimum((j+1) * 100, feat_half1.shape[0]), :, :])
-        print(activation['embeddings'].shape)
-    for j in range(0, math.ceil(feat_half2.shape[0] // 100)):
+        embed_half1.append(activation['embeddings'])
+    for j in range(0, math.ceil(feat_half2.shape[0] // 100) + 1):
         output = model(feat_half2[(j * 100): np.minimum((j+1) * 100, feat_half2.shape[0]), :, :])
-        print(activation['embeddings'].shape)
+        embed_half2.append(activation['embeddings'])
+        
+    embed_half1 = np.concatenate(embed_half1)
+    embed_half2 = np.concatenate(embed_half2)
+    print(embed_half1.shape)
+    print(embed_half2.shape)
