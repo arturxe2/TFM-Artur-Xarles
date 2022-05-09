@@ -97,8 +97,8 @@ class TrainVGGish(Dataset):
                 labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
                 labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
                 
-                idx1 = np.arange(0, labels_half1.shape[0])[(1 - (labels_half1 == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(labels_half1))).astype('bool')]
-                idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2 == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(labels_half2))).astype('bool')]
+                idx1 = np.arange(0, labels_half1.shape[0])[(1 - (labels_half1[:, 0] == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(labels_half1))).astype('bool')]
+                idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(labels_half2))).astype('bool')]
                 print(idx1)
                 print(idx2)
                 
