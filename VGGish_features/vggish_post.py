@@ -40,6 +40,7 @@ model_name = 'model'
 model = VGGish(urls = model_urls, pretrained = True, preprocess = False, postprocess=False)
 checkpoint = torch.load(os.path.join("models", model_name, "model.pth.tar"))
 model.load_state_dict(checkpoint['state_dict'])
+'''
 model.classifier = Postprocessor()
 state_dict = hub.load_state_dict_from_url(model_urls['pca'], progress=True)
     # TODO: Convert the state_dict to torch
@@ -50,6 +51,7 @@ state_dict[vggish_params.PCA_MEANS_NAME] = torch.as_tensor(
     state_dict[vggish_params.PCA_MEANS_NAME].reshape(-1, 1), dtype=torch.float
 )
 model.classifier.load_state_dict(state_dict)
+'''
 model = model.cuda()
 
 
