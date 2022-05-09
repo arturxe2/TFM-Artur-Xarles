@@ -51,4 +51,16 @@ state_dict[vggish_params.PCA_MEANS_NAME] = torch.as_tensor(
 )
 model.classifier.load_state_dict(state_dict)
 
-print(model)
+
+listGames = getListGames(['train', 'valid', 'test', 'challenge'])
+path="/data-net/datasets/SoccerNetv2/videos_lowres"
+features="audio.npy"
+
+for game in tqdm(listGames):
+  
+
+    # Load features
+    feat_half1 = np.load(os.path.join(path, game, "1_" + features))
+    feat_half2 = np.load(os.path.join(path, game, "2_" + features))
+
+    print(model(feat_half1[0, :, :]))
