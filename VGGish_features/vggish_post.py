@@ -59,11 +59,19 @@ listGames = getListGames(['train', 'valid', 'test', 'challenge'])
 path="/data-net/datasets/SoccerNetv2/videos_lowres"
 features="audio.npy"
 
+def get_activation(name):
+    def hook(model, input, output):
+        activation[name] = output.detach()
+    return hook
+model.classifier.register_forward_hook(get_activation('fc2'))
+model.classifier._modules['5'].register_forward_hook(get_activation('5'))
 for game in tqdm(listGames):
   
 
     # Load features
     feat_half1 = torch.from_numpy(np.load(os.path.join(path, game, "1_" + features))).cuda()
     feat_half2 = torch.from_numpy(np.load(os.path.join(path, game, "2_" + features))).cuda()
-
-    print(model(feat_half1[0:20, :, :]))
+    
+    activation = {}
+    output = (model(feat_half1[0:20, :, :]))
+    print(activation)
