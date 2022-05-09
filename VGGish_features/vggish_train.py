@@ -97,10 +97,9 @@ class TrainVGGish(Dataset):
                 labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
                 labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
                 
-                idx1 = np.arange(0, labels_half1.shape[0])[(1 - (labels_half1[:, 0] == 1) * random.choices([0, 1], weights = [0.05, 0.8], k = len(labels_half1))).astype('bool')]
-                idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.05, 0.8], k = len(labels_half2))).astype('bool')]
-                print(idx1)
-                print(idx2)
+                idx1 = np.arange(0, labels_half1.shape[0])[(1 - (labels_half1[:, 0] == 1) * random.choices([0, 1], weights = [0.2, 0.8], k = len(labels_half1))).astype('bool')]
+                idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.2, 0.8], k = len(labels_half2))).astype('bool')]
+
                 
                 self.game_feats.append(feat_half1[idx1, :, :])
                 self.game_feats.append(feat_half2[idx2, :, :])
@@ -177,15 +176,7 @@ def trainer(path, train_loader,
         else:
             n_bad_epochs += 1
         # Test the model on the validation set
-        if epoch % evaluation_frequency == 0 and epoch != 0:
-            performance_validation = test(
-                path,
-                val_metric_loader,
-                model,
-                model_name)
 
-            logging.info("Validation performance at epoch " +
-                         str(epoch+1) + " -> " + str(performance_validation))
 
         # Reduce LR on Plateau after patience reached
         #prevLR = optimizer.param_groups[0]['lr']
