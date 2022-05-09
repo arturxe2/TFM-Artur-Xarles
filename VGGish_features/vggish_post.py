@@ -24,7 +24,7 @@ from torch.utils.data import Dataset
 import random
 # import pandas as pd
 import os
-
+impot math
 
 
 from tqdm import tqdm
@@ -72,7 +72,9 @@ for game in tqdm(listGames):
     feat_half2 = torch.from_numpy(np.load(os.path.join(path, game, "2_" + features))).cuda()
     
     activation = {}
-    output = (model(feat_half1))
-    print(activation['embeddings'].shape)
-    output = model(feat_half2)
-    print(activation['embeddings'].shape)
+    for j in range(0, math.ceil(feat_half1.shape[0] // 100)):
+        output = model(feat_half1[(j * 100): (j+1) * 100])
+        print(activation['embeddings'].shape)
+    for j in range(0, math.ceil(feat_half2.shape[0] // 100)):
+        output = model(feat_half2[(j * 100): (j+1) * 100])
+        print(activation['embeddings'].shape)
