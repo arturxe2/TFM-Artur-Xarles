@@ -37,7 +37,7 @@ import json
 from SoccerNet.Downloader import getListGames
 
 model_name = 'model'
-model = VGGish(urls = model_urls, pretrained = True, preprocess = False, postprocess=False).cuda()
+model = VGGish(urls = model_urls, pretrained = True, preprocess = False, postprocess=False)
 checkpoint = torch.load(os.path.join("models", model_name, "model.pth.tar"))
 model.load_state_dict(checkpoint['state_dict'])
 model.classifier = Postprocessor()
@@ -50,6 +50,7 @@ state_dict[vggish_params.PCA_MEANS_NAME] = torch.as_tensor(
     state_dict[vggish_params.PCA_MEANS_NAME].reshape(-1, 1), dtype=torch.float
 )
 model.classifier.load_state_dict(state_dict)
+model = model.cuda()
 
 
 listGames = getListGames(['train', 'valid', 'test', 'challenge'])
