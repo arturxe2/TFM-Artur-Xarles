@@ -63,7 +63,7 @@ def get_activation(name):
     def hook(model, input, output):
         activation[name] = output.detach()
     return hook
-model.classifier.register_forward_hook(get_activation('classifier_out'))
+model.embeddings.register_forward_hook(get_activation('embeddings'))
 for game in tqdm(listGames):
   
 
@@ -73,4 +73,4 @@ for game in tqdm(listGames):
     
     activation = {}
     output = (model(feat_half1[0:1, :, :]))
-    print(activation['classifier_out'].shape)
+    print(activation['embeddings'].shape)
