@@ -60,7 +60,7 @@ for game in tqdm(listGames):
   
 
     # Load features
-    feat_half1 = np.load(os.path.join(path, game, "1_" + features))
-    feat_half2 = np.load(os.path.join(path, game, "2_" + features))
+    feat_half1 = torch.from_numpy(np.load(os.path.join(path, game, "1_" + features))).cuda()
+    feat_half2 = torch.from_numpy(np.load(os.path.join(path, game, "2_" + features))).cuda()
 
     print(model(feat_half1[0, :, :]))
