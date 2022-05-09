@@ -271,15 +271,17 @@ if __name__ == '__main__':
     dataset_Train = TrainVGGish()
     dataset_val = TrainVGGish(split=["test"])
     train_loader = torch.utils.data.DataLoader(dataset_Train,
-        batch_size=256, num_workers=4, shuffle=True, pin_memory=True)
-    val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=256, shuffle=False,
+        batch_size=128, num_workers=4, shuffle=True, pin_memory=True)
+    val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=128, shuffle=False,
                                              num_workers=1, pin_memory=True)
     print(model)
     
     trainer('', train_loader, val_loader, val_loader, 
             model, optimizer, criterion, patience=5,
-            model_name='model',
+            model_name='final_model',
             max_epochs=5, evaluation_frequency=2)
+    
+    
 
 print('Finished Training')
     
