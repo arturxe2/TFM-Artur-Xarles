@@ -24,7 +24,7 @@ from torch.utils.data import Dataset
 import random
 # import pandas as pd
 import os
-impot math
+import math
 
 
 from tqdm import tqdm
