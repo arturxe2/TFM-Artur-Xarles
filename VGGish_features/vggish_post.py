@@ -76,10 +76,10 @@ for game in tqdm(listGames):
     activation = {}
     for j in range(0, math.ceil(feat_half1.shape[0] // 100) + 1):
         output = model(feat_half1[(j * 100): np.minimum((j+1) * 100, feat_half1.shape[0]), :, :])
-        embed_half1.append(activation['embeddings'].numpy())
+        embed_half1.append(activation['embeddings'].cpu().numpy())
     for j in range(0, math.ceil(feat_half2.shape[0] // 100) + 1):
         output = model(feat_half2[(j * 100): np.minimum((j+1) * 100, feat_half2.shape[0]), :, :])
-        embed_half2.append(activation['embeddings'].numpy())
+        embed_half2.append(activation['embeddings'].cpu().numpy())
         
     embed_half1 = np.concatenate(embed_half1)
     embed_half2 = np.concatenate(embed_half2)
