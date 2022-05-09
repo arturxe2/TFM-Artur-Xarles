@@ -89,25 +89,26 @@ class TrainVGGish(Dataset):
         i = 0
         for game in tqdm(self.listGames):
             i += 1
-            if i < 100:
+            
 
-                # Load features
-                feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
-                feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
-                labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
-                labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
+            # Load features
+            feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
+            feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
+            labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
+            labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
                 
-                idx1 = np.arange(0, labels_half1.shape[0])[(1 - (labels_half1[:, 0] == 1) * random.choices([0, 1], weights = [0.2, 0.8], k = len(labels_half1))).astype('bool')]
-                idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.2, 0.8], k = len(labels_half2))).astype('bool')]
+            idx1 = np.arange(0, labels_half1.shape[0])[(1 - (labels_half1[:, 0] == 1) * random.choices([0, 1], weights = [0.2, 0.8], k = len(labels_half1))).astype('bool')]
+            idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.2, 0.8], k = len(labels_half2))).astype('bool')]
+            
+            if labels_half1.shape[0] == 0:
+                print('Game without examples: ' + game)
+               
+            self.game_feats.append(feat_half1[idx1, :, :])
+            self.game_feats.append(feat_half2[idx2, :, :])
+            self.game_labels.append(labels_half1[idx1, :])
+            self.game_labels.append(labels_half2[idx2, :])
+                
 
-                
-                self.game_feats.append(feat_half1[idx1, :, :])
-                self.game_feats.append(feat_half2[idx2, :, :])
-                self.game_labels.append(labels_half1[idx1, :])
-                self.game_labels.append(labels_half2[idx2, :])
-                
-                #except:
-                    #print('Not npy file')
                 
         self.game_feats = np.concatenate(self.game_feats)
         self.game_labels = np.concatenate(self.game_labels)
