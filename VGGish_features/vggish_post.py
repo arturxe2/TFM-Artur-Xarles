@@ -72,5 +72,7 @@ for game in tqdm(listGames):
     feat_half2 = torch.from_numpy(np.load(os.path.join(path, game, "2_" + features))).cuda()
     
     activation = {}
-    output = (model(feat_half1[0:1, :, :]))
+    output = (model(feat_half1))
+    print(activation['embeddings'].shape)
+    output = model(feat_half2)
     print(activation['embeddings'].shape)
