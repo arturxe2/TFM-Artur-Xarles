@@ -261,21 +261,29 @@ def train(path,
 
 
 if __name__ == '__main__':
+    model_urls = {
+        'vggish': 'https://github.com/harritaylor/torchvggish/'
+                  'releases/download/v0.1/vggish-10086976.pth',
+        'pca': 'https://github.com/harritaylor/torchvggish/'
+               'releases/download/v0.1/vggish_pca_params-970ea276.pth'
+    }
 
-    model = model = VGGish(urls = model_urls, pretrained = True, preprocess = False, postprocess=False).cuda()
+    
     #model.classifier._modules['2'] = nn.Linear(100, 18)
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
-                                betas=(0.9, 0.999), eps=1e-08, 
-                                weight_decay=1e-5, amsgrad=True)
-    criterion = NLLLoss_weights()
+    
     dataset_Train = TrainVGGish()
     dataset_val = TrainVGGish(split=["test"])
     train_loader = torch.utils.data.DataLoader(dataset_Train,
         batch_size=128, num_workers=4, shuffle=True, pin_memory=True)
     val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=128, shuffle=False,
                                              num_workers=1, pin_memory=True)
-    print(model)
+
     
+    model = VGGish(urls = model_urls, pretrained = True, preprocess = False, postprocess=False).cuda()
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
+                                betas=(0.9, 0.999), eps=1e-08, 
+                                weight_decay=1e-5, amsgrad=True)
+    criterion = NLLLoss_weights()
     trainer('', train_loader, val_loader, val_loader, 
             model, optimizer, criterion, patience=5,
             model_name='final_model',
