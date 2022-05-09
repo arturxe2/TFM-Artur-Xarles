@@ -64,7 +64,7 @@ def get_activation(name):
         activation[name] = output.detach()
     return hook
 model.classifier.register_forward_hook(get_activation('fc2'))
-model.classifier._modules['5'].register_forward_hook(get_activation('5'))
+model.classifier._modules['5'].register_forward_hook(get_activation('classifier'))
 for game in tqdm(listGames):
   
 
