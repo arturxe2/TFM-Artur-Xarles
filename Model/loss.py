@@ -15,6 +15,6 @@ class NLLLoss_weights(torch.nn.Module):
         
     def forward(self, labels, output):
         #weights = torch.tensor([1, 20, 10, 15, 10, 20, 20, 20, 10, 10, 10, 10, 10, 10, 10, 15, 30, 50]).cuda() online
-        weights = torch.tensor([1, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 20]).cuda()
+        weights = torch.tensor([1, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]).cuda()
         #weights = torch.tensor([1, 40, 20, 30, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 30, 80, 80]).cuda()
         return torch.mean(torch.mean(weights * labels * -torch.log(output) + (1 - labels) * -torch.log(1 - output), dim=0))
