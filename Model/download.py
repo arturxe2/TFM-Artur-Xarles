@@ -36,11 +36,11 @@ for split in splits:
             os.remove(os.path.join(path, game, '2_224.mkv'))
             
         else:
-            if os.path.exists(os.path.join(path, game, '1_224.mp3')):
+            if os.path.exists(os.path.join(path, game, '1_224p.mp3')):
                 print('Removing mp3 audio 1st half')
-                os.remove(os.path.join(path, game, '1_224.mp3'))
-            if os.path.exists(os.path.join(path, game, '2_224.mp3')):
+                os.remove(os.path.join(path, game, '1_224p.mp3'))
+            if os.path.exists(os.path.join(path, game, '2_224p.mp3')):
                 print('Removing mp3 audio 2nd half')
-                os.remove(os.path.join(path, game, '2_224.mp3'))
+                os.remove(os.path.join(path, game, '2_224p.mp3'))
 #mySoccerNetDownloader.downloadGame(files=["1_224p.mkv", "2_224p.mkv"], split=["train","valid","test","challenge"])
 
