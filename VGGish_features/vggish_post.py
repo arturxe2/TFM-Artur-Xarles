@@ -36,7 +36,7 @@ import logging
 import json
 from SoccerNet.Downloader import getListGames
 
-model_name = 'model'
+model_name = 'final_model'
 model = VGGish(urls = model_urls, pretrained = True, preprocess = False, postprocess=False)
 checkpoint = torch.load(os.path.join("models", model_name, "model.pth.tar"))
 model.load_state_dict(checkpoint['state_dict'])
