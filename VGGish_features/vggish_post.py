@@ -83,6 +83,6 @@ for game in tqdm(listGames):
         
     embed_half1 = np.concatenate(embed_half1)
     embed_half2 = np.concatenate(embed_half2)
-    np.savez_compressed(os.path.join(path, game, "1_featA.npz"), embed_half1)
-    np.savez_compressed(os.path.join(path, game, "2_featA.npz"), embed_half2)
+    np.savez_compressed(os.path.join('/home-net/axesparraguera/data/VGGFeatures', game, "1_featA.npz"), embed_half1)
+    np.savez_compressed(os.path.join('/home-net/axesparraguera/data/VGGFeatures', game, "2_featA.npz"), embed_half2)
     
