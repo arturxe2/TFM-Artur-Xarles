@@ -657,7 +657,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                  Predictions_path=output_results,
                  split="test",
                  prediction_file="results_spotting.json", 
-                 version=dataloader.dataset.version),
+                 version=dataloader.dataset.version,
                  metric="tight")    
 
     
