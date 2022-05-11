@@ -119,134 +119,134 @@ class SoccerNetClips(Dataset):
         i = 0
         for game in tqdm(self.listGames):
             i+=1
-            if i > 1:
-                break
-            # Load features
-            if self.path != 'Baidu+ResNet':
-                feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
-                feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1])
-                feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
-                feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1])
-                feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=stride, clip_length=self.chunk_size)            
-                feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=stride, clip_length=self.chunk_size)
-            # print("feat_half1.shape",feat_half1.shape)
-            else:
-                feat_half1B = np.load(os.path.join(baidu_path, game, "1_" + baidu_name))
-                feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
-                feat_half1R = np.load(os.path.join(resnet_path, game, "1_" + resnet_name))
-                feat_half1R = feat_half1R.reshape(-1, feat_half1R.shape[-1])
-                feat_half2B = np.load(os.path.join(baidu_path, game, "2_" + baidu_name))
-                feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
-                feat_half2R = np.load(os.path.join(resnet_path, game, "2_" + resnet_name))
-                feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
+            if i < 2:
                 
-                if feat_half1B.shape[0]*2 > feat_half1R.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half1R.shape))
-                    feat_half1R_aux = np.zeros((feat_half1B.shape[0] * 2, feat_half1R.shape[1]))
-                    feat_half1R_aux[:feat_half1R.shape[0]] = feat_half1R
-                    feat_half1R_aux[feat_half1R.shape[0]:] = feat_half1R[feat_half1R.shape[0]-1]
-                    feat_half1R = feat_half1R_aux
-                    print('Resized to: ' + str(feat_half1R.shape))
+                # Load features
+                if self.path != 'Baidu+ResNet':
+                    feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
+                    feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1])
+                    feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
+                    feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1])
+                    feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=stride, clip_length=self.chunk_size)            
+                    feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=stride, clip_length=self.chunk_size)
+                # print("feat_half1.shape",feat_half1.shape)
+                else:
+                    feat_half1B = np.load(os.path.join(baidu_path, game, "1_" + baidu_name))
+                    feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
+                    feat_half1R = np.load(os.path.join(resnet_path, game, "1_" + resnet_name))
+                    feat_half1R = feat_half1R.reshape(-1, feat_half1R.shape[-1])
+                    feat_half2B = np.load(os.path.join(baidu_path, game, "2_" + baidu_name))
+                    feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
+                    feat_half2R = np.load(os.path.join(resnet_path, game, "2_" + resnet_name))
+                    feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
                     
-                if feat_half2B.shape[0]*2 > feat_half2R.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half2R.shape))
-                    feat_half2R_aux = np.zeros((feat_half2B.shape[0] * 2, feat_half2R.shape[1]))
-                    feat_half2R_aux[:feat_half2R.shape[0]] = feat_half2R
-                    feat_half2R_aux[feat_half2R.shape[0]:] = feat_half2R[feat_half2R.shape[0]-1]
-                    feat_half2R = feat_half2R_aux
-                    print('Resized to: ' + str(feat_half2R.shape))
+                    if feat_half1B.shape[0]*2 > feat_half1R.shape[0]:
+                        print('Different shape')
+                        print('Previous shape: ' + str(feat_half1R.shape))
+                        feat_half1R_aux = np.zeros((feat_half1B.shape[0] * 2, feat_half1R.shape[1]))
+                        feat_half1R_aux[:feat_half1R.shape[0]] = feat_half1R
+                        feat_half1R_aux[feat_half1R.shape[0]:] = feat_half1R[feat_half1R.shape[0]-1]
+                        feat_half1R = feat_half1R_aux
+                        print('Resized to: ' + str(feat_half1R.shape))
+                        
+                    if feat_half2B.shape[0]*2 > feat_half2R.shape[0]:
+                        print('Different shape')
+                        print('Previous shape: ' + str(feat_half2R.shape))
+                        feat_half2R_aux = np.zeros((feat_half2B.shape[0] * 2, feat_half2R.shape[1]))
+                        feat_half2R_aux[:feat_half2R.shape[0]] = feat_half2R
+                        feat_half2R_aux[feat_half2R.shape[0]:] = feat_half2R[feat_half2R.shape[0]-1]
+                        feat_half2R = feat_half2R_aux
+                        print('Resized to: ' + str(feat_half2R.shape))
+                        
+                    if feat_half1B.shape[0]*2 < feat_half1R.shape[0]:
+                        print('Different shape')
+                        print('Previous shape: ' + str(feat_half1B.shape))
+                        feat_half1B_aux = np.zeros((feat_half1R.shape[0] // 2, feat_half1B.shape[1]))
+                        feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
+                        feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
+                        feat_half1B = feat_half1B_aux
+                        print('Resized to: ' + str(feat_half1B.shape))
+                        
+                    if feat_half2B.shape[0]*2 < feat_half2R.shape[0]:
+                        print('Different shape')
+                        print('Previous shape: ' + str(feat_half2B.shape))
+                        feat_half2B_aux = np.zeros((feat_half2R.shape[0] // 2, feat_half2B.shape[1]))
+                        feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
+                        feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
+                        feat_half2B = feat_half2B_aux
+                        print('Resized to: ' + str(feat_half2B.shape))
                     
-                if feat_half1B.shape[0]*2 < feat_half1R.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half1B.shape))
-                    feat_half1B_aux = np.zeros((feat_half1R.shape[0] // 2, feat_half1B.shape[1]))
-                    feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
-                    feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
-                    feat_half1B = feat_half1B_aux
-                    print('Resized to: ' + str(feat_half1B.shape))
                     
-                if feat_half2B.shape[0]*2 < feat_half2R.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half2B.shape))
-                    feat_half2B_aux = np.zeros((feat_half2R.shape[0] // 2, feat_half2B.shape[1]))
-                    feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
-                    feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
-                    feat_half2B = feat_half2B_aux
-                    print('Resized to: ' + str(feat_half2B.shape))
+                    feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
+                    feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * 2, clip_length=self.chunk_size * 2) 
+                    feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
+                    feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride * 2, clip_length=self.chunk_size * 2) 
+    
+    
                 
-                
-                feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
-                feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * 2, clip_length=self.chunk_size * 2) 
-                feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
-                feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride * 2, clip_length=self.chunk_size * 2) 
-
-
-            
-
-            # Load labels
-            labels = json.load(open(os.path.join(labels_path, game, self.labels)))
-            if self.path != 'Baidu+ResNet':
-                label_half1 = np.zeros((feat_half1.shape[0], self.num_classes+1))
-                label_half1[:,0]=1 # those are BG classes
-                label_half2 = np.zeros((feat_half2.shape[0], self.num_classes+1))
-                label_half2[:,0]=1 # those are BG classes
-            else:
-                label_half1 = np.zeros((feat_half1B.shape[0], self.num_classes+1))
-                label_half1[:,0]=1 # those are BG classes
-                label_half2 = np.zeros((feat_half2B.shape[0], self.num_classes+1))
-                label_half2[:,0]=1 # those are BG classes
-
-            for annotation in labels["annotations"]:
-
-                time = annotation["gameTime"]
-                event = annotation["label"]
-
-                half = int(time[0])
-
-                minutes = int(time[-5:-3])
-                seconds = int(time[-2::])
-                frame = framerate * ( seconds + 60 * minutes ) 
-
-                if version == 1:
-                    if "card" in event: label = 0
-                    elif "subs" in event: label = 1
-                    elif "soccer" in event: label = 2
-                    else: continue
-                elif version == 2:
-                    if event not in self.dict_event:
+    
+                # Load labels
+                labels = json.load(open(os.path.join(labels_path, game, self.labels)))
+                if self.path != 'Baidu+ResNet':
+                    label_half1 = np.zeros((feat_half1.shape[0], self.num_classes+1))
+                    label_half1[:,0]=1 # those are BG classes
+                    label_half2 = np.zeros((feat_half2.shape[0], self.num_classes+1))
+                    label_half2[:,0]=1 # those are BG classes
+                else:
+                    label_half1 = np.zeros((feat_half1B.shape[0], self.num_classes+1))
+                    label_half1[:,0]=1 # those are BG classes
+                    label_half2 = np.zeros((feat_half2B.shape[0], self.num_classes+1))
+                    label_half2[:,0]=1 # those are BG classes
+    
+                for annotation in labels["annotations"]:
+    
+                    time = annotation["gameTime"]
+                    event = annotation["label"]
+    
+                    half = int(time[0])
+    
+                    minutes = int(time[-5:-3])
+                    seconds = int(time[-2::])
+                    frame = framerate * ( seconds + 60 * minutes ) 
+    
+                    if version == 1:
+                        if "card" in event: label = 0
+                        elif "subs" in event: label = 1
+                        elif "soccer" in event: label = 2
+                        else: continue
+                    elif version == 2:
+                        if event not in self.dict_event:
+                            continue
+                        label = self.dict_event[event]
+    
+                    # if label outside temporal of view
+                    if half == 1 and frame//stride>=label_half1.shape[0]:
                         continue
-                    label = self.dict_event[event]
-
-                # if label outside temporal of view
-                if half == 1 and frame//stride>=label_half1.shape[0]:
-                    continue
-                if half == 2 and frame//stride>=label_half2.shape[0]:
-                    continue
-                a = frame // stride
-                if half == 1:
-                    for i in range(self.chunk_size // stride):
-                        label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
-                        label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
-                    #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
-
-                if half == 2:
-                    for i in range(self.chunk_size // stride):
-                        label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
-                        label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
-            
-            if self.path != 'Baidu+ResNet':
-                self.game_feats.append(feat_half1)
-                self.game_feats.append(feat_half2)
-            else:
-                self.game_feats1.append(feat_half1B)
-                self.game_feats2.append(feat_half1R)
-                self.game_feats1.append(feat_half2B)
-                self.game_feats2.append(feat_half2R)
-           
-            self.game_labels.append(label_half1)
-            self.game_labels.append(label_half2)
+                    if half == 2 and frame//stride>=label_half2.shape[0]:
+                        continue
+                    a = frame // stride
+                    if half == 1:
+                        for i in range(self.chunk_size // stride):
+                            label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
+                            label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
+                        #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
+    
+                    if half == 2:
+                        for i in range(self.chunk_size // stride):
+                            label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
+                            label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
+                
+                if self.path != 'Baidu+ResNet':
+                    self.game_feats.append(feat_half1)
+                    self.game_feats.append(feat_half2)
+                else:
+                    self.game_feats1.append(feat_half1B)
+                    self.game_feats2.append(feat_half1R)
+                    self.game_feats1.append(feat_half2B)
+                    self.game_feats2.append(feat_half2R)
+               
+                self.game_labels.append(label_half1)
+                self.game_labels.append(label_half2)
             
         if self.path != 'Baidu+ResNet':
             self.game_feats = np.concatenate(self.game_feats)
