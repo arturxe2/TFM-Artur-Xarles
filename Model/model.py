@@ -312,8 +312,12 @@ class Model(nn.Module):
             inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
             
             
-            #Transformer mix
-            inputs_mix = self.encoder_mix(self.drop(inputs_mix)) #(B x 256 x chunk_size * 7)
+            #Transformer mix (B x chunk_size * 7 x 256)
+            inpus_mix = inputs_mix.permute((0, 2, 1))
+            inputs_mix = self.pool_layer_mix(inputs_mix)
+            inputs_mix = inputs_mix.permute((0, 2, 1))
+            
+            inputs_mix = self.encoder_mix(self.drop(inputs_mix)) 
             inputs_mix = self.encoder_mix_2(inputs_mix)
             
             inputsA = inputsA.permute((0, 2, 1))
@@ -333,7 +337,7 @@ class Model(nn.Module):
             inputs_pooledB4 = self.pool_layerB4(inputsB4).squeeze(-1) #(B x 256)
             inputs_pooledB5 = self.pool_layerB5(inputsB5).squeeze(-1) #(B x 256)
             
-            inputs_pooled_mix = self.pool_layer_mix(inputs_mix).squeeze(-1) #(B x 256)
+            inputs_pooled_mix = (inputs_mix).squeeze(-1) #(B x 256)
             
             outputsA = self.sigm(self.fcA(self.drop(inputs_pooledA)))
             outputsB1 = self.sigm(self.fcB1(self.drop(inputs_pooledB1)))
