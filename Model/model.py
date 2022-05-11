@@ -314,9 +314,7 @@ class Model(nn.Module):
             
             #Transformer mix (B x chunk_size * 7 x 256)
             inputs_mix = inputs_mix.permute((0, 2, 1))
-            print(inputs_mix.shape)
             inputs_mix = self.pool_layer_mix(inputs_mix)
-            print(inputs_mix.shape)
             inputs_mix = inputs_mix.permute((0, 2, 1))
             
             inputs_mix = self.encoder_mix(self.drop(inputs_mix)) 
