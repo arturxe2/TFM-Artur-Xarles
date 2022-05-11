@@ -116,7 +116,11 @@ class SoccerNetClips(Dataset):
         resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
         resnet_name = 'VGGish.npy'
         stride = self.chunk_size #// 2
+        i = 0
         for game in tqdm(self.listGames):
+            i+=1
+            if i > 1:
+                break
             # Load features
             if self.path != 'Baidu+ResNet':
                 feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
