@@ -116,10 +116,10 @@ class SoccerNetClips(Dataset):
         resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
         resnet_name = 'VGGish.npy'
         stride = self.chunk_size #// 2
-        i = 0
+        s = 0
         for game in tqdm(self.listGames):
-            i+=1
-            if i < 2:
+            s+=1
+            if s < 2:
                 
                 # Load features
                 if self.path != 'Baidu+ResNet':
