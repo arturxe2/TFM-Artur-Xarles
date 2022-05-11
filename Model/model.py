@@ -169,7 +169,7 @@ class Model(nn.Module):
             self.encoder_mix_2 = nn.TransformerEncoder(encoder_layer_mix_2, 1)
             
             #Reduce mix to 18
-            self.pool_layer_mix = nn.MaxPool1d(chunk_size*(1*5), stride=1)
+            self.pool_layer_mix = nn.MaxPool1d(chunk_size*(2+1*5), stride=1)
             self.fc_mix = nn.Linear(512, self.num_classes+1)
             
 
@@ -309,7 +309,7 @@ class Model(nn.Module):
             inputsB5 = self.encoderB5_2(inputsB5)
             
             
-            inputs_mix = torch.cat((inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
+            inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
             
             
             #Transformer mix
