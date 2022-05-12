@@ -169,7 +169,8 @@ class Model(nn.Module):
             self.encoder_mix_2 = nn.TransformerEncoder(encoder_layer_mix_2, 1)
             
             #Reduce mix to 18
-            self.pool_layer_mix = nn.MaxPool1d(chunk_size*(2+1*5), stride=1)
+            #self.pool_layer_mix = nn.MaxPool1d(chunk_size*(2+1*5), stride=1)
+            self.pool_layer_mix = nn.MaxPool1d(6, stride = 1)
             self.fc_mix = nn.Linear(512, self.num_classes+1)
             
 
@@ -308,18 +309,6 @@ class Model(nn.Module):
             inputsB4 = self.encoderB4_2(inputsB4)
             inputsB5 = self.encoderB5_2(inputsB5)
             
-            
-            inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
-            
-            
-            #Transformer mix (B x chunk_size * 7 x 256)
-            inputs_mix = inputs_mix.permute((0, 2, 1))
-            inputs_mix = self.pool_layer_mix(inputs_mix)
-            inputs_mix = inputs_mix.permute((0, 2, 1))
-            
-            inputs_mix = self.encoder_mix(self.drop(inputs_mix)) 
-            inputs_mix = self.encoder_mix_2(inputs_mix)
-            
             inputsA = inputsA.permute((0, 2, 1))
             inputsB1 = inputsB1.permute((0, 2, 1))
             inputsB2 = inputsB2.permute((0, 2, 1))
@@ -327,24 +316,56 @@ class Model(nn.Module):
             inputsB4 = inputsB4.permute((0, 2, 1))
             inputsB5 = inputsB5.permute((0, 2, 1))
             
+            inputs_pooledA = self.pool_layerA(inputsA) #(B x 256 x 1)
+            inputs_pooledB1 = self.pool_layerB1(inputsB1) #(B x 256 x1)
+            inputs_pooledB2 = self.pool_layerB2(inputsB2) #(B x 256 x 1)
+            inputs_pooledB3 = self.pool_layerB3(inputsB3) #(B x 256 x 1)
+            inputs_pooledB4 = self.pool_layerB4(inputsB4) #(B x 256 x 1)
+            inputs_pooledB5 = self.pool_layerB5(inputsB5) #(B x 256 x 1)
+            
+            inputs_pooledA_out = inputs_pooledA.squeeze(-1) #(B x 256)
+            inputs_pooledB1_out = inputs_pooledB1.squeeze(-1) #(B x 256)
+            inputs_pooledB2_out = inputs_pooledB2.squeeze(-1) #(B x 256)
+            inputs_pooledB3_out = inputs_pooledB3.squeeze(-1) #(B x 256)
+            inputs_pooledB4_out = inputs_pooledB4.squeeze(-1) #(B x 256)
+            inputs_pooledB5_out = inputs_pooledB5.squeeze(-1) #(B x 256)
+            
+            inputsA = inputs_pooledA.permute((0, 2, 1)) #(B x 1 x 256)
+            inputsB1 = inputs_pooledB1.permute((0, 2, 1)) #(B x 1 x 256)
+            inputsB2 = inputs_pooledB2.permute((0, 2, 1)) #(B x 1 x 256)
+            inputsB3 = inputs_pooledB3.permute((0, 2, 1)) #(B x 1 x 256)
+            inputsB4 = inputs_pooledB4.permute((0, 2, 1)) #(B x 1 x 256)
+            inputsB5 = inputs_pooledB5.permute((0, 2, 1)) #(B x 1 x 256)
+            
+            
+            inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
+            
+            
+            #Transformer mix (B x chunk_size * 7 x 256)
+            #inputs_mix = inputs_mix.permute((0, 2, 1))
+            #inputs_mix = self.pool_layer_mix(inputs_mix)
+            #inputs_mix = inputs_mix.permute((0, 2, 1))
+            
+            inputs_mix = self.encoder_mix(self.drop(inputs_mix)) 
+            inputs_mix = self.encoder_mix_2(inputs_mix)
+            
+            
+            
             inputs_mix = inputs_mix.permute((0, 2, 1))
                                                     
             #Individual outputs
-            inputs_pooledA = self.pool_layerA(inputsA).squeeze(-1) #(B x 256 x 1)
-            inputs_pooledB1 = self.pool_layerB1(inputsB1).squeeze(-1) #(B x 256)
-            inputs_pooledB2 = self.pool_layerB2(inputsB2).squeeze(-1) #(B x 256)
-            inputs_pooledB3 = self.pool_layerB3(inputsB3).squeeze(-1) #(B x 256)
-            inputs_pooledB4 = self.pool_layerB4(inputsB4).squeeze(-1) #(B x 256)
-            inputs_pooledB5 = self.pool_layerB5(inputsB5).squeeze(-1) #(B x 256)
             
-            inputs_pooled_mix = (inputs_mix).squeeze(-1) #(B x 256)
             
-            outputsA = self.sigm(self.fcA(self.drop(inputs_pooledA)))
-            outputsB1 = self.sigm(self.fcB1(self.drop(inputs_pooledB1)))
-            outputsB2 = self.sigm(self.fcB2(self.drop(inputs_pooledB2)))
-            outputsB3 = self.sigm(self.fcB3(self.drop(inputs_pooledB3)))
-            outputsB4 = self.sigm(self.fcB4(self.drop(inputs_pooledB4)))
-            outputsB5 = self.sigm(self.fcB5(self.drop(inputs_pooledB5)))
+            
+            
+            inputs_pooled_mix = self.pool_layer_mix(inputs_mix).squeeze(-1) #(B x 256)
+            
+            outputsA = self.sigm(self.fcA(self.drop(inputs_pooledA_out)))
+            outputsB1 = self.sigm(self.fcB1(self.drop(inputs_pooledB1_out)))
+            outputsB2 = self.sigm(self.fcB2(self.drop(inputs_pooledB2_out)))
+            outputsB3 = self.sigm(self.fcB3(self.drop(inputs_pooledB3_out)))
+            outputsB4 = self.sigm(self.fcB4(self.drop(inputs_pooledB4_out)))
+            outputsB5 = self.sigm(self.fcB5(self.drop(inputs_pooledB5_out)))
             
             outputs_mix = self.sigm(self.fc_mix(self.drop(inputs_pooled_mix)))
             
