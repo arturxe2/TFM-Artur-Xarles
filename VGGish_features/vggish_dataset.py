@@ -145,6 +145,7 @@ class AudioFeatures(Dataset):
                         print('2nd half wav to npy...')
                         feat_half2 = wavfile_to_examples(os.path.join(self.path, game, "2_" + self.features))
                         
+                        print('Features shape:')
                         print(feat_half1.shape)
                         print(feat_half2.shape)
                         
@@ -254,4 +255,4 @@ class AudioFeatures(Dataset):
         
 #GenerateWav('/data-net/datasets/SoccerNetv2/videos_lowres')
 
-audios = AudioFeatures('/data-net/datasets/SoccerNetv2/videos_lowres')
+audios = AudioFeatures('/data-local/data1-hdd/axesparraguera/vggish')
