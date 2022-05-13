@@ -177,7 +177,7 @@ class Model(nn.Module):
 
 
 
-
+        self.drop2 = nn.Dropout(p=0.1)
         self.drop = nn.Dropout(p=0.4)
         self.sigm = nn.Sigmoid()
 
@@ -278,12 +278,12 @@ class Model(nn.Module):
             inputsB5 = inputsB[:, 6528:, :]
             
             #Reduce to 256 dimensionality each
-            inputsA = self.relu(self.normA(self.conv1A(inputsA))) #(B x 256 x chunk_size * 2)
-            inputsB1 = self.relu(self.norm1B(self.conv1B(inputsB1))) #(B x 256 x chunk_size)
-            inputsB2 = self.relu(self.norm2B(self.conv2B(inputsB2))) #(B x 256 x chunk_size)
-            inputsB3 = self.relu(self.norm3B(self.conv3B(inputsB3))) #(B x 256 x chunk_size)
-            inputsB4 = self.relu(self.norm4B(self.conv4B(inputsB4))) #(B x 256 x chunk_size)
-            inputsB5 = self.relu(self.norm5B(self.conv5B(inputsB5))) #(B x 256 x chunk_size)
+            inputsA = self.relu(self.normA(self.conv1A(self.drop2(inputsA)))) #(B x 256 x chunk_size * 2)
+            inputsB1 = self.relu(self.norm1B(self.conv1B(self.drop2(inputsB1)))) #(B x 256 x chunk_size)
+            inputsB2 = self.relu(self.norm2B(self.conv2B(self.drop2(inputsB2)))) #(B x 256 x chunk_size)
+            inputsB3 = self.relu(self.norm3B(self.conv3B(self.drop2(inputsB3)))) #(B x 256 x chunk_size)
+            inputsB4 = self.relu(self.norm4B(self.conv4B(self.drop2(inputsB4)))) #(B x 256 x chunk_size)
+            inputsB5 = self.relu(self.norm5B(self.conv5B(self.drop2(inputsB5)))) #(B x 256 x chunk_size)
             
             inputsA = inputsA.permute((0, 2, 1))
             inputsB1 = inputsB1.permute((0, 2, 1))
