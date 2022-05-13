@@ -187,7 +187,7 @@ def train(path,
                     lossB4 = criterion(labels, outputsB4)
                     lossB5 = criterion(labels, outputsB5)
                     
-                    loss = lossF #+ 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
+                    loss = 0.7 * lossF + 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
                 else:
                     loss = criterion(labels, outputs_mix)
                 
