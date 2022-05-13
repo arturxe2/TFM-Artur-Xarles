@@ -4,6 +4,7 @@ from SoccerNet.Downloader import SoccerNetDownloader, getListGames
 import os
 import numpy as np
 from moviepy.editor import VideoFileClip
+from pydub import AudioSegment
 
 path = "/data-local/data1-hdd/axesparraguera/vggish"
 mySoccerNetDownloader = SoccerNetDownloader(
@@ -36,13 +37,17 @@ for split in splits:
                 
                 print('Extracting 1st half audio...')
                 clip = VideoFileClip(os.path.join(path, game, '1_224p.mkv'))
-                clip.audio.write_audiofile(os.path.join(path, game, '1_224.wav'))
+                clip.audio.write_audiofile(os.path.join(path, game, '1_224.mp3'))
+                sound = AudioSegment.from_mp3(os.path.join(path, game, '1_224.mp3'))
+                sound.export(os.path.join(path, game, "1_audio.wav"), format="wav")
                 os.remove(os.path.join(path, game, '1_224.mkv'))
                 
                 
                 print('Extracting 2nd half audio...')
                 clip = VideoFileClip(os.path.join(path, game, '2_224p.mkv'))
-                clip.audio.write_audiofile(os.path.join(path, game, '2_224.wav'))
+                clip.audio.write_audiofile(os.path.join(path, game, '2_224.mp3'))
+                sound = AudioSegment.from_mp3(os.path.join(path, game, '2_224.mp3'))
+                sound.export(os.path.join(path, game, "2_audio.wav"), format="wav")
                 os.remove(os.path.join(path, game, '2_224.mkv'))
                 
             else:
@@ -60,13 +65,17 @@ for split in splits:
             
             print('Extracting 1st half audio...')
             clip = VideoFileClip(os.path.join(path, game, '1_224p.mkv'))
-            clip.audio.write_audiofile(os.path.join(path, game, '1_224.wav'))
+            clip.audio.write_audiofile(os.path.join(path, game, '1_224.mp3'))
+            sound = AudioSegment.from_mp3(os.path.join(path, game, '1_224.mp3'))
+            sound.export(os.path.join(path, game, "1_audio.wav"), format="wav")
             os.remove(os.path.join(path, game, '1_224.mkv'))
             
             
             print('Extracting 2nd half audio...')
             clip = VideoFileClip(os.path.join(path, game, '2_224p.mkv'))
-            clip.audio.write_audiofile(os.path.join(path, game, '2_224.wav'))
+            clip.audio.write_audiofile(os.path.join(path, game, '2_224.mp3'))
+            sound = AudioSegment.from_mp3(os.path.join(path, game, '2_224.mp3'))
+            sound.export(os.path.join(path, game, "2_audio.wav"), format="wav")
             os.remove(os.path.join(path, game, '2_224.mkv'))
 #mySoccerNetDownloader.downloadGame(files=["1_224p.mkv", "2_224p.mkv"], split=["train","valid","test","challenge"])
 
