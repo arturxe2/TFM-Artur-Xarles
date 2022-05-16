@@ -55,7 +55,7 @@ model.classifier.load_state_dict(state_dict)
 model = model.cuda()
 
 
-listGames = getListGames(['train', 'valid', 'test', 'challenge'])
+listGames = getListGames(['challenge'])#(['train', 'valid', 'test', 'challenge'])
 path="/data-local/data1-hdd/axesparraguera/vggish"
 features="audio.npy"
 
@@ -73,6 +73,8 @@ for game in tqdm(listGames):
         # Load features
         feat_half1 = torch.from_numpy(np.load(os.path.join(path, game, "1_" + features))).cuda()
         feat_half2 = torch.from_numpy(np.load(os.path.join(path, game, "2_" + features))).cuda()
+        print(feat_half1.shape)
+        print(feat_half2.shape)
         
         if (feat_half1.shape[0] > 100) & (feat_half2.shape[0] > 100):
             embed_half1 = []
