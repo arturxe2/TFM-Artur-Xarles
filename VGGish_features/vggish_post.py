@@ -56,7 +56,7 @@ model = model.cuda()
 
 
 listGames = getListGames(['train', 'valid', 'test', 'challenge'])
-path="/data-net/datasets/SoccerNetv2/videos_lowres"
+path="/data-local/data1-hdd/axesparraguera/vggish"
 features="audio.npy"
 
 def get_activation(name):
@@ -81,8 +81,19 @@ for game in tqdm(listGames):
         output = model(feat_half2[(j * 100): np.minimum((j+1) * 100, feat_half2.shape[0]), :, :])
         embed_half2.append(activation['embeddings'].cpu().numpy())
         
+    
+        
     embed_half1 = np.concatenate(embed_half1)
     embed_half2 = np.concatenate(embed_half2)
-    np.save(os.path.join('/home-net/axesparraguera/data/VGGFeatures', game, "1_featA.npy"), embed_half1)
-    np.save(os.path.join('/home-net/axesparraguera/data/VGGFeatures', game, "2_featA.npy"), embed_half2)
+    
+    n1 = len(embed_half1)
+    n2 = len(embed_half2)
+    embed_half1 = embed_half1[np.delete(np.arange(0, n1), np.arange(11, n1, 12)), :]
+    embed_half2 = embed_half2[np.delete(np.arange(0, n2), np.arange(11, n2, 12)), :]
+    
+    print(embed_half1.shape)
+    print(embed_half2.shape)    
+    
+    np.save(os.path.join(path, game, "1_featA.npy"), embed_half1)
+    np.save(os.path.join(path, game, "2_featA.npy"), embed_half2)
     
