@@ -42,7 +42,7 @@ def main(args):
                              path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
                              path_store = "/data-local/data3-ssd/axesparraguera",
                              features_baidu = 'baidu_soccer_embeddings.npy',
-                             features_audio = 'featA.npy'
+                             features_audio = 'featA.npy',
                              #features_audio = 'VGGish.npy', 
                              stride = 1, split=["train"], version=2, 
                             framerate=1, chunk_size=3, augment = False, store = False)

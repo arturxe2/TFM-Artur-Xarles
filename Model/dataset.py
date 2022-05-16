@@ -318,11 +318,11 @@ class SoccerNetClips(Dataset):
 
 class SoccerNetClipsTrain(Dataset):
     def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
-                 path_audio = '/home-net/axesparraguera/data/VGGFeatures', 
+                 path_audio = '/data-local/data1-hdd/axesparraguera/vggish', 
                  path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
                  path_store = "/data-local/data3-ssd/axesparraguera",
                  features_baidu = 'baidu_soccer_embeddings.npy',
-                 features_audio = 'VGGish.npy', stride = 2, split=["train"], version=2, 
+                 features_audio = 'featA.npy', stride = 2, split=["train"], version=2, 
                 framerate=1, chunk_size=7, augment = False, store = True):
         
         self.path_baidu = path_baidu
@@ -351,6 +351,7 @@ class SoccerNetClipsTrain(Dataset):
         logging.info("Pre-compute clips")
         
         self.stride = stride
+        framerate2 = 1
         
         if store:
         
@@ -368,46 +369,46 @@ class SoccerNetClipsTrain(Dataset):
                 feat_half2A = np.load(os.path.join(self.path_audio, game, "2_" + self.features_audio))
                 feat_half2A = feat_half2A.reshape(-1, feat_half2A.shape[-1])
                     
-                if feat_half1B.shape[0]*2 > feat_half1A.shape[0]:
+                if feat_half1B.shape[0]*framerate2 > feat_half1A.shape[0]:
                     print('Different shape')
                     print('Previous shape: ' + str(feat_half1A.shape))
-                    feat_half1A_aux = np.zeros((feat_half1B.shape[0] * 2, feat_half1A.shape[1]))
+                    feat_half1A_aux = np.zeros((feat_half1B.shape[0] * framerate2, feat_half1A.shape[1]))
                     feat_half1A_aux[:feat_half1A.shape[0]] = feat_half1A
                     feat_half1A_aux[feat_half1A.shape[0]:] = feat_half1A[feat_half1A.shape[0]-1]
                     feat_half1A = feat_half1A_aux
                     print('Resized to: ' + str(feat_half1A.shape))
                         
-                if feat_half2B.shape[0]*2 > feat_half2A.shape[0]:
+                if feat_half2B.shape[0]*framerate2 > feat_half2A.shape[0]:
                     print('Different shape')
                     print('Previous shape: ' + str(feat_half2A.shape))
-                    feat_half2A_aux = np.zeros((feat_half2B.shape[0] * 2, feat_half2A.shape[1]))
+                    feat_half2A_aux = np.zeros((feat_half2B.shape[0] * framerate2, feat_half2A.shape[1]))
                     feat_half2A_aux[:feat_half2A.shape[0]] = feat_half2A
                     feat_half2A_aux[feat_half2A.shape[0]:] = feat_half2A[feat_half2A.shape[0]-1]
                     feat_half2A = feat_half2A_aux
                     print('Resized to: ' + str(feat_half2A.shape))
                         
-                if feat_half1B.shape[0]*2 < feat_half1A.shape[0]:
+                if feat_half1B.shape[0]*framerate2 < feat_half1A.shape[0]:
                     print('Different shape')
                     print('Previous shape: ' + str(feat_half1B.shape))
-                    feat_half1B_aux = np.zeros((feat_half1A.shape[0] // 2, feat_half1B.shape[1]))
+                    feat_half1B_aux = np.zeros((feat_half1A.shape[0] // framerate2, feat_half1B.shape[1]))
                     feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
                     feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
                     feat_half1B = feat_half1B_aux
                     print('Resized to: ' + str(feat_half1B.shape))
                         
-                if feat_half2B.shape[0]*2 < feat_half2A.shape[0]:
+                if feat_half2B.shape[0]*framerate2 < feat_half2A.shape[0]:
                     print('Different shape')
                     print('Previous shape: ' + str(feat_half2B.shape))
-                    feat_half2B_aux = np.zeros((feat_half2A.shape[0] // 2, feat_half2B.shape[1]))
+                    feat_half2B_aux = np.zeros((feat_half2A.shape[0] // framerate2, feat_half2B.shape[1]))
                     feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
                     feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
                     feat_half2B = feat_half2B_aux
                     print('Resized to: ' + str(feat_half2B.shape))
                     
                 feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
-                feat_half1A = feats2clip(torch.from_numpy(feat_half1A), stride=stride * 2, clip_length=self.chunk_size * 2) 
+                feat_half1A = feats2clip(torch.from_numpy(feat_half1A), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
                 feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
-                feat_half2A = feats2clip(torch.from_numpy(feat_half2A), stride=stride * 2, clip_length=self.chunk_size * 2) 
+                feat_half2A = feats2clip(torch.from_numpy(feat_half2A), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
                            
     
                 # Load labels
