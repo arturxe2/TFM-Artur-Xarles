@@ -88,8 +88,8 @@ for game in tqdm(listGames):
     
     n1 = len(embed_half1)
     n2 = len(embed_half2)
-    embed_half1 = embed_half1[np.delete(np.arange(0, n1), np.arange(11, n1, 12)), :]
-    embed_half2 = embed_half2[np.delete(np.arange(0, n2), np.arange(11, n2, 12)), :]
+    embed_half1 = embed_half1[np.delete(np.arange(0, n1), np.arange(11, n1, 25)), :]
+    embed_half2 = embed_half2[np.delete(np.arange(0, n2), np.arange(11, n2, 25)), :]
     
     print(embed_half1.shape)
     print(embed_half2.shape)    
