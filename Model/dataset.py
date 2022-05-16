@@ -115,6 +115,9 @@ class SoccerNetClips(Dataset):
         baidu_name = 'baidu_soccer_embeddings.npy'
         resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
         resnet_name = 'VGGish.npy'
+        resnet_path = '/data-local/data1-hdd/axesparraguera/vggish'
+        resnet_name = 'featA.npy'
+        framerate2 = 1
         stride = self.chunk_size #// 2
         for game in tqdm(self.listGames):
             # Load features
@@ -136,37 +139,37 @@ class SoccerNetClips(Dataset):
                 feat_half2R = np.load(os.path.join(resnet_path, game, "2_" + resnet_name))
                 feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
                 
-                if feat_half1B.shape[0]*2 > feat_half1R.shape[0]:
+                if feat_half1B.shape[0]*framerate2 > feat_half1R.shape[0]:
                     print('Different shape')
                     print('Previous shape: ' + str(feat_half1R.shape))
-                    feat_half1R_aux = np.zeros((feat_half1B.shape[0] * 2, feat_half1R.shape[1]))
+                    feat_half1R_aux = np.zeros((feat_half1B.shape[0] * framerate2, feat_half1R.shape[1]))
                     feat_half1R_aux[:feat_half1R.shape[0]] = feat_half1R
                     feat_half1R_aux[feat_half1R.shape[0]:] = feat_half1R[feat_half1R.shape[0]-1]
                     feat_half1R = feat_half1R_aux
                     print('Resized to: ' + str(feat_half1R.shape))
                     
-                if feat_half2B.shape[0]*2 > feat_half2R.shape[0]:
+                if feat_half2B.shape[0]*framerate2 > feat_half2R.shape[0]:
                     print('Different shape')
                     print('Previous shape: ' + str(feat_half2R.shape))
-                    feat_half2R_aux = np.zeros((feat_half2B.shape[0] * 2, feat_half2R.shape[1]))
+                    feat_half2R_aux = np.zeros((feat_half2B.shape[0] * framerate2, feat_half2R.shape[1]))
                     feat_half2R_aux[:feat_half2R.shape[0]] = feat_half2R
                     feat_half2R_aux[feat_half2R.shape[0]:] = feat_half2R[feat_half2R.shape[0]-1]
                     feat_half2R = feat_half2R_aux
                     print('Resized to: ' + str(feat_half2R.shape))
                     
-                if feat_half1B.shape[0]*2 < feat_half1R.shape[0]:
+                if feat_half1B.shape[0]*framerate2 < feat_half1R.shape[0]:
                     print('Different shape')
                     print('Previous shape: ' + str(feat_half1B.shape))
-                    feat_half1B_aux = np.zeros((feat_half1R.shape[0] // 2, feat_half1B.shape[1]))
+                    feat_half1B_aux = np.zeros((feat_half1R.shape[0] // framerate2, feat_half1B.shape[1]))
                     feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
                     feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
                     feat_half1B = feat_half1B_aux
                     print('Resized to: ' + str(feat_half1B.shape))
                     
-                if feat_half2B.shape[0]*2 < feat_half2R.shape[0]:
+                if feat_half2B.shape[0]*framerate2 < feat_half2R.shape[0]:
                     print('Different shape')
                     print('Previous shape: ' + str(feat_half2B.shape))
-                    feat_half2B_aux = np.zeros((feat_half2R.shape[0] // 2, feat_half2B.shape[1]))
+                    feat_half2B_aux = np.zeros((feat_half2R.shape[0] // framerate2, feat_half2B.shape[1]))
                     feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
                     feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
                     feat_half2B = feat_half2B_aux
@@ -174,9 +177,9 @@ class SoccerNetClips(Dataset):
                 
                 
                 feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
-                feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * 2, clip_length=self.chunk_size * 2) 
+                feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
                 feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
-                feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride * 2, clip_length=self.chunk_size * 2) 
+                feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
 
 
             
@@ -648,6 +651,10 @@ class SoccerNetClipsTesting(Dataset):
         baidu_name = 'baidu_soccer_embeddings.npy'
         resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
         resnet_name = 'VGGish.npy'
+        resnet_path = '/data-local/data1-hdd/axesparraguera/vggish'
+        resnet_name = 'featA.npy'
+        
+        framerate2 = 1
         # Load features
         
         if self.path != 'Baidu+ResNet':
@@ -734,26 +741,26 @@ class SoccerNetClipsTesting(Dataset):
         
         else:
             
-            if feat1_half1.shape[0]*2 > feat2_half1.shape[0]:
-                feat2_half1_aux = np.zeros((feat1_half1.shape[0] * 2, feat2_half1.shape[1]))
+            if feat1_half1.shape[0]*framerate2 > feat2_half1.shape[0]:
+                feat2_half1_aux = np.zeros((feat1_half1.shape[0] * framerate2, feat2_half1.shape[1]))
                 feat2_half1_aux[:feat2_half1.shape[0]] = feat2_half1
                 feat2_half1_aux[feat2_half1.shape[0]:] = feat2_half1[feat2_half1.shape[0]-1]
                 feat2_half1 = feat2_half1_aux
                 
-            if feat1_half2.shape[0]*2 > feat2_half2.shape[0]:
-                feat2_half2_aux = np.zeros((feat1_half2.shape[0] * 2, feat2_half2.shape[1]))
+            if feat1_half2.shape[0]*framerate2 > feat2_half2.shape[0]:
+                feat2_half2_aux = np.zeros((feat1_half2.shape[0] * framerate2, feat2_half2.shape[1]))
                 feat2_half2_aux[:feat2_half2.shape[0]] = feat2_half2
                 feat2_half2_aux[feat2_half2.shape[0]:] = feat2_half2[feat2_half2.shape[0]-1]
                 feat2_half2 = feat2_half2_aux
                 
-            if feat1_half1.shape[0]*2 < feat2_half1.shape[0]:
-                feat1_half1_aux = np.zeros((feat2_half1.shape[0] // 2, feat1_half1.shape[1]))
+            if feat1_half1.shape[0]*framerate2 < feat2_half1.shape[0]:
+                feat1_half1_aux = np.zeros((feat2_half1.shape[0] // framerate2, feat1_half1.shape[1]))
                 feat1_half1_aux[:feat1_half1.shape[0]] = feat1_half1
                 feat1_half1_aux[feat1_half1.shape[0]:] = feat1_half1[feat1_half1.shape[0]-1]
                 feat1_half1 = feat1_half1_aux
                 
-            if feat1_half2.shape[0]*2 < feat2_half2.shape[0]:
-                feat1_half2_aux = np.zeros((feat2_half2.shape[0] // 2, feat1_half2.shape[1]))
+            if feat1_half2.shape[0]*framerate2 < feat2_half2.shape[0]:
+                feat1_half2_aux = np.zeros((feat2_half2.shape[0] // framerate2, feat1_half2.shape[1]))
                 feat1_half2_aux[:feat1_half2.shape[0]] = feat1_half2
                 feat1_half2_aux[feat1_half2.shape[0]:] = feat1_half2[feat1_half2.shape[0]-1]
                 feat1_half2 = feat1_half2_aux
@@ -765,11 +772,11 @@ class SoccerNetClipsTesting(Dataset):
                                      stride=1, off=int(self.chunk_size/2),
                                      clip_length=self.chunk_size)
             feat2_half1 = feats2clip(torch.from_numpy(feat2_half1),
-                                     stride=2, off=int(self.chunk_size/2),
-                                     clip_length=self.chunk_size * 2)
+                                     stride=framerate2, off=int(self.chunk_size/2),
+                                     clip_length=self.chunk_size * framerate2)
             feat2_half2 = feats2clip(torch.from_numpy(feat2_half2),
-                                     stride=2, off=int(self.chunk_size/2),
-                                     clip_length=self.chunk_size * 2)
+                                     stride=framerate2, off=int(self.chunk_size/2),
+                                     clip_length=self.chunk_size * framerate2)
             
             if feat1_half1.shape[0] != feat2_half1.shape[0]:
                 feat2_half1 = feat2_half1[:feat1_half1.shape[0]]

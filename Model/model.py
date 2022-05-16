@@ -102,7 +102,8 @@ class Model(nn.Module):
         
         elif self.pool == "final_model":
             #All features to 512 dimensionality
-            self.conv1A = nn.Conv1d(512, 512, 1, stride=1, bias=False)
+            #self.conv1A = nn.Conv1d(512, 512, 1, stride=1, bias=False)
+            self.conv1A = nn.Conv1d(128, 512, 1, stride=1, bias=False)
             self.normA = nn.BatchNorm1d(512)
             self.conv1B = nn.Conv1d(2048, 512, 1, stride=1, bias=False)
             self.norm1B = nn.BatchNorm1d(512)
@@ -149,7 +150,7 @@ class Model(nn.Module):
             
             
             #Reduce for each feature vector to 18
-            self.pool_layerA = nn.MaxPool1d(chunk_size * 2, stride = 1)
+            self.pool_layerA = nn.MaxPool1d(chunk_size * 1, stride = 1)
             self.fcA = nn.Linear(512, self.num_classes+1)
             self.pool_layerB1 = nn.MaxPool1d(chunk_size, stride=1)
             self.fcB1 = nn.Linear(512, self.num_classes+1)
