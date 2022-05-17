@@ -602,11 +602,12 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
                     json_data = dict()
                     json_data["UrlLocal"] = game_ID
                     json_data["predictions"] = list()
-                    
+                    nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
                     for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
+                        
                         for l in range(dataloader.dataset.num_classes):
                             spots = get_spot(
-                                timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window = 0)
+                                timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
 
                             for spot in spots:
                                 # print("spot", int(spot[0]), spot[1], spot)
