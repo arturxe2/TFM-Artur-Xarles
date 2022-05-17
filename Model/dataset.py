@@ -360,7 +360,7 @@ class SoccerNetClipsTrain(Dataset):
 
             for game in tqdm(self.listGames):
                 # Load features
-                correct_audio = os.path.exists(self.path_audio, game, "1_" + self.features_audio)
+                correct_audio = os.path.exists(os.path.join(self.path_audio, game, "1_" + self.features_audio))
                 if correct_audio:
                     audio = np.load(os.path.join(self.path_audio, game, "1_audio.npy"))
                     n_audio = audio.shape[0]
