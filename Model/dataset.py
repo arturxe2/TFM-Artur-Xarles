@@ -360,154 +360,164 @@ class SoccerNetClipsTrain(Dataset):
 
             for game in tqdm(self.listGames):
                 # Load features
-                feat_half1B = np.load(os.path.join(self.path_baidu, game, "1_" + self.features_baidu))
-                feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
-                feat_half1A = np.load(os.path.join(self.path_audio, game, "1_" + self.features_audio))
-                feat_half1A = feat_half1A.reshape(-1, feat_half1A.shape[-1])
-                feat_half2B = np.load(os.path.join(self.path_baidu, game, "2_" + self.features_baidu))
-                feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
-                feat_half2A = np.load(os.path.join(self.path_audio, game, "2_" + self.features_audio))
-                feat_half2A = feat_half2A.reshape(-1, feat_half2A.shape[-1])
-                    
-                if feat_half1B.shape[0]*framerate2 > feat_half1A.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half1A.shape))
-                    feat_half1A_aux = np.zeros((feat_half1B.shape[0] * framerate2, feat_half1A.shape[1]))
-                    feat_half1A_aux[:feat_half1A.shape[0]] = feat_half1A
-                    feat_half1A_aux[feat_half1A.shape[0]:] = feat_half1A[feat_half1A.shape[0]-1]
-                    feat_half1A = feat_half1A_aux
-                    print('Resized to: ' + str(feat_half1A.shape))
+                correct_audio = os.path.exists(self.path_audio, game, "1_" + self.features_audio)
+                if correct_audio:
+                    audio = np.load(os.path.join(self.path_audio, game, "1_audio.npy"))
+                    n_audio = audio.shape[0]
+                    if n_audio > 100:
+                
+                        feat_half1B = np.load(os.path.join(self.path_baidu, game, "1_" + self.features_baidu))
+                        feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
+                        feat_half1A = np.load(os.path.join(self.path_audio, game, "1_" + self.features_audio))
+                        feat_half1A = feat_half1A.reshape(-1, feat_half1A.shape[-1])
+                        feat_half2B = np.load(os.path.join(self.path_baidu, game, "2_" + self.features_baidu))
+                        feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
+                        feat_half2A = np.load(os.path.join(self.path_audio, game, "2_" + self.features_audio))
+                        feat_half2A = feat_half2A.reshape(-1, feat_half2A.shape[-1])
+                            
+                        if feat_half1B.shape[0]*framerate2 > feat_half1A.shape[0]:
+                            print('Different shape')
+                            print('Previous shape: ' + str(feat_half1A.shape))
+                            feat_half1A_aux = np.zeros((feat_half1B.shape[0] * framerate2, feat_half1A.shape[1]))
+                            feat_half1A_aux[:feat_half1A.shape[0]] = feat_half1A
+                            feat_half1A_aux[feat_half1A.shape[0]:] = feat_half1A[feat_half1A.shape[0]-1]
+                            feat_half1A = feat_half1A_aux
+                            print('Resized to: ' + str(feat_half1A.shape))
+                                
+                        if feat_half2B.shape[0]*framerate2 > feat_half2A.shape[0]:
+                            print('Different shape')
+                            print('Previous shape: ' + str(feat_half2A.shape))
+                            feat_half2A_aux = np.zeros((feat_half2B.shape[0] * framerate2, feat_half2A.shape[1]))
+                            feat_half2A_aux[:feat_half2A.shape[0]] = feat_half2A
+                            feat_half2A_aux[feat_half2A.shape[0]:] = feat_half2A[feat_half2A.shape[0]-1]
+                            feat_half2A = feat_half2A_aux
+                            print('Resized to: ' + str(feat_half2A.shape))
+                                
+                        if feat_half1B.shape[0]*framerate2 < feat_half1A.shape[0]:
+                            print('Different shape')
+                            print('Previous shape: ' + str(feat_half1B.shape))
+                            feat_half1B_aux = np.zeros((feat_half1A.shape[0] // framerate2, feat_half1B.shape[1]))
+                            feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
+                            feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
+                            feat_half1B = feat_half1B_aux
+                            print('Resized to: ' + str(feat_half1B.shape))
+                                
+                        if feat_half2B.shape[0]*framerate2 < feat_half2A.shape[0]:
+                            print('Different shape')
+                            print('Previous shape: ' + str(feat_half2B.shape))
+                            feat_half2B_aux = np.zeros((feat_half2A.shape[0] // framerate2, feat_half2B.shape[1]))
+                            feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
+                            feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
+                            feat_half2B = feat_half2B_aux
+                            print('Resized to: ' + str(feat_half2B.shape))
+                            
+                        feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
+                        feat_half1A = feats2clip(torch.from_numpy(feat_half1A), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
+                        feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
+                        feat_half2A = feats2clip(torch.from_numpy(feat_half2A), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
+                                   
+            
+                        # Load labels
+                        labels = json.load(open(os.path.join(self.path_labels, game, self.labels)))
+            
+                        label_half1 = np.zeros((feat_half1B.shape[0], self.num_classes+1))
+                        label_half1[:,0]=1 # those are BG classes
+                        label_half2 = np.zeros((feat_half2B.shape[0], self.num_classes+1))
+                        label_half2[:,0]=1 # those are BG classes
+            
+                        for annotation in labels["annotations"]:
+            
+                            time = annotation["gameTime"]
+                            event = annotation["label"]
+            
+                            half = int(time[0])
+            
+                            minutes = int(time[-5:-3])
+                            seconds = int(time[-2::])
+                            frame = framerate * ( seconds + 60 * minutes ) 
+            
+                            if version == 1:
+                                if "card" in event: label = 0
+                                elif "subs" in event: label = 1
+                                elif "soccer" in event: label = 2
+                                else: continue
+                            elif version == 2:
+                                if event not in self.dict_event:
+                                    continue
+                                label = self.dict_event[event]
+            
+                            # if label outside temporal of view
+                            if half == 1 and frame//stride>=label_half1.shape[0]:
+                                continue
+                            if half == 2 and frame//stride>=label_half2.shape[0]:
+                                continue
+                            a = frame // stride
+            
+                            if half == 1:
+                                for i in range(self.chunk_size // stride):
+                                    label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
+                                    label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
+                                #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
+            
+                            if half == 2:
+                                for i in range(self.chunk_size // stride):
+                                    label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
+                                    label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
                         
-                if feat_half2B.shape[0]*framerate2 > feat_half2A.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half2A.shape))
-                    feat_half2A_aux = np.zeros((feat_half2B.shape[0] * framerate2, feat_half2A.shape[1]))
-                    feat_half2A_aux[:feat_half2A.shape[0]] = feat_half2A
-                    feat_half2A_aux[feat_half2A.shape[0]:] = feat_half2A[feat_half2A.shape[0]-1]
-                    feat_half2A = feat_half2A_aux
-                    print('Resized to: ' + str(feat_half2A.shape))
+                        path = os.path.join(self.path_store, game)
+                        exists = os.path.exists(path)
+                        if not exists:
+                            os.makedirs(path)
                         
-                if feat_half1B.shape[0]*framerate2 < feat_half1A.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half1B.shape))
-                    feat_half1B_aux = np.zeros((feat_half1A.shape[0] // framerate2, feat_half1B.shape[1]))
-                    feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
-                    feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
-                    feat_half1B = feat_half1B_aux
-                    print('Resized to: ' + str(feat_half1B.shape))
+                        #Half1
+                        feat_half1B = feat_half1B.numpy()
+                        feat_half1A = feat_half1A.numpy()
+                        print('Storing 1st half chunks...')
+                        for i in range(feat_half1B.shape[0]):
+                            np.save(path + '/half1_chunk' + str(i) + '_featuresB.npy', feat_half1B[i, :, :])
+                            np.save(path + '/half1_chunk' + str(i) + '_featuresA.npy', feat_half1A[i, :, :])
+                            np.save(path + '/half1_chunk' + str(i) + '_labels.npy', label_half1[i, :])
+                            self.path_list.append(path + '/half1_chunk' + str(i) + '_')
+                        '''
+                        with open(path + '/half1_chunk' + '_featuresB.dat', 'wb') as f:
+                            f.write(blosc.compress(pickle.dumps(feat_half1B)))    
+                        with open(path + '/half1_chunk' + '_featuresA.dat', 'wb') as f:
+                            f.write(blosc.compress(pickle.dumps(feat_half1A)))             
+                        with open(path + '/half1_chunk' + '_labels.dat', 'wb') as f:
+                            f.write(blosc.compress(pickle.dumps(label_half1)))
                         
-                if feat_half2B.shape[0]*framerate2 < feat_half2A.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half2B.shape))
-                    feat_half2B_aux = np.zeros((feat_half2A.shape[0] // framerate2, feat_half2B.shape[1]))
-                    feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
-                    feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
-                    feat_half2B = feat_half2B_aux
-                    print('Resized to: ' + str(feat_half2B.shape))
-                    
-                feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
-                feat_half1A = feats2clip(torch.from_numpy(feat_half1A), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
-                feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
-                feat_half2A = feats2clip(torch.from_numpy(feat_half2A), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
-                           
-    
-                # Load labels
-                labels = json.load(open(os.path.join(self.path_labels, game, self.labels)))
-    
-                label_half1 = np.zeros((feat_half1B.shape[0], self.num_classes+1))
-                label_half1[:,0]=1 # those are BG classes
-                label_half2 = np.zeros((feat_half2B.shape[0], self.num_classes+1))
-                label_half2[:,0]=1 # those are BG classes
-    
-                for annotation in labels["annotations"]:
-    
-                    time = annotation["gameTime"]
-                    event = annotation["label"]
-    
-                    half = int(time[0])
-    
-                    minutes = int(time[-5:-3])
-                    seconds = int(time[-2::])
-                    frame = framerate * ( seconds + 60 * minutes ) 
-    
-                    if version == 1:
-                        if "card" in event: label = 0
-                        elif "subs" in event: label = 1
-                        elif "soccer" in event: label = 2
-                        else: continue
-                    elif version == 2:
-                        if event not in self.dict_event:
-                            continue
-                        label = self.dict_event[event]
-    
-                    # if label outside temporal of view
-                    if half == 1 and frame//stride>=label_half1.shape[0]:
-                        continue
-                    if half == 2 and frame//stride>=label_half2.shape[0]:
-                        continue
-                    a = frame // stride
-    
-                    if half == 1:
-                        for i in range(self.chunk_size // stride):
-                            label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
-                            label_half1[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1
-                        #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
-    
-                    if half == 2:
-                        for i in range(self.chunk_size // stride):
-                            label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
-                            label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
-                
-                path = os.path.join(self.path_store, game)
-                exists = os.path.exists(path)
-                if not exists:
-                    os.makedirs(path)
-                
-                #Half1
-                feat_half1B = feat_half1B.numpy()
-                feat_half1A = feat_half1A.numpy()
-                print('Storing 1st half chunks...')
-                for i in range(feat_half1B.shape[0]):
-                    np.save(path + '/half1_chunk' + str(i) + '_featuresB.npy', feat_half1B[i, :, :])
-                    np.save(path + '/half1_chunk' + str(i) + '_featuresA.npy', feat_half1A[i, :, :])
-                    np.save(path + '/half1_chunk' + str(i) + '_labels.npy', label_half1[i, :])
-                    self.path_list.append(path + '/half1_chunk' + str(i) + '_')
-                '''
-                with open(path + '/half1_chunk' + '_featuresB.dat', 'wb') as f:
-                    f.write(blosc.compress(pickle.dumps(feat_half1B)))    
-                with open(path + '/half1_chunk' + '_featuresA.dat', 'wb') as f:
-                    f.write(blosc.compress(pickle.dumps(feat_half1A)))             
-                with open(path + '/half1_chunk' + '_labels.dat', 'wb') as f:
-                    f.write(blosc.compress(pickle.dumps(label_half1)))
-                
-                    
-                self.path_list.append(path + '/half1_chunk' + '_')
-                self.n_samples.append(feat_half1B.shape[0])
-                
-                '''
-                    
-                #Half2
-                print('Storing 2nd half chunks...')
-                
-                feat_half2B = feat_half2B.numpy()
-                feat_half2A = feat_half2A.numpy()
-                for i in range(feat_half2B.shape[0]):
-                    np.save(path + '/half2_chunk' + str(i) + '_featuresB.npy', feat_half2B[i, :, :])
-                    np.save(path + '/half2_chunk' + str(i) + '_featuresA.npy', feat_half2A[i, :, :])
-                    np.save(path + '/half2_chunk' + str(i) + '_labels.npy', label_half2[i, :])
-                    self.path_list.append(path + '/half2_chunk' + str(i) + '_')
-                '''
-                with open(path + '/half2_chunk' + '_featuresB.dat', 'wb') as f:
-                    f.write(blosc.compress(pickle.dumps(feat_half2B)))    
-                with open(path + '/half2_chunk' + '_featuresA.dat', 'wb') as f:
-                    f.write(blosc.compress(pickle.dumps(feat_half2A)))             
-                with open(path + '/half2_chunk' + '_labels.dat', 'wb') as f:
-                    f.write(blosc.compress(pickle.dumps(label_half2)))  
-                               
-                self.path_list.append(path + '/half2_chunk' + '_')
-                self.n_samples.append(feat_half2B.shape[0])
-                
-                '''
+                            
+                        self.path_list.append(path + '/half1_chunk' + '_')
+                        self.n_samples.append(feat_half1B.shape[0])
+                        
+                        '''
+                            
+                        #Half2
+                        print('Storing 2nd half chunks...')
+                        
+                        feat_half2B = feat_half2B.numpy()
+                        feat_half2A = feat_half2A.numpy()
+                        for i in range(feat_half2B.shape[0]):
+                            np.save(path + '/half2_chunk' + str(i) + '_featuresB.npy', feat_half2B[i, :, :])
+                            np.save(path + '/half2_chunk' + str(i) + '_featuresA.npy', feat_half2A[i, :, :])
+                            np.save(path + '/half2_chunk' + str(i) + '_labels.npy', label_half2[i, :])
+                            self.path_list.append(path + '/half2_chunk' + str(i) + '_')
+                        '''
+                        with open(path + '/half2_chunk' + '_featuresB.dat', 'wb') as f:
+                            f.write(blosc.compress(pickle.dumps(feat_half2B)))    
+                        with open(path + '/half2_chunk' + '_featuresA.dat', 'wb') as f:
+                            f.write(blosc.compress(pickle.dumps(feat_half2A)))             
+                        with open(path + '/half2_chunk' + '_labels.dat', 'wb') as f:
+                            f.write(blosc.compress(pickle.dumps(label_half2)))  
+                                       
+                        self.path_list.append(path + '/half2_chunk' + '_')
+                        self.n_samples.append(feat_half2B.shape[0])
+                        
+                        '''
+                    else:
+                        print('Not correct game: ' + game)
+                else:
+                    print('Not correct game: ' + game)
                     
             with open(self.path_store + '/chunk_list.pkl', 'wb') as f:
                 pickle.dump(self.path_list, f)  
