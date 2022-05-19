@@ -105,9 +105,9 @@ class AudioFeatures(Dataset):
                 shape1 = 0
                 shape2 = 0
                 if exist1:
-                    shape1 = np.load(os.path.join(self.path, game, "1_audio.npy"))[0]
+                    shape1 = np.load(os.path.join(self.path, game, "1_audio.npy")).shape[0]
                 if exist2:
-                    shape2 = np.load(os.path.join(self.path, game, "2_audio.npy"))[0]
+                    shape2 = np.load(os.path.join(self.path, game, "2_audio.npy")).shape[0]
                     
                 if exist1 & exist2 & (shape1 > 100) & (shape2 > 100):
                     
