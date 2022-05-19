@@ -125,13 +125,14 @@ def main(args):
 
     # test on multiple splits [test/challenge]
     for split in args.split_test:
+        '''
         dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
         print('Test loader')
         test_loader = torch.utils.data.DataLoader(dataset_Test,
             batch_size=1, shuffle=False,
             num_workers=1, pin_memory=True)
-        
-        results = testSpottingEnsemble(args.SoccerNet_path, test_loader, args.model_name)
+        '''
+        results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, split)
         results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
         if results is None:
             continue

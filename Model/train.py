@@ -15,6 +15,7 @@ from SoccerNet.Evaluation.ActionSpotting import evaluate
 from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
 from model import Model
+from dataset import SoccerNetClipsTesting
 
 
 
@@ -667,9 +668,9 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
 
     # return a_mAP
     
-def testSpottingEnsemble(path, dataloader, model_name, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'best4class'):
+def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'best4class'):
 
-    split = '_'.join(dataloader.dataset.split)
+    split = '_'.join(split)
     chunk_sizes = [2, 3, 4, 5, 7]
     
     # print(split)
@@ -684,8 +685,16 @@ def testSpottingEnsemble(path, dataloader, model_name, overwrite=True, NMS_windo
         spotting_grountruth_visibility = list()
         spotting_predictions = list()
 
-
+        timestamps_long_half_1 = []
+        timestamps_long_half_2 = []
+        game_IDs = []
         for chunk_size in chunk_sizes:
+            dataset_Test  = SoccerNetClipsTesting(path='Baidu+ResNet', features='baidu_soccer_embeddings.npy', split=[split], version=2, framerate=1, chunk_size=chunk_size*1)
+            print('Test loader')
+            dataloader = torch.utils.data.DataLoader(dataset_Test,
+                batch_size=1, shuffle=False,
+                num_workers=1, pin_memory=True)
+            
             model = Model(weights=None, input_size=8576,
                           num_classes=dataloader.dataset.num_classes, chunk_size=chunk_size*1,
                           framerate=1, pool='final_model').cuda()
@@ -747,7 +756,7 @@ def testSpottingEnsemble(path, dataloader, model_name, overwrite=True, NMS_windo
                     print(timestamp_long_half_1.shape)
                     print(timestamp_long_half_2.shape)
                     
-                    print(aksdf)
+                    
         
                     spotting_grountruth.append(torch.abs(label_half1))
                     spotting_grountruth.append(torch.abs(label_half2))
@@ -755,6 +764,10 @@ def testSpottingEnsemble(path, dataloader, model_name, overwrite=True, NMS_windo
                     spotting_grountruth_visibility.append(label_half2)
                     spotting_predictions.append(timestamp_long_half_1)
                     spotting_predictions.append(timestamp_long_half_2)
+                    
+                    timestamps_long_half_1.append(timestamp_long_half_1)
+                    timestamps_long_half_2.append(timestamp_long_half_2)
+                    game_IDs.append(game_ID)
                     # segmentation_predictions.append(segmentation_long_half_1)
                     # segmentation_predictions.append(segmentation_long_half_2)
         
@@ -776,6 +789,8 @@ def testSpottingEnsemble(path, dataloader, model_name, overwrite=True, NMS_windo
                     t.set_description(desc)
     
     ################################ FINS AQUÍ DE MOMENT
+    
+                print(aksdf)
     
                 def get_spot_from_NMS(Input, window, thresh=0.0, min_window=3):
     
