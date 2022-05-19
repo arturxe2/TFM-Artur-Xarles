@@ -11,7 +11,7 @@ from torch.utils.data import WeightedRandomSampler
 
 from dataset import SoccerNetClips, SoccerNetClipsTrain, SoccerNetClipsTesting #,SoccerNetClipsOld
 from model import Model
-from train import trainer, test, testSpotting
+from train import trainer, test, testSpotting, testSpottingEnsemble
 from loss import NLLLoss
 from loss import NLLLoss_weights
 
@@ -130,7 +130,8 @@ def main(args):
         test_loader = torch.utils.data.DataLoader(dataset_Test,
             batch_size=1, shuffle=False,
             num_workers=1, pin_memory=True)
-
+        
+        results = testSpottingEnsemble(args.SoccerNet_path, test_loader, args.model_name)
         results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
         if results is None:
             continue
