@@ -137,7 +137,7 @@ def trainer(path, train_loader,
     logging.info("start training")
     training_stage = 0
 
-    best_loss = 9e99
+    best_loss = 9000000
 
     n_bad_epochs = 0
     for epoch in range(max_epochs):
@@ -166,12 +166,13 @@ def trainer(path, train_loader,
         os.makedirs(os.path.join("models", model_name), exist_ok=True)
 
         # remember best prec@1 and save checkpoint
-        is_better = loss_validation < best_loss
+        is_better = (loss_validation < best_loss)
         best_loss = min(loss_validation, best_loss)
 
         # Save the best model based on loss only if the evaluation frequency too long
         if is_better:
             n_bad_epochs = 0
+            print('Saving new model')
             torch.save(state, best_model_path)
         
         else:
