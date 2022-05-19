@@ -147,14 +147,14 @@ class AudioFeatures(Dataset):
                             a = frame // stride
                             if half == 1:
                                 for i in range(-2, self.chunk_size // stride + 2):
-                                    label_half1[min(max(a - self.chunk_size // stride + 1 + i, 0), shape1)][0] = 0 # not BG anymore
-                                    label_half1[min(max(a - self.chunk_size // stride + 1 + i, 0), shape1)][label+1] = 1
+                                    label_half1[min(max(a - self.chunk_size // stride + 1 + i, 0), shape1-1)][0] = 0 # not BG anymore
+                                    label_half1[min(max(a - self.chunk_size // stride + 1 + i, 0), shape1-1)][label+1] = 1
                                     #label_half1[max(a - self.chunk_size//stride + 1, 0) : (a + 1)][0] = 0 # not BG anymore
             
                             if half == 2:
                                 for i in range(-2, self.chunk_size // stride + 2):
-                                    label_half2[min(max(a - self.chunk_size // stride + 1 + i, 0), shape2)][0] = 0 # not BG anymore
-                                    label_half2[min(max(a - self.chunk_size // stride + 1 + i, 0), shape2)][label+1] = 1 # that's my class
+                                    label_half2[min(max(a - self.chunk_size // stride + 1 + i, 0), shape2-1)][0] = 0 # not BG anymore
+                                    label_half2[min(max(a - self.chunk_size // stride + 1 + i, 0), shape2-1)][label+1] = 1 # that's my class
                                     
                         #idx1 = (1 - (label_half1 == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(label_half1))).astype('bool')
                         #idx2 = (1 - (label_half2 == 0) * random.choices([0, 1], weights = [0.05, 0.95], k = len(label_half2))).astype('bool')
