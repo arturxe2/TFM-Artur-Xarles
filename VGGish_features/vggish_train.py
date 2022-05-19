@@ -63,7 +63,7 @@ from loss import NLLLoss_weights
 
 
 class TrainVGGish(Dataset):
-    def __init__(self, path="/data-net/datasets/SoccerNetv2/videos_lowres", features="audio.npy", labels="labels.npy", 
+    def __init__(self, path="/data-local/data1-hdd/axesparraguera/vggish", features="audio.npy", labels="labels.npy", 
                  split=["train", "valid"], version=2, val_split = 0.8):
         self.path = path
         self.features = features
