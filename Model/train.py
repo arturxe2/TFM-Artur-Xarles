@@ -670,12 +670,12 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
     
 def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'best4class'):
 
-    split = '_'.join(split)
+    split2 = '_'.join(split)
     chunk_sizes = [2, 3, 4, 5, 7]
     
     # print(split)
-    output_results = os.path.join("models", model_name, f"results_spotting_{split}.zip")
-    output_folder = f"outputs_{split}"
+    output_results = os.path.join("models", model_name, f"results_spotting_{split2}.zip")
+    output_folder = f"outputs_{split2}"
 
     if not os.path.exists(output_results) or overwrite:
         batch_time = AverageMeter()
@@ -917,7 +917,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 target_dir = os.path.join("models", model_name, output_folder),
                 filename="results_spotting.json")
 
-    if split == "challenge": 
+    if split2 == "challenge": 
         print("Visit eval.ai to evalaute performances on Challenge set")
         return None
     labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
