@@ -820,7 +820,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         detections_tmp[nms_from:nms_to] = -1
 
                     return np.transpose([indexes, MaxValues])
-                '''    
+                   
                 def get_spot_from_BNMS(Input, window, thresh= 0.0):
                     detections_tmp = np.copy(Input)
                     indexes = []
@@ -867,7 +867,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                                 MaxValues.append(max_value)
         
                     return np.transpose([indexes, MaxValues])
-    '''
+    
                 framerate = dataloader.dataset.framerate
                 get_spot = get_spot_from_NMS
     
