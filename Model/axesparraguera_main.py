@@ -124,12 +124,17 @@ def main(args):
     model.load_state_dict(checkpoint['state_dict'])
 
     # test on multiple splits [test/challenge]
+    n_ensemble_train = 0
     for split in args.split_test:
         
         ensemble = True
         
         if ensemble:
-            results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, split, NMS_threshold=args.NMS_threshold, ensemble_method='best_model_class')
+            ensemble_method = 'mean'
+            if (ensemble_method == 'MLP') & (n_ensemble_train == 0):
+                results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, 'valid', NMS_threshold=args.NMS_threshold, ensemble_method=ensemble_method)
+                n_ensemble_train += 1
+            results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, split, NMS_threshold=args.NMS_threshold, ensemble_method=ensemble_method)
         
         else:
             dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
