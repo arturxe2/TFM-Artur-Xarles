@@ -120,16 +120,16 @@ def main(args):
                 max_epochs=args.max_epochs, evaluation_frequency=args.evaluation_frequency)
 
     # For the best model only
-    checkpoint = torch.load(os.path.join("models", args.model_name, "model_chunk3.pth.tar"))
+    checkpoint = torch.load(os.path.join("models", args.model_name, "model.pth.tar"))
     model.load_state_dict(checkpoint['state_dict'])
 
     # test on multiple splits [test/challenge]
     for split in args.split_test:
         
-        ensemble = False
+        ensemble = True
         
         if ensemble:
-            results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, split, ensemble_method='weighted_mean2')
+            results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, split, NMS_threshold=args.NMS_threshold, ensemble_method='weighted_mean2')
         
         else:
             dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
