@@ -815,6 +815,8 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
 
             return np.transpose([indexes, MaxValues])
         
+        #if split != 'challenge':
+        
         for m in range(n_matches):
             if ensemble_method == 'best_model_class':
                 best_models =np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 5])
@@ -836,7 +838,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 timestamp_long_half_2 /= len(chunk_sizes)
                 
             if ensemble_method == 'weighted_mean':
-                model_weights = np.array([0.541, 0.5728, 0.5187, 0.5351, 0.3966]) ** 2
+                model_weights = np.array([0.541, 0.5728, 0.5187, 0.5351, 0.3966])
                 timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
                 timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
                 for j in range(len(chunk_sizes)):
