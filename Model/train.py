@@ -815,91 +815,104 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
 
             return np.transpose([indexes, MaxValues])
         
-        #if split != 'challenge':
-        
-        for m in range(n_matches):
-            if ensemble_method == 'best_model_class':
-                best_models =np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 5])
-                timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
-                timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
-                for j in range(len(chunk_sizes)):
-                    chunk = chunk_sizes[j]
-                    ids = (best_models == chunk)
-                    timestamp_long_half_1[:, ids] = timestamps_long_half_1[m + n_matches * j][:, ids]
-                    timestamp_long_half_2[:, ids] = timestamps_long_half_2[m + n_matches * j][:, ids]
+        if split != 'challenge':
             
-            if ensemble_method == 'mean':
-                timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
-                timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
-                for j in range(len(chunk_sizes)):
-                    timestamp_long_half_1 += timestamps_long_half_1[m + n_matches * j]
-                    timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j]
-                timestamp_long_half_1 /= len(chunk_sizes)
-                timestamp_long_half_2 /= len(chunk_sizes)
+            for m in range(n_matches):
+                if ensemble_method == 'best_model_class':
+                    best_models =np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 5])
+                    timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
+                    timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
+                    for j in range(len(chunk_sizes)):
+                        chunk = chunk_sizes[j]
+                        ids = (best_models == chunk)
+                        timestamp_long_half_1[:, ids] = timestamps_long_half_1[m + n_matches * j][:, ids]
+                        timestamp_long_half_2[:, ids] = timestamps_long_half_2[m + n_matches * j][:, ids]
                 
-            if ensemble_method == 'weighted_mean':
-                model_weights = np.array([0.541, 0.5728, 0.5187, 0.5351, 0.3966])
-                timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
-                timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
-                for j in range(len(chunk_sizes)):
-                    timestamp_long_half_1 += timestamps_long_half_1[m + n_matches * j] * model_weights[j]
-                    timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j] * model_weights[j]
-                timestamp_long_half_1 /= model_weights.sum()
-                timestamp_long_half_2 /= model_weights.sum()
-                
-            if ensemble_method == 'weighted_mean2':
-                model_weights = np.array([[0.6893, 0.5455, 0.6962, 0.4447, 0.4519, 0.5189, 0.5235, 0.5239, 0.6988, 0.6722, 0.6562, 0.4086, 0.6142, 0.7429, 0.5034, 0.3122, 0.1953],
-                                          [0.8025, 0.5726, 0.769, 0.4757, 0.5294, 0.5333, 0.5274, 0.5395, 0.7392, 0.6961, 0.6911, 0.4366, 0.5886, 0.7683, 0.5133, 0.2147, 0.3402],
-                                          [0.744, 0.4997, 0.6725, 0.4095, 0.4516, 0.506, 0.4838, 0.5045, 0.6659, 0.6378, 0.6214, 0.4095, 0.5995, 0.708, 0.4909, 0.2534, 0.1606],
-                                          [0.7458, 0.5091, 0.6985, 0.4164, 0.4635, 0.4959, 0.5116, 0.506, 0.6967, 0.6583, 0.6439, 0.4152, 0.5255, 0.6845, 0.5068, 0.276, 0.3434],
-                                          [0.5502, 0.33, 0.3995, 0.358, 0.328, 0.3416, 0.3548, 0.4041, 0.4571, 0.4846, 0.454, 0.3139, 0.4861, 0.6839, 0.4584, 0.2019, 0.1362]
-                                          ])
-                timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
-                timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
-                for j in range(len(chunk_sizes)):
-                    timestamp_long_half_1 += timestamps_long_half_1[m + n_matches * j] * model_weights[j]
-                    timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j] * model_weights[j]
-                timestamp_long_half_1 /= model_weights.sum(axis = 0)
-                timestamp_long_half_2 /= model_weights.sum(axis = 0)
-                
-            framerate = dataloader.dataset.framerate
-            get_spot = get_spot_from_NMS
+                if ensemble_method == 'mean':
+                    timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
+                    timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
+                    for j in range(len(chunk_sizes)):
+                        timestamp_long_half_1 += timestamps_long_half_1[m + n_matches * j]
+                        timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j]
+                    timestamp_long_half_1 /= len(chunk_sizes)
+                    timestamp_long_half_2 /= len(chunk_sizes)
+                    
+                if ensemble_method == 'weighted_mean':
+                    model_weights = np.array([0.541, 0.5728, 0.5187, 0.5351, 0.3966]) ** 2
+                    timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
+                    timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
+                    for j in range(len(chunk_sizes)):
+                        timestamp_long_half_1 += timestamps_long_half_1[m + n_matches * j] * model_weights[j]
+                        timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j] * model_weights[j]
+                    timestamp_long_half_1 /= model_weights.sum()
+                    timestamp_long_half_2 /= model_weights.sum()
+                    
+                if ensemble_method == 'weighted_mean2':
+                    model_weights = np.array([[0.6893, 0.5455, 0.6962, 0.4447, 0.4519, 0.5189, 0.5235, 0.5239, 0.6988, 0.6722, 0.6562, 0.4086, 0.6142, 0.7429, 0.5034, 0.3122, 0.1953],
+                                              [0.8025, 0.5726, 0.769, 0.4757, 0.5294, 0.5333, 0.5274, 0.5395, 0.7392, 0.6961, 0.6911, 0.4366, 0.5886, 0.7683, 0.5133, 0.2147, 0.3402],
+                                              [0.744, 0.4997, 0.6725, 0.4095, 0.4516, 0.506, 0.4838, 0.5045, 0.6659, 0.6378, 0.6214, 0.4095, 0.5995, 0.708, 0.4909, 0.2534, 0.1606],
+                                              [0.7458, 0.5091, 0.6985, 0.4164, 0.4635, 0.4959, 0.5116, 0.506, 0.6967, 0.6583, 0.6439, 0.4152, 0.5255, 0.6845, 0.5068, 0.276, 0.3434],
+                                              [0.5502, 0.33, 0.3995, 0.358, 0.328, 0.3416, 0.3548, 0.4041, 0.4571, 0.4846, 0.454, 0.3139, 0.4861, 0.6839, 0.4584, 0.2019, 0.1362]
+                                              ])
+                    timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
+                    timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
+                    for j in range(len(chunk_sizes)):
+                        timestamp_long_half_1 += timestamps_long_half_1[m + n_matches * j] * model_weights[j]
+                        timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j] * model_weights[j]
+                    timestamp_long_half_1 /= model_weights.sum(axis = 0)
+                    timestamp_long_half_2 /= model_weights.sum(axis = 0)
+                    
+                framerate = dataloader.dataset.framerate
+                get_spot = get_spot_from_NMS
+        
+                json_data = dict()
+                json_data["UrlLocal"] = game_ID
+                json_data["predictions"] = list()
+                nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
+                for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
+                            
+                    for l in range(dataloader.dataset.num_classes):
+                        spots = get_spot(
+                            timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
     
-            json_data = dict()
-            json_data["UrlLocal"] = game_ID
-            json_data["predictions"] = list()
-            nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
-            for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
-                        
-                for l in range(dataloader.dataset.num_classes):
-                    spots = get_spot(
-                        timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
-
-                    for spot in spots:
-                        # print("spot", int(spot[0]), spot[1], spot)
-                        frame_index = int(spot[0])
-                        confidence = spot[1]
-                        # confidence = predictions_half_1[frame_index, l]
-
-                        seconds = int((frame_index//framerate)%60)
-                        minutes = int((frame_index//framerate)//60)
-
-                        prediction_data = dict()
-                        prediction_data["gameTime"] = str(half+1) + " - " + str(minutes) + ":" + str(seconds)
-                        if dataloader.dataset.version == 2:
-                            prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V2[l]
-                        else:
-                            prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V1[l]
-                        prediction_data["position"] = str(int((frame_index/framerate)*1000))
-                        prediction_data["half"] = str(half+1)
-                        prediction_data["confidence"] = str(confidence)
-                        json_data["predictions"].append(prediction_data)
-                
-            os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
-            with open(os.path.join("models", model_name, output_folder, game_IDs[m], "results_spotting.json"), 'w') as output_file:
-                json.dump(json_data, output_file, indent=4)
+                        for spot in spots:
+                            # print("spot", int(spot[0]), spot[1], spot)
+                            frame_index = int(spot[0])
+                            confidence = spot[1]
+                            # confidence = predictions_half_1[frame_index, l]
+    
+                            seconds = int((frame_index//framerate)%60)
+                            minutes = int((frame_index//framerate)//60)
+    
+                            prediction_data = dict()
+                            prediction_data["gameTime"] = str(half+1) + " - " + str(minutes) + ":" + str(seconds)
+                            if dataloader.dataset.version == 2:
+                                prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V2[l]
+                            else:
+                                prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V1[l]
+                            prediction_data["position"] = str(int((frame_index/framerate)*1000))
+                            prediction_data["half"] = str(half+1)
+                            prediction_data["confidence"] = str(confidence)
+                            json_data["predictions"].append(prediction_data)
+                    
+                os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
+                with open(os.path.join("models", model_name, output_folder, game_IDs[m], "results_spotting.json"), 'w') as output_file:
+                    json.dump(json_data, output_file, indent=4)
 
 ###### FINS AQUÍ
+'''
+        else:
+            for m in range(n_matches):
+                for j in range(len(chunk_sizes)):
+                    if j == 0:
+                        full_preds1 = timestamps_long_half_1[m + n_matches * j]
+                        full_preds2 = timestamps_long_half_2[m + n_matches * j]
+                    else:
+                        full_preds1 = np.concatenate((full_preds1, timestamps_long_half_1[m + n_matches * j]), axis = 1)
+                        full_preds2 = np.concatenate((full_preds1, timestamps_long_half_2[m + n_matches * j]), axis = 1)
+            
+            return 0
+        '''
 
         def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
             zipobj = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
