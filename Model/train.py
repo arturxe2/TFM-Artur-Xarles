@@ -668,7 +668,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
 
     # return a_mAP
   
-def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'best4class'):
+def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'mean'):
 
     split2 = '_'.join([split])
     chunk_sizes = [2, 3]#, 4, 5, 7]
