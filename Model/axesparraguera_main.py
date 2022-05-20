@@ -11,7 +11,7 @@ from torch.utils.data import WeightedRandomSampler
 
 from dataset import SoccerNetClips, SoccerNetClipsTrain, SoccerNetClipsTesting #,SoccerNetClipsOld
 from model import Model
-from train import trainer, test, testSpotting, testSpottingEnsemble
+from train import trainer, test, testSpotting#, testSpottingEnsemble
 from loss import NLLLoss
 from loss import NLLLoss_weights
 
