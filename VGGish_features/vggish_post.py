@@ -55,7 +55,7 @@ model.classifier.load_state_dict(state_dict)
 model = model.cuda()
 
 
-listGames = getListGames(['challenge'])#(['train', 'valid', 'test', 'challenge'])
+listGames = getListGames(['train', 'valid', 'test', 'challenge'])
 path="/data-local/data1-hdd/axesparraguera/vggish"
 features="audio.npy"
 
