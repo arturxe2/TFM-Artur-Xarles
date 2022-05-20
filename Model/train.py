@@ -900,8 +900,10 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     json.dump(json_data, output_file, indent=4)
 
 ###### FINS AQUÍ
-'''
+
         else:
+            print('asdf')
+            '''
             for m in range(n_matches):
                 for j in range(len(chunk_sizes)):
                     if j == 0:
@@ -912,7 +914,8 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         full_preds2 = np.concatenate((full_preds1, timestamps_long_half_2[m + n_matches * j]), axis = 1)
             
             return 0
-        '''
+'''
+
 
         def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
             zipobj = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
