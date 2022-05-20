@@ -853,7 +853,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                                               [0.744, 0.4997, 0.6725, 0.4095, 0.4516, 0.506, 0.4838, 0.5045, 0.6659, 0.6378, 0.6214, 0.4095, 0.5995, 0.708, 0.4909, 0.2534, 0.1606],
                                               [0.7458, 0.5091, 0.6985, 0.4164, 0.4635, 0.4959, 0.5116, 0.506, 0.6967, 0.6583, 0.6439, 0.4152, 0.5255, 0.6845, 0.5068, 0.276, 0.3434],
                                               [0.5502, 0.33, 0.3995, 0.358, 0.328, 0.3416, 0.3548, 0.4041, 0.4571, 0.4846, 0.454, 0.3139, 0.4861, 0.6839, 0.4584, 0.2019, 0.1362]
-                                              ])
+                                              ]) ** 2
                     timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
                     timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
                     for j in range(len(chunk_sizes)):
