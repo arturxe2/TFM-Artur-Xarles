@@ -904,6 +904,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
         else:
             print('asdf')
             '''
+            all_preds = []
             for m in range(n_matches):
                 for j in range(len(chunk_sizes)):
                     if j == 0:
@@ -911,7 +912,11 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         full_preds2 = timestamps_long_half_2[m + n_matches * j]
                     else:
                         full_preds1 = np.concatenate((full_preds1, timestamps_long_half_1[m + n_matches * j]), axis = 1)
-                        full_preds2 = np.concatenate((full_preds1, timestamps_long_half_2[m + n_matches * j]), axis = 1)
+                        full_preds2 = np.concatenate((full_preds2, timestamps_long_half_2[m + n_matches * j]), axis = 1)
+                all_preds.append(full_preds1)
+                all_preds.append(full_preds2)
+            
+            all_preds = np.concatenate(all_preds)
             
             return 0
 '''
