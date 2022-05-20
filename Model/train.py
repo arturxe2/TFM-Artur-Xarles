@@ -821,8 +821,10 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
                 timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
                 for j in range(len(chunk_sizes)):
-                    timestamp_long_half_1 += timestamps_long_half_1[m + n_matches * j]
-                    timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j]
+                    chunk = chunk_sizes[j]
+                    ids = (best_models == chunk)
+                    timestamp_long_half_1[:, ids] = timestamps_long_half_1[m + n_matches * j][:, ids]
+                    timestamp_long_half_2[:, ids] = timestamps_long_half_2[m + n_matches * j][:, ids]
             
             if ensemble_method == 'mean':
                 timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
@@ -834,7 +836,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 timestamp_long_half_2 /= len(chunk_sizes)
                 
             if ensemble_method == 'weighted_mean':
-                model_weights = np.array([0.541, 0.5728, 0.5187, 0.5351, 0.3966])
+                model_weights = np.array([0.541, 0.5728, 0.5187, 0.5351, 0.3966]) ** 2
                 timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
                 timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
                 for j in range(len(chunk_sizes)):
