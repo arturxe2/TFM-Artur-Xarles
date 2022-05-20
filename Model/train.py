@@ -671,7 +671,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
 def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'best4class'):
 
     split2 = '_'.join(split)
-    chunk_sizes = [2, 3, 4, 5, 7]
+    chunk_sizes = [2, 3]#, 4, 5, 7]
     
     # print(split)
     output_results = os.path.join("models", model_name, f"results_spotting_{split2}.zip")
@@ -790,7 +790,12 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
     
     ################################ FINS AQUÍ DE MOMENT
     
-                print(aksdf)
+        #Ensemble
+        n_matches = len(timestamps_long_half_1)/len(chunk_sizes)
+        for m in range(n_matches):
+            
+        
+        print(aksdf)
     
                 def get_spot_from_NMS(Input, window, thresh=0.0, min_window=3):
     
