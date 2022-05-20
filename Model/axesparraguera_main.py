@@ -127,7 +127,7 @@ def main(args):
     n_ensemble_train = 0
     for split in args.split_test:
         
-        ensemble = True
+        ensemble = False
         
         if ensemble:
             ensemble_method = 'weighted_mean2'
