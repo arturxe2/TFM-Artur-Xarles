@@ -129,7 +129,7 @@ def main(args):
         ensemble = True
         
         if ensemble:
-            results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, split, ensemble_method='best_model_class')
+            results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, split, ensemble_method='weighted_mean2')
         
         else:
             dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
