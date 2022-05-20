@@ -170,6 +170,7 @@ def trainer(path, train_loader,
         best_loss = min(loss_validation, best_loss)
 
         # Save the best model based on loss only if the evaluation frequency too long
+        torch.save(state, best_model_path)
         if is_better:
             n_bad_epochs = 0
             print('Saving new model')
@@ -288,7 +289,7 @@ if __name__ == '__main__':
     trainer('', train_loader, val_loader, val_loader, 
             model, optimizer, criterion, patience=5,
             model_name='final_model',
-            max_epochs=100, evaluation_frequency=2)
+            max_epochs=8, evaluation_frequency=2)
     
     
 
