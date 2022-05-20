@@ -667,7 +667,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
     return results
 
     # return a_mAP
-'''   
+  
 def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'best4class'):
 
     split2 = '_'.join(split)
@@ -753,8 +753,6 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     timestamp_long_half_1 = timestamp_long_half_1[:, 1:]
                     timestamp_long_half_2 = timestamp_long_half_2[:, 1:]
                     
-                    print(timestamp_long_half_1.shape)
-                    print(timestamp_long_half_2.shape)
                     
                     
         
@@ -788,124 +786,83 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     desc += f'(it:{data_time.val:.3f}s) '
                     t.set_description(desc)
     
-    ################################ FINS AQUÍ DE MOMENT
     
         #Ensemble
-        n_matches = len(timestamps_long_half_1)/len(chunk_sizes)
-        for m in range(n_matches):
-            
+        n_matches = int(len(timestamps_long_half_1)/len(chunk_sizes))
+        print('Ensembling...')
         
-        print(aksdf)
-    
-                def get_spot_from_NMS(Input, window, thresh=0.0, min_window=3):
-    
-                    detections_tmp = np.copy(Input)
-                    # res = np.empty(np.size(Input), dtype=bool)
-                    indexes = []
-                    MaxValues = []
-                    while(np.max(detections_tmp) >= thresh):
+        def get_spot_from_NMS(Input, window, thresh=0.0, min_window=3):
 
-                        # Get the max remaining index and value
-                        max_value = np.max(detections_tmp)
-                        max_index = np.argmax(detections_tmp)
-                        
-                        # detections_NMS[max_index,i] = max_value
+            detections_tmp = np.copy(Input)
+            # res = np.empty(np.size(Input), dtype=bool)
+            indexes = []
+            MaxValues = []
+            while(np.max(detections_tmp) >= thresh):
 
-                        nms_from = int(np.maximum(-(window/2)+max_index,0))
-                        nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
-                        
-                        if (detections_tmp[nms_from:nms_to] >= thresh).sum() > min_window:
-                            MaxValues.append(max_value)
-                            indexes.append(max_index)
-                        detections_tmp[nms_from:nms_to] = -1
-
-                    return np.transpose([indexes, MaxValues])
-                   
-                def get_spot_from_BNMS(Input, window, thresh= 0.0):
-                    detections_tmp = np.copy(Input)
-                    indexes = []
-                    MaxValues = []
-                    while(np.max(detections_tmp) >= thresh):
-                        max_value = np.max(detections_tmp)
-                        max_index = np.argmax(detections_tmp)
-                        MaxValues.append(max_value)
-    
-                        nms_from = int(np.maximum(-(window/2)+max_index,0))
-                        nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
-                        
-                        best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
-                        
-                        indexes.append(round(best_index))
-                        detections_tmp[nms_from:nms_to] = 0
-                    return np.transpose([indexes, MaxValues])
-                    
-                def get_spot_from_BNMS2(Input, window, thresh= 0.0, min_window = 0, max_window = 20):
-                    detections_tmp = np.copy(Input)
-                    not_indexes = ([i for i, x in enumerate(detections_tmp < thresh) if x])
-                    if len(not_indexes) == 0:
-                        not_indexes = [0, len(detections_tmp)]
-                    indexes = []
-                    MaxValues = []
-                    for i in range(len(not_indexes)-1):
-                        action_length = not_indexes[i+1] - not_indexes[i] -1
-                        if (action_length) > (min_window):
-                            if action_length > max_window:
-                                splits = (math.ceil(action_length / max_window))
-                                for j in range(splits):
-                                    nms_from = not_indexes[i]+1+j*max_window
-                                    nms_to = np.minimum(not_indexes[i]+(j+1)*max_window, len(detections_tmp))
-                                    max_value = np.mean(detections_tmp[nms_from:nms_to])
-                                    best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
-                                    indexes.append(round(best_index))
-                                    MaxValues.append(max_value)
-                            else:
-                                nms_from = not_indexes[i] +1
-                                nms_to = not_indexes[i+1]
-                                max_value = np.mean(detections_tmp[nms_from:nms_to])
-                                best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
-                                indexes.append(round(best_index))
-                                MaxValues.append(max_value)
-        
-                    return np.transpose([indexes, MaxValues])
-    
-                framerate = dataloader.dataset.framerate
-                get_spot = get_spot_from_NMS
-    
-                json_data = dict()
-                json_data["UrlLocal"] = game_ID
-                json_data["predictions"] = list()
-                nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
-                for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
-                        
-                    for l in range(dataloader.dataset.num_classes):
-                        spots = get_spot(
-                            timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
-
-                        for spot in spots:
-                            # print("spot", int(spot[0]), spot[1], spot)
-                            frame_index = int(spot[0])
-                            confidence = spot[1]
-                            # confidence = predictions_half_1[frame_index, l]
-
-                            seconds = int((frame_index//framerate)%60)
-                            minutes = int((frame_index//framerate)//60)
-
-                            prediction_data = dict()
-                            prediction_data["gameTime"] = str(half+1) + " - " + str(minutes) + ":" + str(seconds)
-                            if dataloader.dataset.version == 2:
-                                prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V2[l]
-                            else:
-                                prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V1[l]
-                            prediction_data["position"] = str(int((frame_index/framerate)*1000))
-                            prediction_data["half"] = str(half+1)
-                            prediction_data["confidence"] = str(confidence)
-                            json_data["predictions"].append(prediction_data)
+                # Get the max remaining index and value
+                max_value = np.max(detections_tmp)
+                max_index = np.argmax(detections_tmp)
                 
-                os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
-                with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
-                    json.dump(json_data, output_file, indent=4)
+                # detections_NMS[max_index,i] = max_value
 
+                nms_from = int(np.maximum(-(window/2)+max_index,0))
+                nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
+                
+                if (detections_tmp[nms_from:nms_to] >= thresh).sum() > min_window:
+                    MaxValues.append(max_value)
+                    indexes.append(max_index)
+                detections_tmp[nms_from:nms_to] = -1
 
+            return np.transpose([indexes, MaxValues])
+        
+        for m in range(n_matches):
+            if ensemble_method == 'mean':
+                timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
+                timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
+                for j in range(len(chunk_sizes)):
+                    timestamp_long_half_1 += timestamps_long_half_1[m + n_matches * j]
+                    timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j]
+                timestamp_long_half_1 /= len(chunk_sizes)
+                timestamp_long_half_2 /= len(chunk_sizes)
+                
+            framerate = dataloader.dataset.framerate
+            get_spot = get_spot_from_NMS
+    
+            json_data = dict()
+            json_data["UrlLocal"] = game_ID
+            json_data["predictions"] = list()
+            nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
+            for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
+                        
+                for l in range(dataloader.dataset.num_classes):
+                    spots = get_spot(
+                        timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
+
+                    for spot in spots:
+                        # print("spot", int(spot[0]), spot[1], spot)
+                        frame_index = int(spot[0])
+                        confidence = spot[1]
+                        # confidence = predictions_half_1[frame_index, l]
+
+                        seconds = int((frame_index//framerate)%60)
+                        minutes = int((frame_index//framerate)//60)
+
+                        prediction_data = dict()
+                        prediction_data["gameTime"] = str(half+1) + " - " + str(minutes) + ":" + str(seconds)
+                        if dataloader.dataset.version == 2:
+                            prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V2[l]
+                        else:
+                            prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V1[l]
+                        prediction_data["position"] = str(int((frame_index/framerate)*1000))
+                        prediction_data["half"] = str(half+1)
+                        prediction_data["confidence"] = str(confidence)
+                        json_data["predictions"].append(prediction_data)
+                
+            os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
+            with open(os.path.join("models", model_name, output_folder, game_IDs[m], "results_spotting.json"), 'w') as output_file:
+                json.dump(json_data, output_file, indent=4)
+
+###### FINS AQUÍ
 
         def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
             zipobj = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
@@ -936,4 +893,3 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
     
     return results
 
-'''
