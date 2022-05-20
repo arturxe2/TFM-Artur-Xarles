@@ -817,7 +817,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
         
         for m in range(n_matches):
             if ensemble_method == 'best_model_class':
-                best_models =np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 5])
+                best_models =np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 5])
                 timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
                 timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
                 for j in range(len(chunk_sizes)):
