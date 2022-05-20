@@ -670,7 +670,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
   
 def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'best4class'):
 
-    split2 = '_'.join(split)
+    split2 = '_'.join([split])
     chunk_sizes = [2, 3]#, 4, 5, 7]
     
     # print(split)
