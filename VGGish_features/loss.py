@@ -20,7 +20,7 @@ class NLLLoss_weights(torch.nn.Module):
 
 class NLLLoss_weights2(torch.nn.Module):
     def __init__(self):
-        super(NLLLoss_weights, self).__init__()
+        super(NLLLoss_weights2, self).__init__()
         #self.weights1 = weights1
         
     def forward(self, labels, output):
