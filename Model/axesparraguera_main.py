@@ -127,10 +127,10 @@ def main(args):
     n_ensemble_train = 0
     for split in args.split_test:
         
-        ensemble = False
+        ensemble = True
         
         if ensemble:
-            ensemble_method = 'weighted_mean2'
+            ensemble_method = 'mean'
             if (ensemble_method == 'MLP') & (n_ensemble_train == 0):
                 results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, 'valid', NMS_threshold=args.NMS_threshold, ensemble_method=ensemble_method)
                 n_ensemble_train += 1
