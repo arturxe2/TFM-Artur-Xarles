@@ -818,6 +818,11 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             return np.transpose([indexes, MaxValues])
         
         if split != 'valid':
+            if ensemble_method == 'MLP':
+                #Load trained model
+                model = EnsembleModel(ensemble_chunk = ensemble_chunk, n_models = len(chunk_sizes)).cuda()
+                checkpoint = torch.load(os.path.join("models", 'ensemble', "model.pth.tar"))
+                model.load_state_dict(checkpoint['state_dict'])
             
             for m in range(n_matches):
                 if ensemble_method == 'best_model_class':
@@ -863,6 +868,29 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         timestamp_long_half_2 += timestamps_long_half_2[m + n_matches * j] * model_weights[j]
                     timestamp_long_half_1 /= model_weights.sum(axis = 0)
                     timestamp_long_half_2 /= model_weights.sum(axis = 0)
+                    
+                if ensemble_method == 'MLP':
+                    for j in range(len(chunk_sizes)):
+                        if j == 0:
+                            full_preds1 = timestamps_long_half_1[m + n_matches * j]
+                            full_preds2 = timestamps_long_half_2[m + n_matches * j]
+                        else:
+                            full_preds1 = np.concatenate((full_preds1, timestamps_long_half_1[m + n_matches * j]), axis = 1)
+                            full_preds2 = np.concatenate((full_preds2, timestamps_long_half_2[m + n_matches * j]), axis = 1)
+                    
+                    full_preds1 = feats2clip(full_preds1, 1, ensemble_chunk, off=int(ensemble_chunk/2))
+                    full_preds2 = feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))
+                    output1 = []
+                    for j in range(0, math.ceil((full_preds1.shape[0] - 1) // 100) + 1):
+                        output1.append(model(full_preds1[(j * 100): np.minimum((j+1) * 100, full_preds1.shape[0]), :, :]))
+                    output2 = []
+                    for j in range(0, math.ceil((full_preds2.shape[0] - 1) // 100) + 1):
+                        output2.append(model(full_preds2[(j * 100): np.minimum((j+1) * 100, full_preds2.shape[0]), :, :]))
+                    
+                    timestamp_long_half_1 = np.concatenate(output1)
+                    timestamp_long_half_2 = np.concatenate(output2)
+                    print(timestamp_long_half_1)
+                    print(timestamp_long_half_2)
                     
                 framerate = dataloader.dataset.framerate
                 get_spot = get_spot_from_NMS
