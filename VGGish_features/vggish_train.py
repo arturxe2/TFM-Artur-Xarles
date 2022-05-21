@@ -57,7 +57,7 @@ import logging
 import json
 from SoccerNet.Downloader import getListGames
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V2
-from loss import NLLLoss_weights
+from loss import NLLLoss_weights2
 
 
 
@@ -97,8 +97,8 @@ class TrainVGGish(Dataset):
             labels_half1 = np.load(os.path.join(self.path, game, "1_" + self.labels))
             labels_half2 = np.load(os.path.join(self.path, game, "2_" + self.labels))
                 
-            idx1 = np.arange(0, labels_half1.shape[0])[(1 - (labels_half1[:, 0] == 1) * random.choices([0, 1], weights = [0.8, 0.2], k = len(labels_half1))).astype('bool')]
-            idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.8, 0.2], k = len(labels_half2))).astype('bool')]
+            idx1 = np.arange(0, labels_half1.shape[0])[(1 - (labels_half1[:, 0] == 1) * random.choices([0, 1], weights = [0.9, 0.1], k = len(labels_half1))).astype('bool')]
+            idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.9, 0.1], k = len(labels_half2))).astype('bool')]
             
             if labels_half1.shape[0] == 0:
                 print('Game without examples: ' + game)
@@ -285,7 +285,7 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
                                 betas=(0.9, 0.999), eps=1e-08, 
                                 weight_decay=1e-5, amsgrad=True)
-    criterion = NLLLoss_weights()
+    criterion = NLLLoss_weights2()
     trainer('', train_loader, val_loader, val_loader, 
             model, optimizer, criterion, patience=5,
             model_name='final_model',
