@@ -882,10 +882,10 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     full_preds2 = torch.from_numpy(feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))).cuda()
                     output1 = []
                     for j in range(0, math.ceil((full_preds1.shape[0] - 1) // 100) + 1):
-                        output1.append(model(full_preds1[(j * 100): np.minimum((j+1) * 100, full_preds1.shape[0]), :, :]))
+                        output1.append(model(full_preds1[(j * 100): np.minimum((j+1) * 100, full_preds1.shape[0]), :, :]).cpu().numpy())
                     output2 = []
                     for j in range(0, math.ceil((full_preds2.shape[0] - 1) // 100) + 1):
-                        output2.append(model(full_preds2[(j * 100): np.minimum((j+1) * 100, full_preds2.shape[0]), :, :]))
+                        output2.append(model(full_preds2[(j * 100): np.minimum((j+1) * 100, full_preds2.shape[0]), :, :]).cpu().numpy())
                     
                     timestamp_long_half_1 = np.concatenate(output1)
                     timestamp_long_half_2 = np.concatenate(output2)
@@ -1009,7 +1009,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             trainer('ensemble', train_loader, train_loader, train_loader, 
                     model, optimizer, criterion, patience=5,
                     model_name='ensemble',
-                    max_epochs=10, evaluation_frequency=20)
+                    max_epochs=2, evaluation_frequency=20)
             
             print('asdf')
             
