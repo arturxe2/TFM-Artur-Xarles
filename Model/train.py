@@ -14,8 +14,9 @@ from sklearn.metrics import average_precision_score
 from SoccerNet.Evaluation.ActionSpotting import evaluate
 from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
-from model import Model
-from dataset import SoccerNetClipsTesting, feats2clip
+from model import Model, EnsembleModel
+from dataset import SoccerNetClipsTesting, feats2clip, TrainEnsemble
+from loss import NLLLoss_weights_ensemble
 
 
 
@@ -217,7 +218,7 @@ def train(path,
                 desc += f'(it:{data_time.val:.3f}s) '
                 desc += f'Loss {losses.avg:.4e} '
                 t.set_description(desc)
-    if training_stage == 0:
+    if (training_stage == 0) & (path == 'Baidu+ResNet'):
         print('Total loss: ' + str(lossF))
         print('Audio loss: ' + str(lossA))
         print('Baidu1 loss: ' + str(lossB1))
@@ -958,10 +959,29 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 all_labels.append(label_half2)
             all_preds = np.concatenate(all_preds)
             all_labels = np.concatenate(all_labels)
-            print(all_preds.shape)
-            print(all_preds[0, :])
-            print(all_labels.shape)
-            print(all_labels[0, :])
+            
+            dataset_ensemble = TrainEnsemble(all_preds, all_labels)
+            train_loader = torch.utils.data.DataLoader(dataset_ensemble,
+                batch_size=128,
+                num_workers=1, shuffle = True, pin_memory=True)
+            model = EnsembleModel(ensemble_chunk = ensemble_chunk, n_models = len(chunk_sizes)).cuda()
+            logging.info(model)
+            total_params = sum(p.numel()
+                               for p in model.parameters() if p.requires_grad)
+            parameters_per_layer  = [p.numel() for p in model.parameters() if p.requires_grad]
+            logging.info("Total number of parameters: " + str(total_params))
+            
+            criterion = NLLLoss_weights_ensemble()
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-04, 
+                                        betas=(0.9, 0.999), eps=1e-08, 
+                                        weight_decay=1e-5, amsgrad=True)
+            
+                        
+            # start training
+            trainer('ensemble', train_loader, train_loader, train_loader, 
+                    model, optimizer, criterion, patience=5,
+                    model_name='ensemble',
+                    max_epochs=10, evaluation_frequency=20)
             
             print('asdf')
             

@@ -838,3 +838,16 @@ if __name__ == '__main__':
     #     print(feats2.shape)
     #     print(labels2.shape)
     #     # print(feats1[-1])
+    
+class TrainEnsemble(Dataset):
+    def __init__(self, features, labels):
+        self.features = features
+        self.labels = labels
+        self.n = len(self.features)
+        
+        
+    def __getitem__(self, index):
+        return self.features[index, :, :], self.labels[index, :]
+    
+    def __len__(self):
+        return self.n

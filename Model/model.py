@@ -376,3 +376,29 @@ class Model(nn.Module):
         #output = self.sigm(self.fc2(self.drop(inputs_pooled)))
 
         return outputs
+    
+    
+class EnsembleModel(nn.Module):
+
+    def __init__(self, ensemble_chunk = 3, n_models = 2):
+        super(EnsembleModel, self).__init__()
+        # 1 input image channel, 6 output channels, 5x5 square convolution
+        # kernel
+        self.conv1 = nn.Conv1d(n_models * 17, 17, 1, stride=1, bias=False)
+        self.relu = nn.ReLU()
+        self.conv2 = nn.Conv1d(ensemble_chunk, 1, 1, stride=1, bias=False)
+        self.drop = nn.Dropout(p=0.4)
+
+    def forward(self, inputs):
+        # Input B x 3 x 34
+        inputs = inputs.permute((0, 2, 1)) #B x 34 x 3
+        
+        inputs = self.relu(self.conv1(self.drop(inputs))) #B x 17 x 3
+        
+        inputs = inputs.permute((0, 2, 1)) #B x 3 x 17
+        
+        inputs = self.relu(self.conv2(self.drop(inputs))) #B x 1 x 17
+        
+        inputs = inputs.squeeze(1) #B x 17
+        
+        return inputs

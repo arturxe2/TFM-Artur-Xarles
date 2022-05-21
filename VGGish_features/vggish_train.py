@@ -258,7 +258,7 @@ def train(path,
             desc += f'Loss {losses.avg:.4e} '
             t.set_description(desc)
         
-    return loss
+    return loss.avg
 
 
 
