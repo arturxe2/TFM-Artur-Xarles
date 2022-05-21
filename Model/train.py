@@ -704,13 +704,13 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
 
 
 
-            end = time.time()
+            #end = time.time()
             with tqdm(enumerate(dataloader), total=len(dataloader), ncols=120) as t:
                 #Spotting if not Baidu+ResNet
     
                 for i, (game_ID, feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2) in t:
     
-                    data_time.update(time.time() - end)
+                    #data_time.update(time.time() - end)
         
                     # Batch size of 1
                         
@@ -776,8 +776,8 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     # count_visible = count_visible + torch.sum((torch.abs(label_half2)+label_half2)/2, dim=0)
                     # count_unshown = count_unshown + torch.sum((torch.abs(label_half2)-label_half2)/2, dim=0)
     
-                    batch_time.update(time.time() - end)
-                    end = time.time()
+                    #batch_time.update(time.time() - end)
+                    #end = time.time()
         
                     desc = f'Test (spot.): '
                     desc += f'Time {batch_time.avg:.3f}s '
