@@ -388,6 +388,7 @@ class EnsembleModel(nn.Module):
         self.relu = nn.ReLU()
         self.conv2 = nn.Conv1d(ensemble_chunk, 1, 1, stride=1, bias=False)
         self.drop = nn.Dropout(p=0.4)
+        self.sigm = nn.Sigmoid()
 
     def forward(self, inputs):
         # Input B x 3 x 34
@@ -401,4 +402,6 @@ class EnsembleModel(nn.Module):
         
         inputs = inputs.squeeze(1) #B x 17
         
-        return inputs
+        outputs = self.sigm(inputs)
+        
+        return outputs
