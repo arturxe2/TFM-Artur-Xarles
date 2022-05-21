@@ -394,6 +394,7 @@ class EnsembleModel(nn.Module):
 
     def forward(self, inputs):
         # Input B x 3 x 34
+        inputs = inputs.float()
         inputs = self.relu(self.conv2((inputs))) #B x 1 x 34
         
         inputs = inputs.squeeze(1) #B x 34
