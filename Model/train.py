@@ -815,7 +815,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
 
             return np.transpose([indexes, MaxValues])
         
-        if split != 'challenge':
+        if split != 'valid':
             
             for m in range(n_matches):
                 if ensemble_method == 'best_model_class':
@@ -895,16 +895,18 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                             prediction_data["confidence"] = str(confidence)
                             json_data["predictions"].append(prediction_data)
                     
-                os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
+                os.makedirs(os.path.join("models", model_name, output_folder, game_IDs[m]), exist_ok=True)
                 with open(os.path.join("models", model_name, output_folder, game_IDs[m], "results_spotting.json"), 'w') as output_file:
                     json.dump(json_data, output_file, indent=4)
 
 ###### FINS AQUÍ
 
         else:
-            print('asdf')
-            '''
+            
+            dict_event = EVENT_DICTIONARY_V2
+            path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
             all_preds = []
+            all_labels = []
             for m in range(n_matches):
                 for j in range(len(chunk_sizes)):
                     if j == 0:
@@ -915,11 +917,52 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         full_preds2 = np.concatenate((full_preds2, timestamps_long_half_2[m + n_matches * j]), axis = 1)
                 all_preds.append(full_preds1)
                 all_preds.append(full_preds2)
-            
+                
+                #Get labels of each frame for match
+                labels = json.load(open(os.path.join(path_labels, game_IDs[m], "Labels-v2.json")))
+                label_half1 = np.zeros((timestamps_long_half_1[m].shape[0], 17))
+                label_half2 = np.zeros((timestamps_long_half_2[m].shape[0], 17))
+                
+                for annotation in labels["annotations"]:
+    
+                    time = annotation["gameTime"]
+                    event = annotation["label"]
+    
+                    half = int(time[0])
+    
+                    minutes = int(time[-5:-3])
+                    seconds = int(time[-2::])
+                    frame = framerate * ( seconds + 60 * minutes ) 
+    
+                    if event not in dict_event:
+                        continue
+                    label = dict_event[event]
+    
+                    # if label outside temporal of view
+                    if half == 1 and frame>=label_half1.shape[0]:
+                        continue
+                    if half == 2 and frame>=label_half2.shape[0]:
+                        continue
+                        
+                    if half == 1:
+                        label_half1[frame][label] = 1
+    
+                    if half == 2:
+                        label_half2[frame][label] = 1
+
+                all_labels.append(label_half1)
+                all_labels.append(label_half2)
             all_preds = np.concatenate(all_preds)
+            all_labels = np.concatenate(all_labels)
+            print(all_preds.shape)
+            print(all_preds[0, :])
+            print(all_labels.shape)
+            print(all_labels[0, :])
+            
+            print('asdf')
             
             return 0
-'''
+
 
 
         def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
