@@ -389,9 +389,21 @@ class EnsembleModel(nn.Module):
         self.conv2 = nn.Conv1d(ensemble_chunk, 1, 1, stride=1, bias=False)
         self.drop = nn.Dropout(p=0.4)
         self.sigm = nn.Sigmoid()
+        self.fc1 = nn.Linear(n_models * 17, n_models * 17)
+        self.fc2 = nn.Linear(n_models * 17, 17)
 
     def forward(self, inputs):
         # Input B x 3 x 34
+        inputs = self.relu(self.con2((inputs))) #B x 1 x 34
+        
+        inputs = inputs.squeeze(1) #B x 34
+        
+        inputs = self.relu(self.fc1(self.drop(inputs))) #B x 34
+        
+        outputs = self.sigm(self.fc2(self.drop(inputs)))
+        
+        '''
+        
         inputs = inputs.permute((0, 2, 1)) #B x 34 x 3
         
         inputs = self.relu(self.conv1(self.drop(inputs))) #B x 17 x 3
@@ -403,5 +415,7 @@ class EnsembleModel(nn.Module):
         inputs = inputs.squeeze(1) #B x 17
         
         outputs = self.sigm(inputs)
+        
+        '''
         
         return outputs
