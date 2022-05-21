@@ -113,6 +113,6 @@ for game in tqdm(listGames):
     print(embed_half1.shape)
     print(embed_half2.shape)    
     
-    np.save(os.path.join(path, game, "1_featA3.npy"), embed_half1)
-    np.save(os.path.join(path, game, "2_featA3.npy"), embed_half2)
+    np.save(os.path.join(path, game, "1_featA4.npy"), embed_half1)
+    np.save(os.path.join(path, game, "2_featA4.npy"), embed_half2)
     
