@@ -889,8 +889,11 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     
                     timestamp_long_half_1 = np.concatenate(output1)
                     timestamp_long_half_2 = np.concatenate(output2)
-                    print(timestamp_long_half_1)
-                    print(timestamp_long_half_2)
+                    if m == 0:
+                        print(timestamp_long_half_1.shape)
+                        print(timestamp_long_half_1)
+                        print(timestamp_long_half_2.shape)
+                        print(timestamp_long_half_2)
                     
                 framerate = dataloader.dataset.framerate
                 get_spot = get_spot_from_NMS
@@ -1009,7 +1012,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             trainer('ensemble', train_loader, train_loader, train_loader, 
                     model, optimizer, criterion, patience=5,
                     model_name='ensemble',
-                    max_epochs=2, evaluation_frequency=20)
+                    max_epochs=15, evaluation_frequency=20)
             
             print('asdf')
             

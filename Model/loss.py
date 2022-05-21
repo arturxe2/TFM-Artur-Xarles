@@ -36,7 +36,7 @@ class NLLLoss_weights_ensemble(torch.nn.Module):
         #self.weights1 = weights1
         
     def forward(self, labels, output):
-        weights = torch.tensor([20, 10, 10, 15, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 30, 30, 30]).cuda() #loss online
+        weights = torch.tensor([50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]).cuda() #loss online
         #weights = torch.tensor([1, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 20]).cuda() #loss ram
         #weights = torch.tensor([1, 40, 20, 30, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 30, 80, 80]).cuda()
         return torch.mean(torch.mean(weights * labels * -torch.log(output) + (1 - labels) * -torch.log(1 - output), dim=0))
