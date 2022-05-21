@@ -15,7 +15,7 @@ from SoccerNet.Evaluation.ActionSpotting import evaluate
 from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
 from model import Model
-from dataset import SoccerNetClipsTesting
+from dataset import SoccerNetClipsTesting, feats2clip
 
 
 
@@ -668,7 +668,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
 
     # return a_mAP
   
-def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'mean'):
+def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'mean', ensemble_chunk = 3):
 
     split2 = '_'.join([split])
     chunk_sizes = [2, 3]#, 4, 5, 7]
@@ -680,6 +680,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
     if not os.path.exists(output_results) or overwrite:
         batch_time = AverageMeter()
         data_time = AverageMeter()
+        framerate = 1
 
         spotting_grountruth = list()
         spotting_grountruth_visibility = list()
@@ -915,6 +916,9 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     else:
                         full_preds1 = np.concatenate((full_preds1, timestamps_long_half_1[m + n_matches * j]), axis = 1)
                         full_preds2 = np.concatenate((full_preds2, timestamps_long_half_2[m + n_matches * j]), axis = 1)
+                
+                full_preds1 = feats2clip(full_preds1, 1, ensemble_chunk, off=int(ensemble_chunk/2))
+                full_preds2 = feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))
                 all_preds.append(full_preds1)
                 all_preds.append(full_preds2)
                 
