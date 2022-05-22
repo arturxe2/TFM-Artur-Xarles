@@ -1004,11 +1004,10 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 all_labels.append(label_half2)
             all_preds = np.concatenate(all_preds)
             all_labels = np.concatenate(all_labels)
-            print((all_preds).shape)
-            print((all_labels).shape)
+
             
-            idx1 = np.arange(0, all_labels.shape[0])[(1 - (all_labels.sum(axis = 1) == 0) * random.choices([0, 1], weights = [0.9, 0.1], k = len(all_labels))).astype('bool')]
-            print(idx1)
+            idx1 = np.arange(0, all_labels.shape[0])#[(1 - (all_labels.sum(axis = 1) == 0) * random.choices([0, 1], weights = [0.9, 0.1], k = len(all_labels))).astype('bool')]
+            #print(idx1)
             #idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.9, 0.1], k = len(labels_half2))).astype('bool')]
             
             dataset_ensemble = TrainEnsemble(all_preds[idx1, :, :], all_labels[idx1, :])
