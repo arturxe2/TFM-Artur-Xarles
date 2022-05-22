@@ -1031,7 +1031,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             trainer('ensemble', train_loader, train_loader, train_loader, 
                     model, optimizer, criterion, patience=5,
                     model_name='ensemble',
-                    max_epochs=25, evaluation_frequency=20)
+                    max_epochs=25, evaluation_frequency=1000)
             
             print('asdf')
             
