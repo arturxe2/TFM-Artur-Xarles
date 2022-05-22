@@ -950,8 +950,8 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         full_preds1 = np.concatenate((full_preds1, timestamps_long_half_1[m + n_matches * j]), axis = 1)
                         full_preds2 = np.concatenate((full_preds2, timestamps_long_half_2[m + n_matches * j]), axis = 1)
                 
-                full_preds1 = feats2clip(full_preds1, 1, ensemble_chunk, off=int(ensemble_chunk/2))
-                full_preds2 = feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))
+                full_preds1 = feats2clip(full_preds1, 1, ensemble_chunk, off=0)
+                full_preds2 = feats2clip(full_preds2, 1, ensemble_chunk, off=0)
                 all_preds.append(full_preds1)
                 all_preds.append(full_preds2)
                 
