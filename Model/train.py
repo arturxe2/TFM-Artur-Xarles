@@ -1006,7 +1006,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             all_labels = np.concatenate(all_labels)
 
             
-            idx1 = np.arange(0, all_labels.shape[0])[(1 - (all_labels.sum(axis = 1) == 0) * random.choices([0, 1], weights = [0.9, 0.1], k = len(all_labels))).astype('bool')]
+            idx1 = np.arange(0, all_labels.shape[0])#[(1 - (all_labels.sum(axis = 1) == 0) * random.choices([0, 1], weights = [0.9, 0.1], k = len(all_labels))).astype('bool')]
             #print(idx1)
             #idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.9, 0.1], k = len(labels_half2))).astype('bool')]
             
@@ -1031,7 +1031,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             trainer('ensemble', train_loader, train_loader, train_loader, 
                     model, optimizer, criterion, patience=5,
                     model_name='ensemble',
-                    max_epochs=15, evaluation_frequency=20)
+                    max_epochs=25, evaluation_frequency=20)
             
             print('asdf')
             
