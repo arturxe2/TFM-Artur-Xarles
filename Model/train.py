@@ -943,7 +943,8 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
             all_preds = []
             all_labels = []
-            full_preds = []
+            full_preds1 = []
+            full_preds2 = []
             for m in range(n_matches):
                 for j in range(len(chunk_sizes)):
                     if j == 0:
