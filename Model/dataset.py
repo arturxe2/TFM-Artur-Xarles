@@ -322,7 +322,7 @@ class SoccerNetClipsTrain(Dataset):
                  path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
                  path_store = "/data-local/data3-ssd/axesparraguera",
                  features_baidu = 'baidu_soccer_embeddings.npy',
-                 features_audio = 'featA4.npy', stride = 2, split=["train"], version=2, 
+                 features_audio = 'featA3.npy', stride = 2, split=["train"], version=2, 
                 framerate=1, chunk_size=7, augment = False, store = True):
         
         self.path_baidu = path_baidu
