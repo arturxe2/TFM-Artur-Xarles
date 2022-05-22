@@ -880,7 +880,6 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         else:
                             full_preds1.append(timestamps_long_half_1[m + n_matches * j])
                             full_preds2.append(timestamps_long_half_2[m + n_matches * j])
-                    print(full_preds1.shape)
                     
                     full_preds1 = torch.from_numpy(feats2clip(full_preds1, 1, ensemble_chunk, off=int(ensemble_chunk/2))).cuda()
                     full_preds2 = torch.from_numpy(feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))).cuda()
@@ -944,14 +943,19 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
             all_preds = []
             all_labels = []
+            full_preds = []
             for m in range(n_matches):
                 for j in range(len(chunk_sizes)):
                     if j == 0:
-                        full_preds1 = timestamps_long_half_1[m + n_matches * j]
-                        full_preds2 = timestamps_long_half_2[m + n_matches * j]
+                        full_preds1.append(timestamps_long_half_1[m + n_matches * j])
+                        full_preds2.append(timestamps_long_half_2[m + n_matches * j])
                     else:
-                        full_preds1 = np.concatenate((full_preds1, timestamps_long_half_1[m + n_matches * j]), axis = 1)
-                        full_preds2 = np.concatenate((full_preds2, timestamps_long_half_2[m + n_matches * j]), axis = 1)
+                        full_preds1.append(timestamps_long_half_1[m + n_matches * j])
+                        full_preds2.append(timestamps_long_half_2[m + n_matches * j])
+                full_preds1 = np.concatenate(full_preds1)
+                full_preds2 = np.concatenate(full_preds2)
+                print(full_preds1.shape)
+                print(full_preds2.shape)
                 
                 full_preds1 = feats2clip(full_preds1, 1, ensemble_chunk, off=int(ensemble_chunk/2))
                 full_preds2 = feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))
