@@ -954,6 +954,9 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 full_preds2 = feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))
                 all_preds.append(full_preds1)
                 all_preds.append(full_preds2)
+                print(full_preds1.shape)
+                print(full_preds2.shape)
+                print(all_preds.shape)
                 
                 #Get labels of each frame for match
                 labels = json.load(open(os.path.join(path_labels, game_IDs[m], "Labels-v2.json")))
