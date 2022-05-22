@@ -1022,7 +1022,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             logging.info("Total number of parameters: " + str(total_params))
             
             criterion = NLLLoss_weights_ensemble()
-            optimizer = torch.optim.Adam(model.parameters(), lr=1e-02, 
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
                                         betas=(0.9, 0.999), eps=1e-08, 
                                         weight_decay=1e-5, amsgrad=True)
             
