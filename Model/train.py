@@ -17,6 +17,7 @@ from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIO
 from model import Model, EnsembleModel
 from dataset import SoccerNetClipsTesting, feats2clip, TrainEnsemble
 from loss import NLLLoss_weights_ensemble
+import random
 
 
 
@@ -870,16 +871,13 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     timestamp_long_half_2 /= model_weights.sum(axis = 0)
                     
                 if ensemble_method == 'MLP':
-                    full_preds1 = []
-                    full_preds2 = []
                     for j in range(len(chunk_sizes)):
                         if j == 0:
-                            
-                            full_preds1.append(timestamps_long_half_1[m + n_matches * j])
-                            full_preds2.append(timestamps_long_half_2[m + n_matches * j])
+                            full_preds1 = timestamps_long_half_1[m + n_matches * j]
+                            full_preds2 = timestamps_long_half_2[m + n_matches * j]
                         else:
-                            full_preds1.append(timestamps_long_half_1[m + n_matches * j])
-                            full_preds2.append(timestamps_long_half_2[m + n_matches * j])
+                            full_preds1 = np.concatenate((full_preds1, timestamps_long_half_1[m + n_matches * j]), axis = 1)
+                            full_preds2 = np.concatenate((full_preds2, timestamps_long_half_2[m + n_matches * j]), axis = 1)
                     
                     full_preds1 = torch.from_numpy(feats2clip(full_preds1, 1, ensemble_chunk, off=int(ensemble_chunk/2))).cuda()
                     full_preds2 = torch.from_numpy(feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))).cuda()
@@ -943,20 +941,14 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
             all_preds = []
             all_labels = []
-            full_preds1 = []
-            full_preds2 = []
             for m in range(n_matches):
                 for j in range(len(chunk_sizes)):
                     if j == 0:
-                        full_preds1.append(timestamps_long_half_1[m + n_matches * j])
-                        full_preds2.append(timestamps_long_half_2[m + n_matches * j])
+                        full_preds1 = timestamps_long_half_1[m + n_matches * j]
+                        full_preds2 = timestamps_long_half_2[m + n_matches * j]
                     else:
-                        full_preds1.append(timestamps_long_half_1[m + n_matches * j])
-                        full_preds2.append(timestamps_long_half_2[m + n_matches * j])
-                full_preds1 = np.concatenate(full_preds1)
-                full_preds2 = np.concatenate(full_preds2)
-                print(full_preds1.shape)
-                print(full_preds2.shape)
+                        full_preds1 = np.concatenate((full_preds1, timestamps_long_half_1[m + n_matches * j]), axis = 1)
+                        full_preds2 = np.concatenate((full_preds2, timestamps_long_half_2[m + n_matches * j]), axis = 1)
                 
                 full_preds1 = feats2clip(full_preds1, 1, ensemble_chunk, off=int(ensemble_chunk/2))
                 full_preds2 = feats2clip(full_preds2, 1, ensemble_chunk, off=int(ensemble_chunk/2))
@@ -1013,7 +1005,10 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             all_preds = np.concatenate(all_preds)
             all_labels = np.concatenate(all_labels)
             
-            dataset_ensemble = TrainEnsemble(all_preds, all_labels)
+            idx1 = np.arange(0, all_labels.shape[0])[(1 - (all_labels.sum(axis = 1) == 0) * random.choices([0, 1], weights = [0.9, 0.1], k = len(all_labels))).astype('bool')]
+            #idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.9, 0.1], k = len(labels_half2))).astype('bool')]
+            
+            dataset_ensemble = TrainEnsemble(all_preds[idx1, :, :], all_labels[idx1, :])
             train_loader = torch.utils.data.DataLoader(dataset_ensemble,
                 batch_size=128,
                 num_workers=1, shuffle = True, pin_memory=True)
@@ -1025,7 +1020,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             logging.info("Total number of parameters: " + str(total_params))
             
             criterion = NLLLoss_weights_ensemble()
-            optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-02, 
                                         betas=(0.9, 0.999), eps=1e-08, 
                                         weight_decay=1e-5, amsgrad=True)
             
