@@ -116,7 +116,7 @@ class SoccerNetClips(Dataset):
         resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
         resnet_name = 'VGGish.npy'
         resnet_path = '/data-local/data1-hdd/axesparraguera/vggish'
-        resnet_name = 'featA4.npy'
+        resnet_name = 'featA.npy'
         framerate2 = 1
         stride = self.chunk_size #// 2
         for game in tqdm(self.listGames):
@@ -663,7 +663,7 @@ class SoccerNetClipsTesting(Dataset):
         resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
         resnet_name = 'VGGish.npy'
         resnet_path = '/data-local/data1-hdd/axesparraguera/vggish'
-        resnet_name = 'featA4.npy'
+        resnet_name = 'featA.npy'
         
         framerate2 = 1
         # Load features
