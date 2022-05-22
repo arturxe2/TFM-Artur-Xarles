@@ -390,7 +390,8 @@ class EnsembleModel(nn.Module):
         self.drop = nn.Dropout(p=0.4)
         self.sigm = nn.Sigmoid()
         self.fc1 = nn.Linear(n_models * 17, n_models * 17)
-        self.fc2 = nn.Linear(n_models * 17, 17)
+        self.fc2 = nn.Linear(n_models * 17, n_models * 17)
+        self.fc3 = nn.Linear(n_models * 17, 17)
 
     def forward(self, inputs):
         # Input B x 3 x 34
@@ -401,7 +402,9 @@ class EnsembleModel(nn.Module):
         
         inputs = self.relu(self.fc1(self.drop(inputs))) #B x 34
         
-        outputs = self.sigm(self.fc2(self.drop(inputs)))
+        outputs = self.relu(self.fc2(self.drop(inputs))) #B x 34
+        
+        outputs = self.sigm(self.fc3(outputs))
         
         '''
         
