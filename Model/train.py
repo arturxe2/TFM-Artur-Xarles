@@ -1039,7 +1039,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         
             # start training
             trainer('ensemble', train_loader, val_loader, train_loader, 
-                    model, optimizer, criterion, patience=5,
+                    model, optimizer, criterion, patience=10,
                     model_name='ensemble',
                     max_epochs=1000, evaluation_frequency=10000)
             
