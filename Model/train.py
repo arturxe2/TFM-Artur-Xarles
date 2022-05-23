@@ -670,7 +670,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
 
     # return a_mAP
   
-def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'mean', ensemble_chunk = 5):
+def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.5, ensemble_method = 'mean', ensemble_chunk = 9):
 
     split2 = '_'.join([split])
     chunk_sizes = [2, 3, 4, 5, 7]
@@ -992,11 +992,11 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         
     
                     if half == 2:
-                        #label_half2[max(0, frame-3)][label] = 0.5
-                        #label_half2[max(0, frame-2)][label] = 0.75
+                        label_half2[max(0, frame-3)][label] = 0.5
+                        label_half2[max(0, frame-2)][label] = 0.75
                         label_half2[max(0, frame-1)][label] = 1
-                        #label_half2[min(label_half2.shape[0]-1, frame+3)][label] = 0.5
-                        #label_half2[min(label_half2.shape[0]-1, frame+2)][label] = 0.75
+                        label_half2[min(label_half2.shape[0]-1, frame+3)][label] = 0.5
+                        label_half2[min(label_half2.shape[0]-1, frame+2)][label] = 0.75
                         label_half2[min(label_half2.shape[0]-1, frame+1)][label] = 1
                         label_half2[frame][label] = 1
 
