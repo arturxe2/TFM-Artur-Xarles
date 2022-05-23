@@ -1022,7 +1022,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 batch_size=512,
                 num_workers=1, shuffle = True, pin_memory=True)
             val_loader = torch.utils.data.DataLoader(dataset_val_ensemble,
-                bath_size=512,
+                batch_size=512,
                 num_workers=1, shuffle = False, pin_memory=True)
             model = EnsembleModel(ensemble_chunk = ensemble_chunk, n_models = len(chunk_sizes)).cuda()
             logging.info(model)
