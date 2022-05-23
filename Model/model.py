@@ -403,9 +403,9 @@ class EnsembleModel(nn.Module):
         
         inputs = self.relu(self.fc1(self.drop(inputs))) #B x 34
         
-        inputs = self.relu(self.fc2(self.drop(inputs))) #B x 34
+        #inputs = self.relu(self.fc2(self.drop(inputs))) #B x 34
         
-        inputs = self.relu(self.fc3(self.drop(inputs)))
+        #inputs = self.relu(self.fc3(self.drop(inputs)))
         
         outputs = self.sigm(self.fc4(inputs))
         
