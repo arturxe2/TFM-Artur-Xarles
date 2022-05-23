@@ -1006,14 +1006,24 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             all_labels = np.concatenate(all_labels)
 
             
-            idx1 = np.arange(0, all_labels.shape[0])#[(1 - (all_labels.sum(axis = 1) == 0) * random.choices([0, 1], weights = [0.9, 0.1], k = len(all_labels))).astype('bool')]
+            #idx1 = np.arange(0, all_labels.shape[0])#[(1 - (all_labels.sum(axis = 1) == 0) * random.choices([0, 1], weights = [0.9, 0.1], k = len(all_labels))).astype('bool')]
             #print(idx1)
             #idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.9, 0.1], k = len(labels_half2))).astype('bool')]
+            train_prob = 0.8
+            true_false_split = (np.random.uniform(size = all_labels.shape[0]) > train_prob)
+            idx_train = np.arange(0, all_labels.shape[0])[(1 - true_false_split).astype('bool')]
+            idx_test = np.arange(0, all_labels.shape[0])[true_false_split]
             
-            dataset_ensemble = TrainEnsemble(all_preds[idx1, :, :], all_labels[idx1, :])
-            train_loader = torch.utils.data.DataLoader(dataset_ensemble,
-                batch_size=128,
+            
+            
+            dataset_train_ensemble = TrainEnsemble(all_preds[idx_train, :, :], all_labels[idx_train, :])
+            dataset_val_ensemble = TrainEnsemble(all_preds[idx_test, :, :], all_labels[idx_test, :])
+            train_loader = torch.utils.data.DataLoader(dataset_train_ensemble,
+                batch_size=512,
                 num_workers=1, shuffle = True, pin_memory=True)
+            val_loader = torch.utils.data.DataLoader(dataset_val_ensemble,
+                bath_size=512,
+                num_workers=1, shuffle = False, pin_memory=True)
             model = EnsembleModel(ensemble_chunk = ensemble_chunk, n_models = len(chunk_sizes)).cuda()
             logging.info(model)
             total_params = sum(p.numel()
@@ -1022,13 +1032,13 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             logging.info("Total number of parameters: " + str(total_params))
             
             criterion = NLLLoss_weights_ensemble()
-            optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-02, 
                                         betas=(0.9, 0.999), eps=1e-08, 
                                         weight_decay=1e-5, amsgrad=True)
             
                         
             # start training
-            trainer('ensemble', train_loader, train_loader, train_loader, 
+            trainer('ensemble', train_loader, val_loader, train_loader, 
                     model, optimizer, criterion, patience=5,
                     model_name='ensemble',
                     max_epochs=10, evaluation_frequency=1000)
