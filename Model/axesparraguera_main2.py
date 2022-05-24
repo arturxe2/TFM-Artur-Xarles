@@ -48,8 +48,8 @@ def main(args):
                             framerate=1, chunk_size=3, augment = False, store = False)
                 
                 #dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+                #dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+                #dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
     dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             
         
@@ -80,12 +80,12 @@ def main(args):
                                num_workers=args.max_num_worker, pin_memory=True)
                 #torch.save(train_loader, 'train_loader.pth')
                 
-            val_loader = torch.utils.data.DataLoader(dataset_Valid,
+            val_loader = torch.utils.data.DataLoader(dataset_Train,
                 batch_size=args.batch_size, shuffle=False,
                 num_workers=args.max_num_worker, pin_memory=True)
             #torch.save(val_loader, 'val_loader.pth')
 
-            val_metric_loader = torch.utils.data.DataLoader(dataset_Valid_metric,
+            val_metric_loader = torch.utils.data.DataLoader(dataset_Train,
                 batch_size=args.batch_size, shuffle=False,
                 num_workers=args.max_num_worker, pin_memory=True)
             #torch.save(val_metric_loader, 'val_metric_loader.pth')
@@ -115,12 +115,12 @@ def main(args):
         
         # start training
         trainer(args.SoccerNet_path, train_loader, val_loader, val_metric_loader, 
-                model, optimizer, criterion, patience=args.patience,
+                model, optimizer, criterion, patience=1000,
                 model_name=args.model_name,
-                max_epochs=args.max_epochs, evaluation_frequency=args.evaluation_frequency)
+                max_epochs=9, evaluation_frequency=100)
 
     # For the best model only
-    checkpoint = torch.load(os.path.join("models", args.model_name, "model_chunk3.pth.tar"))
+    checkpoint = torch.load(os.path.join("models", args.model_name, "model.pth.tar"))
     model.load_state_dict(checkpoint['state_dict'])
 
     # test on multiple splits [test/challenge]
