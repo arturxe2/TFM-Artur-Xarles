@@ -48,7 +48,7 @@ def main(args):
                             framerate=1, chunk_size=3, augment = False, store = False)
                 
                 #dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                #dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+                dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
                 #dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
     dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             
@@ -80,12 +80,12 @@ def main(args):
                                num_workers=args.max_num_worker, pin_memory=True)
                 #torch.save(train_loader, 'train_loader.pth')
                 
-            val_loader = torch.utils.data.DataLoader(dataset_Train,
+            val_loader = torch.utils.data.DataLoader(dataset_Valid,
                 batch_size=args.batch_size, shuffle=False,
                 num_workers=args.max_num_worker, pin_memory=True)
             #torch.save(val_loader, 'val_loader.pth')
 
-            val_metric_loader = torch.utils.data.DataLoader(dataset_Train,
+            val_metric_loader = torch.utils.data.DataLoader(dataset_Valid,
                 batch_size=args.batch_size, shuffle=False,
                 num_workers=args.max_num_worker, pin_memory=True)
             #torch.save(val_metric_loader, 'val_metric_loader.pth')
