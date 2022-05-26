@@ -98,8 +98,8 @@ def main(args):
             val_loader = torch.load('val_loader.pth')
             val_metric_loader = torch.load('val_metric_loader.pth')
     
-    checkpoint = torch.load(os.path.join("models", args.model_name, "model_chunk3_full.pth.tar"))
-    model.load_state_dict(checkpoint['state_dict'])
+    #checkpoint = torch.load(os.path.join("models", args.model_name, "model_chunk3_full.pth.tar"))
+    #model.load_state_dict(checkpoint['state_dict'])
     
 
     # training parameters
@@ -120,7 +120,7 @@ def main(args):
         trainer(args.SoccerNet_path, train_loader, val_loader, val_metric_loader, 
                 model, optimizer, criterion, patience=1000,
                 model_name=args.model_name,
-                max_epochs=2, evaluation_frequency=100)
+                max_epochs=11, evaluation_frequency=100)
 
     # For the best model only
     checkpoint = torch.load(os.path.join("models", args.model_name, "model.pth.tar"))
