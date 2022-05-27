@@ -673,7 +673,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
 def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.2, ensemble_method = 'mean', ensemble_chunk = 15):
 
     split2 = '_'.join([split])
-    chunk_sizes = [2, 3, 4, 5, 7]
+    chunk_sizes = [2, 3, 4, 5]#, 7]
     
     # print(split)
     output_results = os.path.join("models", model_name, f"results_spotting_{split2}.zip")
@@ -701,7 +701,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             model = Model(weights=None, input_size=8576,
                           num_classes=dataloader.dataset.num_classes, chunk_size=chunk_size*1,
                           framerate=1, pool='final_model').cuda()
-            checkpoint = torch.load(os.path.join("models", 'Pooling', 'model_chunk' + str(chunk_size) + '.pth.tar'))
+            checkpoint = torch.load(os.path.join("models", 'Pooling', 'model_chunk' + str(chunk_size) + '_full.pth.tar'))
             model.load_state_dict(checkpoint['state_dict'])
             model.eval()
 
@@ -859,8 +859,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                     model_weights = np.array([[0.6893, 0.5455, 0.6962, 0.4447, 0.4519, 0.5189, 0.5235, 0.5239, 0.6988, 0.6722, 0.6562, 0.4086, 0.6142, 0.7429, 0.5034, 0.3122, 0.1953],
                                               [0.8025, 0.5726, 0.769, 0.4757, 0.5294, 0.5333, 0.5274, 0.5395, 0.7392, 0.6961, 0.6911, 0.4366, 0.5886, 0.7683, 0.5133, 0.2147, 0.3402],
                                               [0.744, 0.4997, 0.6725, 0.4095, 0.4516, 0.506, 0.4838, 0.5045, 0.6659, 0.6378, 0.6214, 0.4095, 0.5995, 0.708, 0.4909, 0.2534, 0.1606],
-                                              [0.7458, 0.5091, 0.6985, 0.4164, 0.4635, 0.4959, 0.5116, 0.506, 0.6967, 0.6583, 0.6439, 0.4152, 0.5255, 0.6845, 0.5068, 0.276, 0.3434],
-                                              [0.5502, 0.33, 0.3995, 0.358, 0.328, 0.3416, 0.3548, 0.4041, 0.4571, 0.4846, 0.454, 0.3139, 0.4861, 0.6839, 0.4584, 0.2019, 0.1362]
+                                              [0.7458, 0.5091, 0.6985, 0.4164, 0.4635, 0.4959, 0.5116, 0.506, 0.6967, 0.6583, 0.6439, 0.4152, 0.5255, 0.6845, 0.5068, 0.276, 0.3434]
                                               ]) ** 2
                     timestamp_long_half_1 = np.zeros(timestamps_long_half_1[m].shape)
                     timestamp_long_half_2 = np.zeros(timestamps_long_half_2[m].shape)
