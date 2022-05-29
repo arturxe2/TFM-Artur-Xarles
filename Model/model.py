@@ -410,7 +410,7 @@ class EnsembleModel(nn.Module):
         # Input B x 3 x 34
         inputs = inputs.float()
         inputs = self.encoder(self.drop(inputs))
-        #inputs = self.encoder2((inputs))
+        inputs = self.encoder2((inputs))
         inputs = inputs.permute((0, 2, 1))
         inputs = self.pool_layer(inputs)
         inputs = inputs.squeeze(-1)
