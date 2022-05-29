@@ -388,6 +388,8 @@ class EnsembleModel(nn.Module):
         self.pool_layer = nn.MaxPool1d(ensemble_chunk, stride = 1)
         self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
         self.fc = nn.Linear(n_models*17, 17)
+        self.drop = nn.Dropout(p=0.2)
+        self.sigm = nn.Sigmoid()
         '''
         self.conv1 = nn.Conv1d(n_models * 17, 17, 1, stride=1, bias=False)
         self.relu = nn.ReLU()
