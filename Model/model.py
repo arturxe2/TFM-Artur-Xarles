@@ -409,12 +409,12 @@ class EnsembleModel(nn.Module):
     def forward(self, inputs):
         # Input B x 3 x 34
         inputs = inputs.float()
-        inputs = self.encoder((inputs))
-        inputs = self.encoder2((inputs))
+        inputs = self.encoder(self.drop(inputs))
+        #inputs = self.encoder2((inputs))
         inputs = inputs.permute((0, 2, 1))
         inputs = self.pool_layer(inputs)
         inputs = inputs.squeeze(-1)
-        outputs = self.relu(self.fc((inputs)))
+        outputs = self.relu(self.fc(self.drop(inputs)))
         #outputs = self.relu(self.fc2((outputs1)))
         #outputs = self.sigm(self.fc3((outputs)))
         
