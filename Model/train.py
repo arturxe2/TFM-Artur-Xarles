@@ -981,22 +981,22 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         continue
                         
                     if half == 1:
-                        label_half1[max(0, frame-3)][label] = 0.5
-                        label_half1[max(0, frame-2)][label] = 0.75
-                        label_half1[max(0, frame-1)][label] = 0.9
-                        label_half1[min(label_half1.shape[0]-1, frame+3)][label] = 0.5
-                        label_half1[min(label_half1.shape[0]-1, frame+2)][label] = 0.75
-                        label_half1[min(label_half1.shape[0]-1, frame+1)][label] = 0.9                        
+                        #label_half1[max(0, frame-3)][label] = 0.5
+                        #label_half1[max(0, frame-2)][label] = 0.75
+                        #label_half1[max(0, frame-1)][label] = 0.9
+                        #label_half1[min(label_half1.shape[0]-1, frame+3)][label] = 0.5
+                        #label_half1[min(label_half1.shape[0]-1, frame+2)][label] = 0.75
+                        #label_half1[min(label_half1.shape[0]-1, frame+1)][label] = 0.9                        
                         label_half1[frame][label] = 1
                         
     
                     if half == 2:
-                        label_half2[max(0, frame-3)][label] = 0.5
-                        label_half2[max(0, frame-2)][label] = 0.75
-                        label_half2[max(0, frame-1)][label] = 0.9
-                        label_half2[min(label_half2.shape[0]-1, frame+3)][label] = 0.5
-                        label_half2[min(label_half2.shape[0]-1, frame+2)][label] = 0.75
-                        label_half2[min(label_half2.shape[0]-1, frame+1)][label] = 0.9
+                        #label_half2[max(0, frame-3)][label] = 0.5
+                        #label_half2[max(0, frame-2)][label] = 0.75
+                        #label_half2[max(0, frame-1)][label] = 0.9
+                        #label_half2[min(label_half2.shape[0]-1, frame+3)][label] = 0.5
+                        #label_half2[min(label_half2.shape[0]-1, frame+2)][label] = 0.75
+                        #label_half2[min(label_half2.shape[0]-1, frame+1)][label] = 0.9
                         label_half2[frame][label] = 1
 
                 all_labels.append(label_half1)

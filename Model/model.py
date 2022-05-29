@@ -387,9 +387,13 @@ class EnsembleModel(nn.Module):
         encoder_layer = nn.TransformerEncoderLayer(d_model=n_models * 17, nhead=n_models)
         self.pool_layer = nn.MaxPool1d(ensemble_chunk, stride = 1)
         self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
-        self.fc = nn.Linear(n_models*17, 17)
+        encoder_layer2 = nn.TransformerEncoderLayer(d_model=n_models*17, nhead=n_models)
+        self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
+        self.fc = nn.Linear(n_models*17, n_models * 17)
+        self.fc2 = nn.Linear(n_models*17, n_models)
         self.drop = nn.Dropout(p=0.2)
         self.sigm = nn.Sigmoid()
+        self.relu = nn.ReLU()
         '''
         self.conv1 = nn.Conv1d(n_models * 17, 17, 1, stride=1, bias=False)
         self.relu = nn.ReLU()
@@ -405,10 +409,12 @@ class EnsembleModel(nn.Module):
         # Input B x 3 x 34
         inputs = inputs.float()
         inputs = self.encoder(self.drop(inputs))
+        inputs = self.encoder2(self.drop(inputs))
         inputs = inputs.permute((0, 2, 1))
         inputs = self.pool_layer(inputs)
         inputs = inputs.squeeze(-1)
-        outputs = self.sigm(self.fc(self.drop(inputs)))
+        outputs1 = self.relu(self.fc(self.drop(inputs)))
+        outputs = self.sigm(self.fc2(self.drop(outputs1)))
         
         '''
         inputs = self.relu(self.conv2((inputs))) #B x 1 x 34
