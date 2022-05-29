@@ -906,9 +906,11 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
                             
                     for l in range(dataloader.dataset.num_classes):
+                        #spots = get_spot(
+                        #    timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
                         spots = get_spot(
-                            timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
-    
+                            timestamp[:, l], window=nms_window*framerate, thresh=NMS_threshold, min_window = 0)
+                        
                         for spot in spots:
                             # print("spot", int(spot[0]), spot[1], spot)
                             frame_index = int(spot[0])
