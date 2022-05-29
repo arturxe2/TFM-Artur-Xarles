@@ -389,8 +389,8 @@ class EnsembleModel(nn.Module):
         self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
         encoder_layer2 = nn.TransformerEncoderLayer(d_model=n_models*17, nhead=n_models)
         self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
-        self.fc = nn.Linear(n_models*17, 17)
-        self.fc2 = nn.Linear(n_models*17, n_models * 17)
+        self.fc = nn.Linear(n_models*17, 17 * n_models)
+        self.fc2 = nn.Linear(n_models*17, 17)
         self.fc3 = nn.Linear(n_models * 17, 17)
         self.drop = nn.Dropout(p=0.4)
         self.sigm = nn.Sigmoid()
@@ -415,7 +415,7 @@ class EnsembleModel(nn.Module):
         inputs = self.pool_layer(inputs)
         inputs = inputs.squeeze(-1)
         outputs = self.relu(self.fc(self.drop(inputs)))
-        #outputs = self.relu(self.fc2((outputs1)))
+        outputs = self.relu(self.fc2(self.drop(outputs)))
         #outputs = self.sigm(self.fc3((outputs)))
         
         '''
