@@ -389,7 +389,7 @@ class EnsembleModel(nn.Module):
         self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
         encoder_layer2 = nn.TransformerEncoderLayer(d_model=n_models*17, nhead=n_models)
         self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
-        self.fc = nn.Linear(n_models*17, 17 * n_models)
+        self.fc = nn.Linear(n_models*17, 17)
         self.fc2 = nn.Linear(n_models*17, 17)
         self.fc3 = nn.Linear(n_models * 17, 17)
         self.drop = nn.Dropout(p=0.4)
