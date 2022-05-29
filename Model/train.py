@@ -901,7 +901,8 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 json_data = dict()
                 json_data["UrlLocal"] = game_ID
                 json_data["predictions"] = list()
-                nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
+                #nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
+                nms_window = 7
                 for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
                             
                     for l in range(dataloader.dataset.num_classes):
