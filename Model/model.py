@@ -389,7 +389,7 @@ class EnsembleModel(nn.Module):
         self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
         encoder_layer2 = nn.TransformerEncoderLayer(d_model=n_models*17, nhead=n_models)
         self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
-        self.fc = nn.Linear(n_models*17, n_models * 17)
+        self.fc = nn.Linear(n_models*17, 17)
         self.fc2 = nn.Linear(n_models*17, n_models * 17)
         self.fc3 = nn.Linear(n_models * 17, 17)
         self.drop = nn.Dropout(p=0.4)
@@ -409,14 +409,14 @@ class EnsembleModel(nn.Module):
     def forward(self, inputs):
         # Input B x 3 x 34
         inputs = inputs.float()
-        inputs = self.encoder(self.drop(inputs))
-        inputs = self.encoder2(self.drop(inputs))
+        inputs = self.encoder((inputs))
+        inputs = self.encoder2((inputs))
         inputs = inputs.permute((0, 2, 1))
         inputs = self.pool_layer(inputs)
         inputs = inputs.squeeze(-1)
-        outputs1 = self.relu(self.fc(self.drop(inputs)))
-        outputs = self.relu(self.fc2(self.drop(outputs1)))
-        outputs = self.sigm(self.fc3(self.drop(outputs)))
+        outputs = self.relu(self.fc((inputs)))
+        #outputs = self.relu(self.fc2((outputs1)))
+        #outputs = self.sigm(self.fc3((outputs)))
         
         '''
         inputs = self.relu(self.conv2((inputs))) #B x 1 x 34
