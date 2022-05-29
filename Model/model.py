@@ -384,6 +384,11 @@ class EnsembleModel(nn.Module):
         super(EnsembleModel, self).__init__()
         # 1 input image channel, 6 output channels, 5x5 square convolution
         # kernel
+        encoder_layer = nn.TransformerEncoderLayer(d_model=n_models * 17, nhead=8)
+        self.pool_layer = nn.MaxPool1d(ensemble_chunk, stride = 1)
+        self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
+        self.fc = nn.Linear(n_models*17, 17)
+        '''
         self.conv1 = nn.Conv1d(n_models * 17, 17, 1, stride=1, bias=False)
         self.relu = nn.ReLU()
         self.conv2 = nn.Conv1d(ensemble_chunk, 1, 1, stride=1, bias=False)
@@ -393,10 +398,16 @@ class EnsembleModel(nn.Module):
         #self.fc2 = nn.Linear(n_models * 17 * 10, n_models * 17 * 5)
         self.fc3 = nn.Linear(n_models * 17 * 2, n_models * 17)
         self.fc4 = nn.Linear(n_models * 17, 17)
-
+        '''
     def forward(self, inputs):
         # Input B x 3 x 34
         inputs = inputs.float()
+        inputs = self.encoder(self.drop(inputs))
+        inputs = self.pool_layer(inputs)
+        inputs = inputs.squeeze(-1)
+        outputs = self.sigm(self.fc(self.drop(inputs)))
+        
+        '''
         inputs = self.relu(self.conv2((inputs))) #B x 1 x 34
         
         inputs = inputs.squeeze(1) #B x 34
@@ -409,7 +420,7 @@ class EnsembleModel(nn.Module):
         
         outputs = self.sigm(self.fc4(inputs))
         
-        '''
+        
         
         inputs = inputs.permute((0, 2, 1)) #B x 34 x 3
         
