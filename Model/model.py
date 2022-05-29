@@ -392,7 +392,7 @@ class EnsembleModel(nn.Module):
         self.fc = nn.Linear(n_models*17, 17)
         self.fc2 = nn.Linear(n_models*17, 17)
         self.fc3 = nn.Linear(n_models * 17, 17)
-        self.drop = nn.Dropout(p=0.4)
+        self.drop = nn.Dropout(p=0.1)
         self.sigm = nn.Sigmoid()
         self.relu = nn.ReLU()
         '''
