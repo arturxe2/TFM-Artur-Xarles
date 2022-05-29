@@ -384,7 +384,7 @@ class EnsembleModel(nn.Module):
         super(EnsembleModel, self).__init__()
         # 1 input image channel, 6 output channels, 5x5 square convolution
         # kernel
-        encoder_layer = nn.TransformerEncoderLayer(d_model=n_models * 17, nhead=8)
+        encoder_layer = nn.TransformerEncoderLayer(d_model=n_models * 17, nhead=n_models)
         self.pool_layer = nn.MaxPool1d(ensemble_chunk, stride = 1)
         self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
         self.fc = nn.Linear(n_models*17, 17)
