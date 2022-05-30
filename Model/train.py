@@ -691,8 +691,13 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
         timestamps_long_half_1 = []
         timestamps_long_half_2 = []
         game_IDs = []
+        if split == 'valid':
+            split_aux = ['valid', 'test']
+        else:
+            split_aux = [split]
+        
         for chunk_size in chunk_sizes:
-            dataset_Test  = SoccerNetClipsTesting(path='Baidu+ResNet', features='baidu_soccer_embeddings.npy', split=[split], version=2, framerate=1, chunk_size=chunk_size*1)
+            dataset_Test  = SoccerNetClipsTesting(path='Baidu+ResNet', features='baidu_soccer_embeddings.npy', split=split_aux, version=2, framerate=1, chunk_size=chunk_size*1)
             print('Test loader')
             dataloader = torch.utils.data.DataLoader(dataset_Test,
                 batch_size=1, shuffle=False,
@@ -701,7 +706,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             model = Model(weights=None, input_size=8576,
                           num_classes=dataloader.dataset.num_classes, chunk_size=chunk_size*1,
                           framerate=1, pool='final_model').cuda()
-            checkpoint = torch.load(os.path.join("models", 'Pooling', 'model_chunk' + str(chunk_size) + '.pth.tar'))
+            checkpoint = torch.load(os.path.join("models", 'Pooling', 'model_chunk' + str(chunk_size) + '_full.pth.tar'))
             model.load_state_dict(checkpoint['state_dict'])
             model.eval()
 
@@ -1011,15 +1016,15 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             #idx1 = np.arange(0, all_labels.shape[0])#[(1 - (all_labels.sum(axis = 1) == 0) * random.choices([0, 1], weights = [0.9, 0.1], k = len(all_labels))).astype('bool')]
             #print(idx1)
             #idx2 = np.arange(0, labels_half2.shape[0])[(1 - (labels_half2[:, 0] == 1) * random.choices([0, 1], weights = [0.9, 0.1], k = len(labels_half2))).astype('bool')]
-            train_prob = 0.8
-            true_false_split = (np.random.uniform(size = all_labels.shape[0]) > train_prob)
-            idx_train = np.arange(0, all_labels.shape[0])[(1 - true_false_split).astype('bool')]
-            idx_test = np.arange(0, all_labels.shape[0])[true_false_split]
+            #train_prob = 0.8
+            #true_false_split = (np.random.uniform(size = all_labels.shape[0]) > train_prob)
+            #idx_train = np.arange(0, all_labels.shape[0])[(1 - true_false_split).astype('bool')]
+            #idx_test = np.arange(0, all_labels.shape[0])[true_false_split]
             
             
             
-            dataset_train_ensemble = TrainEnsemble(all_preds[idx_train, :, :], all_labels[idx_train, :])
-            dataset_val_ensemble = TrainEnsemble(all_preds[idx_test, :, :], all_labels[idx_test, :])
+            dataset_train_ensemble = TrainEnsemble(all_preds, all_labels)
+            dataset_val_ensemble = TrainEnsemble(all_preds, all_labels)
             train_loader = torch.utils.data.DataLoader(dataset_train_ensemble,
                 batch_size=512,
                 num_workers=1, shuffle = True, pin_memory=True)
@@ -1041,9 +1046,9 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                         
             # start training
             trainer('ensemble', train_loader, val_loader, train_loader, 
-                    model, optimizer, criterion, patience=10,
+                    model, optimizer, criterion, patience=1000,
                     model_name='ensemble',
-                    max_epochs=1000, evaluation_frequency=10000)
+                    max_epochs=50, evaluation_frequency=10000)
             
             print('asdf')
             
