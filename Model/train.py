@@ -701,7 +701,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             model = Model(weights=None, input_size=8576,
                           num_classes=dataloader.dataset.num_classes, chunk_size=chunk_size*1,
                           framerate=1, pool='final_model').cuda()
-            checkpoint = torch.load(os.path.join("models", 'Pooling', 'model_chunk' + str(chunk_size) + '_full.pth.tar'))
+            checkpoint = torch.load(os.path.join("models", 'Pooling', 'model_chunk' + str(chunk_size) + '.pth.tar'))
             model.load_state_dict(checkpoint['state_dict'])
             model.eval()
 
