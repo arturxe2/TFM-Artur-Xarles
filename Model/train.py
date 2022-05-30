@@ -906,15 +906,15 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
                 json_data = dict()
                 json_data["UrlLocal"] = game_ID
                 json_data["predictions"] = list()
-                #nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
-                nms_window = 7
+                nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
+                #nms_window = 7
                 for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
                             
                     for l in range(dataloader.dataset.num_classes):
-                        #spots = get_spot(
-                        #    timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
                         spots = get_spot(
-                            timestamp[:, l], window=nms_window*framerate, thresh=NMS_threshold, min_window = 0)
+                            timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
+                        #spots = get_spot(
+                        #    timestamp[:, l], window=nms_window*framerate, thresh=NMS_threshold, min_window = 0)
                         
                         for spot in spots:
                             # print("spot", int(spot[0]), spot[1], spot)
