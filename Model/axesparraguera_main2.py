@@ -129,7 +129,7 @@ def main(args):
     # test on multiple splits [test/challenge]
     n_ensemble_train = 0
     #for split in args.split_test:
-    for split in ['test', 'challenge']:
+    for split in ['challenge']:
         
         ensemble = True
         

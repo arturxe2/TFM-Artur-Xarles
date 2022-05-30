@@ -692,7 +692,7 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
         timestamps_long_half_2 = []
         game_IDs = []
         if split == 'valid':
-            split_aux = ['valid', 'test']
+            split_aux = ['train', 'valid', 'test']
         else:
             split_aux = [split]
         
