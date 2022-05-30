@@ -418,7 +418,7 @@ class EnsembleModel(nn.Module):
         inputs = self.pool_layer(inputs)
         inputs = inputs.squeeze(-1)
         #outputs = self.relu(self.fc((inputs)))
-        outputs = self.sigm(self.fc(self.drop(inputs)))
+        outputs = self.sigm(self.fc((inputs)))
         #outputs = self.sigm(self.fc3((outputs)))
         
         '''
