@@ -123,15 +123,15 @@ def main(args):
                 max_epochs=11, evaluation_frequency=100)
 
     # For the best model only
-    #checkpoint = torch.load(os.path.join("models", args.model_name, "model.pth.tar"))
-    #model.load_state_dict(checkpoint['state_dict'])
+    checkpoint = torch.load(os.path.join("models", args.model_name, "model_chunk3_good.pth.tar"))
+    model.load_state_dict(checkpoint['state_dict'])
 
     # test on multiple splits [test/challenge]
     n_ensemble_train = 0
     #for split in args.split_test:
     for split in ['challenge']:
         
-        ensemble = True
+        ensemble = False
         
         if ensemble:
             ensemble_method = 'MLP'
