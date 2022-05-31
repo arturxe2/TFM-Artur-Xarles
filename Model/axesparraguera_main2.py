@@ -123,7 +123,7 @@ def main(args):
                 max_epochs=11, evaluation_frequency=100)
 
     # For the best model only
-    checkpoint = torch.load(os.path.join("models", args.model_name, "model_chunk3_good.pth.tar"))
+    checkpoint = torch.load(os.path.join("models", args.model_name, "model_chunk3.pth.tar"))
     model.load_state_dict(checkpoint['state_dict'])
 
     # test on multiple splits [test/challenge]
