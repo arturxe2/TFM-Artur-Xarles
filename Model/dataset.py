@@ -663,7 +663,7 @@ class SoccerNetClipsTesting(Dataset):
         resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
         resnet_name = 'VGGish.npy'
         resnet_path = '/data-local/data1-hdd/axesparraguera/vggish'
-        resnet_name = 'featA.npy'
+        resnet_name = 'featA2.npy'
         
         framerate2 = 1
         # Load features
