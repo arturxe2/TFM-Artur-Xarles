@@ -282,8 +282,9 @@ class Model(nn.Module):
         elif self.pool == "together":
             inputsA = inputs2.float()
             inputsB = inputs1.float()
+            inputsB = inputsB.permute((0, 2, 1))
             
-            inputsB1 = self.relu(self.normB(self.convB(inputsB)))
+            inputsB = self.relu(self.normB(self.convB(inputsB)))
             inputsB = inputsB.permute((0, 2, 1))
             inputsB = self.encoderB(self.drop(inputsB))
             inputsB = self.encoderB2(inputsB)
