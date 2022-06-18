@@ -16,6 +16,7 @@ i = 0
 for path in tqdm(path_list):
     if i == 0:
         labels = np.load(path + 'labels.npy')
+        i += 1
     else:
         labels += np.load(path + 'labels.npy')
         
