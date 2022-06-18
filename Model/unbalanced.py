@@ -6,13 +6,14 @@ Created on Sat Jun 18 11:12:45 2022
 """
 import pickle
 import numpy as np
+from tqdm import tqdm
 
 path_store = '/data-local/data3-ssd/axesparraguera'
 with open(path_store + '/chunk_list.pkl', 'rb') as f:
     path_list = pickle.load(f)
     
 i = 0
-for path in path_list:
+for path in tqdm(path_list):
     if i == 0:
         labels = np.load(path + 'labels.npy')
     else:
