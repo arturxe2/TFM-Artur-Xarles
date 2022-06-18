@@ -111,7 +111,7 @@ class Model(nn.Module):
             self.encoderB2 = nn.TransformerEncoder(encoder_layerB2, 1)
             
             self.pool_layerB = nn.MaxPool1d(chunk_size, stride=1)
-            self.fcB = nn.Linear(512, self.num_classes+1)
+            self.fcB = nn.Linear(8576, self.num_classes+1)
         
         elif self.pool == "final_model":
             #All features to 512 dimensionality
@@ -282,11 +282,11 @@ class Model(nn.Module):
         elif self.pool == "together":
             inputsA = inputs2.float()
             inputsB = inputs1.float()
-            inputsB = inputsB.permute((0, 2, 1))
+            #inputsB = inputsB.permute((0, 2, 1))
             
-            inputsB = self.relu(self.normB(self.convB(inputsB)))
-            inputsB = inputsB.permute((0, 2, 1))
-            inputsB = self.encoderB(self.drop(inputsB))
+            #inputsB = self.relu(self.normB(self.convB(inputsB)))
+            #inputsB = inputsB.permute((0, 2, 1))
+            #inputsB = self.encoderB(self.drop(inputsB))
             #inputsB = self.encoderB2(inputsB)
             inputsB = inputsB.permute((0, 2, 1))
             
