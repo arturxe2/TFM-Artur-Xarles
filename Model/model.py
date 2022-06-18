@@ -99,6 +99,19 @@ class Model(nn.Module):
             #Pool layer
             self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
             self.fc2 = nn.Linear(512, self.num_classes+1)
+            
+        elif self.pool == 'together':
+            self.convB = nn.Conv1d(8576, 512, 1, stride = 1, bias=False)
+            self.normB=nn.BatchNorm1d(512)
+            self.relu = nn.ReLU()
+            
+            encoder_layerB = nn.TransformerEncoderLayer(d_model=512, nhead=8)
+            self.encoderB = nn.TransformerEncoder(encoder_layerB, 1)
+            encoder_layerB2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
+            self.encoderB2 = nn.TransformerEncoder(encoder_layerB2, 1)
+            
+            self.pool_layerB = nn.MaxPool1d(chunk_size, stride=1)
+            self.fcB = nn.Linear(512, self.num_classes+1)
         
         elif self.pool == "final_model":
             #All features to 512 dimensionality
@@ -265,6 +278,21 @@ class Model(nn.Module):
             inputs_pooled = inputs_pooled.squeeze(-1)
             
             outputs = self.sigm(self.fc2(self.drop(inputs_pooled)))
+        
+        elif self.pool == "together":
+            inputsA = inputs2.float()
+            inputsB = inputs1.float()
+            
+            inputsB1 = self.relu(self.normB(self.convB(inputsB)))
+            inputsB = inputsB.permute((0, 2, 1))
+            inputsB = self.encoderB(self.drop(inputsB))
+            inputsB = self.encoderB2(inputsB)
+            inputsB = inputsB.permute((0, 2, 1))
+            
+            inputs_pooledB = self.pool_layerB(inputsB).squeeze(-1)
+            outputsB = self.sigm(self.fcB(self.drop(inputs_pooledB)))
+            
+            return outputsB, outputsB, outputsB, outputsB, outputsB, outputsB, outputsB
 
         elif self.pool == "final_model":
             inputsA = inputs2.float()
