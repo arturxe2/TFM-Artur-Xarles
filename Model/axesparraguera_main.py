@@ -103,8 +103,8 @@ def main(args):
     if not args.test_only:
         #class_weights1 = torch.from_numpy(dataset_Train.class_weights1).type('torch.DoubleTensor').cuda()
         #class_weights2 = torch.from_numpy(dataset_Train.class_weights2).type('torch.DoubleTensor').cuda()
-        criterion = NLLLoss()
-        #criterion = NLLLoss_weights()
+        #criterion = NLLLoss()
+        criterion = NLLLoss_weights()
         optimizer = torch.optim.Adam(model.parameters(), lr=args.LR, 
                                     betas=(0.9, 0.999), eps=1e-08, 
                                     weight_decay=1e-5, amsgrad=True)
