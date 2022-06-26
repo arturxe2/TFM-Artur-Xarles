@@ -7,18 +7,48 @@ Created on Sat Jun 18 11:12:45 2022
 import pickle
 import numpy as np
 from tqdm import tqdm
+from torch.utils.data import Dataset
 
-path_store = '/data-local/data3-ssd/axesparraguera'
-with open(path_store + '/chunk_list.pkl', 'rb') as f:
-    path_list = pickle.load(f)
+import numpy as np
+import random
+# import pandas as pd
+import os
+import time
+import pickle
+import blosc
+
+
+from tqdm import tqdm
+# import utils
+
+import torch
+
+import logging
+import json
+import random
+from SoccerNet.Downloader import getListGames
+from SoccerNet.Downloader import SoccerNetDownloader
+from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
+from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
+
+path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
+listGames = getListGames(['train', 'test', 'valid'])
     
 i = 0
-for path in tqdm(path_list):
-    if i == 0:
-        labels = np.load(path + 'labels.npy')
-        i += 1
-    else:
-        labels += np.load(path + 'labels.npy')
-        
-print(labels)
-print(labels / len(path_list) * 100)
+for game in tqdm(listGames):
+    labels = json.load(open(os.path.join(path_labels, game, "Labels-v2.json")))
+    
+    label_count = np.zeros(17)
+    for annotation in labels["annotations"]:
+
+        time = annotation["gameTime"]
+        event = annotation["label"]
+
+        if event not in EVENT_DICTIONARY_V2:
+            continue
+        label = EVENT_DICTIONARY_V2[event]
+        label_count[label] += 1
+
+
+print(label_count)
+print(EVENT_DICTIONARY_V2)
