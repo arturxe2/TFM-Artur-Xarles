@@ -59,12 +59,15 @@ def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
 
 'Class to generate samples and store them in RAM to train the HMTAS model'
 class SoccerNetClips(Dataset):
-    def __init__(self, path, features="ResNET_PCA512.npy", split=["train"], version=1, 
+    def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
+                 path_audio = '/data-local/data1-hdd/axesparraguera/vggish', 
+                 path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
+                 features_baidu = 'baidu_soccer_embeddings.npy',
+                 features_audio = 'featA2.npy', split=["train"], version=1, 
                 framerate=2, chunk_size=240, augment = False):
-        self.path = path
+
         labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
         self.listGames = getListGames(split)
-        self.features = features
         self.chunk_size = chunk_size
         self.version = version
         if version == 1:
@@ -90,91 +93,72 @@ class SoccerNetClips(Dataset):
         self.game_labels = list()
 
         # game_counter = 0
-        baidu_path = '/data-net/datasets/SoccerNetv2/Baidu_features'
-        baidu_name = 'baidu_soccer_embeddings.npy'
-        resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
-        resnet_name = 'VGGish.npy'
-        resnet_path = '/data-local/data1-hdd/axesparraguera/vggish'
-        resnet_name = 'featA2.npy'
         framerate2 = 1
         stride = self.chunk_size #// 2
         for game in tqdm(self.listGames):
-            # Load features
-            if self.path != 'Baidu+ResNet':
-                feat_half1 = np.load(os.path.join(self.path, game, "1_" + self.features))
-                feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1])
-                feat_half2 = np.load(os.path.join(self.path, game, "2_" + self.features))
-                feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1])
-                feat_half1 = feats2clip(torch.from_numpy(feat_half1), stride=stride, clip_length=self.chunk_size)            
-                feat_half2 = feats2clip(torch.from_numpy(feat_half2), stride=stride, clip_length=self.chunk_size)
-            # print("feat_half1.shape",feat_half1.shape)
-            else:
-                feat_half1B = np.load(os.path.join(baidu_path, game, "1_" + baidu_name))
-                feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
-                feat_half1R = np.load(os.path.join(resnet_path, game, "1_" + resnet_name))
-                feat_half1R = feat_half1R.reshape(-1, feat_half1R.shape[-1])
-                feat_half2B = np.load(os.path.join(baidu_path, game, "2_" + baidu_name))
-                feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
-                feat_half2R = np.load(os.path.join(resnet_path, game, "2_" + resnet_name))
-                feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
+            
+            feat_half1B = np.load(os.path.join(path_baidu, game, "1_" + features_baidu))
+            feat_half1B = feat_half1B.reshape(-1, feat_half1B.shape[-1])
+            feat_half1R = np.load(os.path.join(path_audio, game, "1_" + features_audio))
+            feat_half1R = feat_half1R.reshape(-1, feat_half1R.shape[-1])
+            feat_half2B = np.load(os.path.join(path_baidu, game, "2_" + features_baidu))
+            feat_half2B = feat_half2B.reshape(-1, feat_half2B.shape[-1])
+            feat_half2R = np.load(os.path.join(path_audio, game, "2_" + features_audio))
+            feat_half2R = feat_half2R.reshape(-1, feat_half2R.shape[-1])
                 
-                if feat_half1B.shape[0]*framerate2 > feat_half1R.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half1R.shape))
-                    feat_half1R_aux = np.zeros((feat_half1B.shape[0] * framerate2, feat_half1R.shape[1]))
-                    feat_half1R_aux[:feat_half1R.shape[0]] = feat_half1R
-                    feat_half1R_aux[feat_half1R.shape[0]:] = feat_half1R[feat_half1R.shape[0]-1]
-                    feat_half1R = feat_half1R_aux
-                    print('Resized to: ' + str(feat_half1R.shape))
+            if feat_half1B.shape[0]*framerate2 > feat_half1R.shape[0]:
+                print('Different shape')
+                print('Previous shape: ' + str(feat_half1R.shape))
+                feat_half1R_aux = np.zeros((feat_half1B.shape[0] * framerate2, feat_half1R.shape[1]))
+                feat_half1R_aux[:feat_half1R.shape[0]] = feat_half1R
+                feat_half1R_aux[feat_half1R.shape[0]:] = feat_half1R[feat_half1R.shape[0]-1]
+                feat_half1R = feat_half1R_aux
+                print('Resized to: ' + str(feat_half1R.shape))
                     
-                if feat_half2B.shape[0]*framerate2 > feat_half2R.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half2R.shape))
-                    feat_half2R_aux = np.zeros((feat_half2B.shape[0] * framerate2, feat_half2R.shape[1]))
-                    feat_half2R_aux[:feat_half2R.shape[0]] = feat_half2R
-                    feat_half2R_aux[feat_half2R.shape[0]:] = feat_half2R[feat_half2R.shape[0]-1]
-                    feat_half2R = feat_half2R_aux
-                    print('Resized to: ' + str(feat_half2R.shape))
+            if feat_half2B.shape[0]*framerate2 > feat_half2R.shape[0]:
+                print('Different shape')
+                print('Previous shape: ' + str(feat_half2R.shape))
+                feat_half2R_aux = np.zeros((feat_half2B.shape[0] * framerate2, feat_half2R.shape[1]))
+                feat_half2R_aux[:feat_half2R.shape[0]] = feat_half2R
+                feat_half2R_aux[feat_half2R.shape[0]:] = feat_half2R[feat_half2R.shape[0]-1]
+                feat_half2R = feat_half2R_aux
+                print('Resized to: ' + str(feat_half2R.shape))
                     
-                if feat_half1B.shape[0]*framerate2 < feat_half1R.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half1B.shape))
-                    feat_half1B_aux = np.zeros((feat_half1R.shape[0] // framerate2, feat_half1B.shape[1]))
-                    feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
-                    feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
-                    feat_half1B = feat_half1B_aux
-                    print('Resized to: ' + str(feat_half1B.shape))
+            if feat_half1B.shape[0]*framerate2 < feat_half1R.shape[0]:
+                print('Different shape')
+                print('Previous shape: ' + str(feat_half1B.shape))
+                feat_half1B_aux = np.zeros((feat_half1R.shape[0] // framerate2, feat_half1B.shape[1]))
+                feat_half1B_aux[:feat_half1B.shape[0]] = feat_half1B
+                feat_half1B_aux[feat_half1B.shape[0]:] = feat_half1B[feat_half1B.shape[0]-1]
+                feat_half1B = feat_half1B_aux
+                print('Resized to: ' + str(feat_half1B.shape))
                     
-                if feat_half2B.shape[0]*framerate2 < feat_half2R.shape[0]:
-                    print('Different shape')
-                    print('Previous shape: ' + str(feat_half2B.shape))
-                    feat_half2B_aux = np.zeros((feat_half2R.shape[0] // framerate2, feat_half2B.shape[1]))
-                    feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
-                    feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
-                    feat_half2B = feat_half2B_aux
-                    print('Resized to: ' + str(feat_half2B.shape))
+            if feat_half2B.shape[0]*framerate2 < feat_half2R.shape[0]:
+                print('Different shape')
+                print('Previous shape: ' + str(feat_half2B.shape))
+                feat_half2B_aux = np.zeros((feat_half2R.shape[0] // framerate2, feat_half2B.shape[1]))
+                feat_half2B_aux[:feat_half2B.shape[0]] = feat_half2B
+                feat_half2B_aux[feat_half2B.shape[0]:] = feat_half2B[feat_half2B.shape[0]-1]
+                feat_half2B = feat_half2B_aux
+                print('Resized to: ' + str(feat_half2B.shape))
                 
                 
-                feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
-                feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
-                feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
-                feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
+            feat_half1B = feats2clip(torch.from_numpy(feat_half1B), stride=stride, clip_length=self.chunk_size) 
+            feat_half1R = feats2clip(torch.from_numpy(feat_half1R), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
+            feat_half2B = feats2clip(torch.from_numpy(feat_half2B), stride=stride, clip_length=self.chunk_size) 
+            feat_half2R = feats2clip(torch.from_numpy(feat_half2R), stride=stride * framerate2, clip_length=self.chunk_size * framerate2) 
 
 
             
 
             # Load labels
-            labels = json.load(open(os.path.join(labels_path, game, self.labels)))
-            if self.path != 'Baidu+ResNet':
-                label_half1 = np.zeros((feat_half1.shape[0], self.num_classes+1))
-                label_half1[:,0]=1 # those are BG classes
-                label_half2 = np.zeros((feat_half2.shape[0], self.num_classes+1))
-                label_half2[:,0]=1 # those are BG classes
-            else:
-                label_half1 = np.zeros((feat_half1B.shape[0], self.num_classes+1))
-                label_half1[:,0]=1 # those are BG classes
-                label_half2 = np.zeros((feat_half2B.shape[0], self.num_classes+1))
-                label_half2[:,0]=1 # those are BG classes
+            labels = json.load(open(os.path.join(path_labels, game, self.labels)))
+
+
+            label_half1 = np.zeros((feat_half1B.shape[0], self.num_classes+1))
+            label_half1[:,0]=1 # those are BG classes
+            label_half2 = np.zeros((feat_half2B.shape[0], self.num_classes+1))
+            label_half2[:,0]=1 # those are BG classes
 
             for annotation in labels["annotations"]:
 
@@ -214,61 +198,22 @@ class SoccerNetClips(Dataset):
                         label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][0] = 0 # not BG anymore
                         label_half2[max(a - self.chunk_size // stride + 1 + i, 0)][label+1] = 1 # that's my class
             
-            if self.path != 'Baidu+ResNet':
-                self.game_feats.append(feat_half1)
-                self.game_feats.append(feat_half2)
-            else:
-                self.game_feats1.append(feat_half1B)
-                self.game_feats2.append(feat_half1R)
-                self.game_feats1.append(feat_half2B)
-                self.game_feats2.append(feat_half2R)
+
+
+            self.game_feats1.append(feat_half1B)
+            self.game_feats2.append(feat_half1R)
+            self.game_feats1.append(feat_half2B)
+            self.game_feats2.append(feat_half2R)
            
             self.game_labels.append(label_half1)
             self.game_labels.append(label_half2)
-            
-        if self.path != 'Baidu+ResNet':
-            self.game_feats = np.concatenate(self.game_feats)
-            self.game_labels = np.concatenate(self.game_labels)
-            
-            if augment == True:
-                n_aug = 10000
-                weights = np.array([0.01, 1/0.88, 1/0.76, 1/0.79, 1/0.70, 1/0.56, 1/0.58, 
-                                    1/0.58, 1/0.71, 1/0.87, 1/0.85, 1/0.77, 1/0.62, 
-                                    1/0.69, 1/0.89, 1/0.69, 1/0.08, 1/0.19])**2
-                prob_ind = self.game_labels.dot(weights)
-                
-                i=0
-                feat_aug_list = []
-                y_aug_list = []
-                while(i < n_aug):
-                    i+=1
-                    id1 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    while(id1 == id2):
-                        id2 = random.choices(np.arange(0, len(self.game_feats)), weights = prob_ind, k=1)
-                    feat_aug, y_aug = mix_up(self.game_feats[id1], self.game_feats[id2], self.game_labels[id1], self.game_labels[id2])
-                    feat_aug_list.append(feat_aug)
-                    y_aug_list.append(y_aug)
-                feat_aug_list = np.concatenate(feat_aug_list)
-                y_aug_list = np.concatenate(y_aug_list)
-                self.game_feats = np.concatenate((self.game_feats, feat_aug_list))
-                self.game_labels = np.concatenate((self.game_labels, y_aug_list))
-                
-        else:
-            self.game_feats1 = np.concatenate(self.game_feats1)
-            self.game_feats2 = np.concatenate(self.game_feats2)
-            self.game_labels = np.concatenate(self.game_labels)
+                        
+
+        self.game_feats1 = np.concatenate(self.game_feats1)
+        self.game_feats2 = np.concatenate(self.game_feats2)
+        self.game_labels = np.concatenate(self.game_labels)
         #self.game_labels = np.concatenate(self.game_labels)
-        print(self.dict_event)
-        class_weights1 = len(self.game_labels) / (self.game_labels.sum(axis = 0) * 2) 
-        self.class_weights1 = class_weights1
-        self.class_weights1[self.class_weights1 <= 100] = 10
-        self.class_weights1[(self.class_weights1 > 100) & (self.class_weights1 < 200)] = 15
-        self.class_weights1[self.class_weights1 >= 200] = 20
-        self.class_weights1[0] = 1.
-        print(self.class_weights1)
-        #self.weights = (self.game_labels * class_weights).sum(axis = 1)
-        #print(self.weights.shape)
+
 
 
 
@@ -281,16 +226,11 @@ class SoccerNetClips(Dataset):
             clip_labels (np.array): clip of labels for the segmentation.
             clip_targets (np.array): clip of targets for the spotting.
         """
-        if self.path != 'Baidu+ResNet':
-            return self.game_feats[index,:,:], self.game_labels[index,:]
-        else:
-            return self.game_feats1[index,:,:], self.game_feats2[index,:,:], self.game_labels[index,:]
+        return self.game_feats1[index,:,:], self.game_feats2[index,:,:], self.game_labels[index,:]
 
     def __len__(self):
-        if self.path != 'Baidu+ResNet':
-            return len(self.game_feats)
-        else:
-            return len(self.game_feats1)
+
+        return len(self.game_feats1)
         
         
         
@@ -598,12 +538,20 @@ class SoccerNetClipsTrain(Dataset):
 
 'Class to generate the samples for the test part'
 class SoccerNetClipsTesting(Dataset):
-    def __init__(self, path, features="ResNET_PCA512.npy", split=["test"], version=1, 
+    def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
+                 path_audio = '/data-local/data1-hdd/axesparraguera/vggish', 
+                 path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
+                 path_store = "/data-local/data3-ssd/axesparraguera",
+                 features_baidu = 'baidu_soccer_embeddings.npy',
+                 features_audio = 'featA2.npy', split=["test"], version=1, 
                 framerate=2, chunk_size=240):
-        self.path = path
         
+        self.path_baidu = path_baidu
+        self.path_labels = path_labels
+        self.path_audio = path_audio
+        self.features_baidu = features_baidu
+        self.features_audio = features_audio
         self.listGames = getListGames(split)
-        self.features = features
         self.chunk_size = chunk_size
         self.framerate = framerate
         self.version = version
@@ -636,45 +584,26 @@ class SoccerNetClipsTesting(Dataset):
             label_half1 (np.array): labels (one-hot) for the 1st half.
             label_half2 (np.array): labels (one-hot) for the 2nd half.
         """
-        labels_path = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
-        baidu_path = '/data-net/datasets/SoccerNetv2/Baidu_features'
-        baidu_name = 'baidu_soccer_embeddings.npy'
-        resnet_path = '/home-net/axesparraguera/data/VGGFeatures'
-        resnet_name = 'VGGish.npy'
-        resnet_path = '/data-local/data1-hdd/axesparraguera/vggish'
-        resnet_name = 'featA2.npy'
         
-        framerate2 = 1
-        # Load features
         
-        if self.path != 'Baidu+ResNet':
-            feat_half1 = np.load(os.path.join(self.path, self.listGames[index], "1_" + self.features))
-            feat_half1 = feat_half1.reshape(-1, feat_half1.shape[-1]) #for C3D non PCA
-            feat_half2 = np.load(os.path.join(self.path, self.listGames[index], "2_" + self.features))
-            feat_half2 = feat_half2.reshape(-1, feat_half2.shape[-1]) #for C3D non PCA
-    
-            # Load labels
-            label_half1 = np.zeros((feat_half1.shape[0], self.num_classes))
-            label_half2 = np.zeros((feat_half2.shape[0], self.num_classes))
-        
-        else:
-            feat1_half1 = np.load(os.path.join(baidu_path, self.listGames[index], "1_" + baidu_name))
-            feat1_half1 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
-            feat1_half2 = np.load(os.path.join(baidu_path, self.listGames[index], "2_" + baidu_name))
-            feat1_half2 = feat1_half2.reshape(-1, feat1_half2.shape[-1])    #for C3D non PCA
-            feat2_half1 = np.load(os.path.join(resnet_path, self.listGames[index], "1_" + resnet_name))
-            feat2_half1 = feat2_half1.reshape(-1, feat2_half1.shape[-1])    #for C3D non PCA
-            feat2_half2 = np.load(os.path.join(resnet_path, self.listGames[index], "2_" + resnet_name))
-            feat2_half2 = feat2_half2.reshape(-1, feat2_half2.shape[-1])    #for C3D non PCA
+
+        feat1_half1 = np.load(os.path.join(self.path_baidu, self.listGames[index], "1_" + self.features_baidu))
+        feat1_half1 = feat1_half1.reshape(-1, feat1_half1.shape[-1])    #for C3D non PCA
+        feat1_half2 = np.load(os.path.join(self.path_baidu, self.listGames[index], "2_" + self.features_baidu))
+        feat1_half2 = feat1_half2.reshape(-1, feat1_half2.shape[-1])    #for C3D non PCA
+        feat2_half1 = np.load(os.path.join(self.path_audio, self.listGames[index], "1_" + self.features_audio))
+        feat2_half1 = feat2_half1.reshape(-1, feat2_half1.shape[-1])    #for C3D non PCA
+        feat2_half2 = np.load(os.path.join(self.path_audio, self.listGames[index], "2_" + self.features_audio))
+        feat2_half2 = feat2_half2.reshape(-1, feat2_half2.shape[-1])    #for C3D non PCA
 
             
-            label_half1 = np.zeros((feat1_half1.shape[0], self.num_classes))
-            label_half2 = np.zeros((feat1_half2.shape[0], self.num_classes))
+        label_half1 = np.zeros((feat1_half1.shape[0], self.num_classes))
+        label_half2 = np.zeros((feat1_half2.shape[0], self.num_classes))
         
         # check if annoation exists
-        if os.path.exists(os.path.join(labels_path, self.listGames[index], self.labels)):
+        if os.path.exists(os.path.join(self.path_labels, self.listGames[index], self.labels)):
         
-            labels = json.load(open(os.path.join(labels_path, self.listGames[index], self.labels)))
+            labels = json.load(open(os.path.join(self.path_labels, self.listGames[index], self.labels)))
             for annotation in labels["annotations"]:
 
                 time = annotation["gameTime"]
@@ -700,80 +629,59 @@ class SoccerNetClipsTesting(Dataset):
                 if "visibility" in annotation.keys():
                     if annotation["visibility"] == "not shown":
                         value = -1
-                if self.path != 'Baidu+ResNet':
-                    if half == 1:
-                        frame = min(frame, feat_half1.shape[0]-1)
-                        label_half1[frame][label] = value
-    
-                    if half == 2:
-                        frame = min(frame, feat_half2.shape[0]-1)
-                        label_half2[frame][label] = value
-                else:
-                    if half == 1:
-                        frame = min(frame, feat1_half1.shape[0]-1)
-                        label_half1[frame][label] = value
-    
-                    if half == 2:
-                        frame = min(frame, feat1_half2.shape[0]-1)
-                        label_half2[frame][label] = value
 
-            
-                
-        if self.path != 'Baidu+ResNet':
-            feat_half1 = feats2clip(torch.from_numpy(feat_half1), 
-                            stride=1, off=int(self.chunk_size/2), 
-                            clip_length=self.chunk_size)
+                if half == 1:
+                    frame = min(frame, feat1_half1.shape[0]-1)
+                    label_half1[frame][label] = value
     
-            feat_half2 = feats2clip(torch.from_numpy(feat_half2), 
-                            stride=1, off=int(self.chunk_size/2), 
-                            clip_length=self.chunk_size)
-            return self.listGames[index], feat_half1, feat_half2, label_half1, label_half2
+                if half == 2:
+                    frame = min(frame, feat1_half2.shape[0]-1)
+                    label_half2[frame][label] = value
         
-        else:
             
-            if feat1_half1.shape[0]*framerate2 > feat2_half1.shape[0]:
-                feat2_half1_aux = np.zeros((feat1_half1.shape[0] * framerate2, feat2_half1.shape[1]))
-                feat2_half1_aux[:feat2_half1.shape[0]] = feat2_half1
-                feat2_half1_aux[feat2_half1.shape[0]:] = feat2_half1[feat2_half1.shape[0]-1]
-                feat2_half1 = feat2_half1_aux
+        if feat1_half1.shape[0]*self.framerate > feat2_half1.shape[0]:
+            feat2_half1_aux = np.zeros((feat1_half1.shape[0] * self.framerate, feat2_half1.shape[1]))
+            feat2_half1_aux[:feat2_half1.shape[0]] = feat2_half1
+            feat2_half1_aux[feat2_half1.shape[0]:] = feat2_half1[feat2_half1.shape[0]-1]
+            feat2_half1 = feat2_half1_aux
                 
-            if feat1_half2.shape[0]*framerate2 > feat2_half2.shape[0]:
-                feat2_half2_aux = np.zeros((feat1_half2.shape[0] * framerate2, feat2_half2.shape[1]))
-                feat2_half2_aux[:feat2_half2.shape[0]] = feat2_half2
-                feat2_half2_aux[feat2_half2.shape[0]:] = feat2_half2[feat2_half2.shape[0]-1]
-                feat2_half2 = feat2_half2_aux
+        if feat1_half2.shape[0]*self.framerate > feat2_half2.shape[0]:
+            feat2_half2_aux = np.zeros((feat1_half2.shape[0] * self.framerate, feat2_half2.shape[1]))
+            feat2_half2_aux[:feat2_half2.shape[0]] = feat2_half2
+            feat2_half2_aux[feat2_half2.shape[0]:] = feat2_half2[feat2_half2.shape[0]-1]
+            feat2_half2 = feat2_half2_aux
                 
-            if feat1_half1.shape[0]*framerate2 < feat2_half1.shape[0]:
-                feat1_half1_aux = np.zeros((feat2_half1.shape[0] // framerate2, feat1_half1.shape[1]))
-                feat1_half1_aux[:feat1_half1.shape[0]] = feat1_half1
-                feat1_half1_aux[feat1_half1.shape[0]:] = feat1_half1[feat1_half1.shape[0]-1]
-                feat1_half1 = feat1_half1_aux
+        if feat1_half1.shape[0]*self.framerate < feat2_half1.shape[0]:
+            feat1_half1_aux = np.zeros((feat2_half1.shape[0] // self.framerate, feat1_half1.shape[1]))
+            feat1_half1_aux[:feat1_half1.shape[0]] = feat1_half1
+            feat1_half1_aux[feat1_half1.shape[0]:] = feat1_half1[feat1_half1.shape[0]-1]
+            feat1_half1 = feat1_half1_aux
                 
-            if feat1_half2.shape[0]*framerate2 < feat2_half2.shape[0]:
-                feat1_half2_aux = np.zeros((feat2_half2.shape[0] // framerate2, feat1_half2.shape[1]))
-                feat1_half2_aux[:feat1_half2.shape[0]] = feat1_half2
-                feat1_half2_aux[feat1_half2.shape[0]:] = feat1_half2[feat1_half2.shape[0]-1]
-                feat1_half2 = feat1_half2_aux
+        if feat1_half2.shape[0]*self.framerate < feat2_half2.shape[0]:
+            feat1_half2_aux = np.zeros((feat2_half2.shape[0] // self.framerate, feat1_half2.shape[1]))
+            feat1_half2_aux[:feat1_half2.shape[0]] = feat1_half2
+            feat1_half2_aux[feat1_half2.shape[0]:] = feat1_half2[feat1_half2.shape[0]-1]
+            feat1_half2 = feat1_half2_aux
             
-            feat1_half1 = feats2clip(torch.from_numpy(feat1_half1),
+        feat1_half1 = feats2clip(torch.from_numpy(feat1_half1),
                                      stride=1, off=int(self.chunk_size/2),
                                      clip_length=self.chunk_size)
-            feat1_half2 = feats2clip(torch.from_numpy(feat1_half2),
+        feat1_half2 = feats2clip(torch.from_numpy(feat1_half2),
                                      stride=1, off=int(self.chunk_size/2),
                                      clip_length=self.chunk_size)
-            feat2_half1 = feats2clip(torch.from_numpy(feat2_half1),
-                                     stride=framerate2, off=int(self.chunk_size/2),
-                                     clip_length=self.chunk_size * framerate2)
-            feat2_half2 = feats2clip(torch.from_numpy(feat2_half2),
-                                     stride=framerate2, off=int(self.chunk_size/2),
-                                     clip_length=self.chunk_size * framerate2)
+        feat2_half1 = feats2clip(torch.from_numpy(feat2_half1),
+                                     stride=self.framerate, off=int(self.chunk_size/2),
+                                     clip_length=self.chunk_size * self.framerate)
+        feat2_half2 = feats2clip(torch.from_numpy(feat2_half2),
+                                     stride=self.framerate, off=int(self.chunk_size/2),
+                                     clip_length=self.chunk_size * self.framerate)
             
-            if feat1_half1.shape[0] != feat2_half1.shape[0]:
-                feat2_half1 = feat2_half1[:feat1_half1.shape[0]]
-            if feat1_half2.shape[0] != feat2_half2.shape[0]:
-                feat2_half2 = feat2_half2[:feat1_half2.shape[0]]
+        if feat1_half1.shape[0] != feat2_half1.shape[0]:
+            feat2_half1 = feat2_half1[:feat1_half1.shape[0]]
+        if feat1_half2.shape[0] != feat2_half2.shape[0]:
+            feat2_half2 = feat2_half2[:feat1_half2.shape[0]]
             
-            return self.listGames[index], feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2
+        return self.listGames[index], feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2
 
         
         

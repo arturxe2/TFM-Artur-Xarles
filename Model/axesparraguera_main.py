@@ -41,13 +41,31 @@ def main(args):
                             path_store = args.store_path,
                             features_baidu = args.features_baidu,
                             features_audio = args.features_audio,
-                            stride = 1, split=["train"], version=args.version, 
-                            framerate=1, chunk_size=3, augment = False, store = True)
+                            stride = 1, split=args.split_train, version=args.version, 
+                            framerate=1, chunk_size=3, augment = False, store = False)
                 
             #dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-            dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-    dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            dataset_Valid = SoccerNetClips(path_baidu = args.baidu_path, 
+                            path_audio = args.audio_path,
+                            path_labels = args.labels_path,
+                            features_baidu = args.features_baidu,
+                            features_audio = args.features_audio, 
+                            split=args.split_valid, version=args.version, 
+                            framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            dataset_Valid_metric  = SoccerNetClips(path_baidu = args.baidu_path, 
+                            path_audio = args.audio_path,
+                            path_labels = args.labels_path,
+                            features_baidu = args.features_baidu,
+                            features_audio = args.features_audio, 
+                            split=args.split_valid, version=args.version, 
+                            framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+    dataset_Test  = SoccerNetClipsTesting(path_baidu = args.baidu_path, 
+                    path_audio = args.audio_path,
+                    path_labels = args.labels_path,
+                    features_baidu = args.features_baidu,
+                    features_audio = args.features_audio, 
+                    split=args.split_test, version=args.version, 
+                    framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             
         
             
