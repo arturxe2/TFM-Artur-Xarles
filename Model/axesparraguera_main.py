@@ -1,3 +1,10 @@
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
+
+Main code to read data, train the HMTAS model and make predictions
+'''
+
+
 import os
 import logging
 from datetime import datetime
@@ -5,10 +12,8 @@ import time
 import numpy as np
 import pdb
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-
 import torch
 from torch.utils.data import WeightedRandomSampler
-
 from dataset import SoccerNetClips, SoccerNetClipsTrain, SoccerNetClipsTesting #,SoccerNetClipsOld
 from model import Model
 from train import trainer, test, testSpotting, testSpottingEnsemble
@@ -19,6 +24,8 @@ from loss import NLLLoss_weights
 torch.manual_seed(1)
 np.random.seed(1)
 
+
+'Main code to read data, train the model and make predictions'
 def main(args):
 
     logging.info("Parameters:")

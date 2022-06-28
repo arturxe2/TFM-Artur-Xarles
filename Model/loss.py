@@ -1,3 +1,9 @@
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
+
+Code in this file defines the different loss functions used / tried
+'''
+
 import torch
 
 

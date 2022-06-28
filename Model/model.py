@@ -1,15 +1,18 @@
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
 
+Code in this file defines the HMTAS model and the model for the fusion learning ensemble
+'''
 import __future__
-
 import numpy as np
 import warnings
 import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 from netvlad import NetVLAD
 
+'Positional Encoding class'
 class PositionalEncoding(nn.Module):
 
     def __init__(self, d_model: int, dropout: float = 0.1, max_len: int = 6000):
@@ -31,6 +34,8 @@ class PositionalEncoding(nn.Module):
         x = x + self.pe[:x.size(0)] + add
         return self.dropout(x)
 
+
+'Model class'
 class Model(nn.Module):
     def __init__(self, weights=None, input_size=512, num_classes=3, vocab_size=128, chunk_size=240, framerate=2, pool="NetVLAD"):
         """
@@ -47,73 +52,9 @@ class Model(nn.Module):
         self.pool = pool
         self.vlad_k = vocab_size
 
-        if self.pool == "MAX":
-            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
-            self.fc2 = nn.Linear(input_size, self.num_classes+1)
         
-        elif self.pool == "MAX512":
-            self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
-            self.norm = nn.BatchNorm1d(512)
-            self.relu = nn.ReLU()
-            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
-            self.fc2 = nn.Linear(512, self.num_classes+1)
-            
-        elif self.pool == "MAX512_transformer":
-            self.conv1 = nn.Conv1d(input_size, 512, 1, stride=1, bias=False)
-            self.norm = nn.BatchNorm1d(512)
-            self.relu = nn.ReLU()
-            #First TransformerEncoder (1 layer)
-            encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.pos_encoder = PositionalEncoding(512, )
-            self.encoder = nn.TransformerEncoder(encoder_layer, 1) 
-            
-            #Second TransformerEncoder (1 layer)
-            encoder_layer2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
-            
-            #Third TransformerEncoder
-            encoder_layer3 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoder3 = nn.TransformerEncoder(encoder_layer3, 1)
-            
-            
-            self.pool_layer = nn.MaxPool1d(chunk_size, stride=1)
-            self.fc2 = nn.Linear(512, self.num_classes+1)
-            
-        elif self.pool == "transformer_2features":
-            self.conv1R = nn.Conv1d(512, 512, 1, stride=1, bias=False)
-            self.normR = nn.BatchNorm1d(512)
-            self.conv1B = nn.Conv1d(8576, 512, 1, stride=1, bias=False)
-            self.normB = nn.BatchNorm1d(512)
-            self.relu = nn.ReLU()
-            #Add segment embedding
-            self.pos_encoder = PositionalEncoding(512, )
-            
-            encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
-            self.encoder = nn.TransformerEncoder(encoder_layer, 1)
-            
-            encoder_layer2 = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
-            self.encoder2 = nn.TransformerEncoder(encoder_layer2, 1)
-            
-            encoder_layer3 = nn.TransformerEncoderLayer(d_model=512, nhead=4, dim_feedforward=64)
-            self.encoder3 = nn.TransformerEncoder(encoder_layer3, 1)
-            #Pool layer
-            self.pool_layer = nn.MaxPool1d(chunk_size * (2 + 1), stride=1)
-            self.fc2 = nn.Linear(512, self.num_classes+1)
-            
-        elif self.pool == 'together':
-            self.convB = nn.Conv1d(8576, 512, 1, stride = 1, bias=False)
-            self.normB=nn.BatchNorm1d(512)
-            self.relu = nn.ReLU()
-            
-            encoder_layerB = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoderB = nn.TransformerEncoder(encoder_layerB, 1)
-            encoder_layerB2 = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-            self.encoderB2 = nn.TransformerEncoder(encoder_layerB2, 1)
-            
-            self.pool_layerB = nn.MaxPool1d(chunk_size, stride=1)
-            self.fcB = nn.Linear(512, self.num_classes+1)
         
-        elif self.pool == "final_model":
+        if self.pool == "final_model":
             #All features to 512 dimensionality
             #self.conv1A = nn.Conv1d(512, 512, 1, stride=1, bias=False)
             self.conv1A = nn.Conv1d(128, 512, 1, stride=1, bias=False)
@@ -206,96 +147,9 @@ class Model(nn.Module):
                   .format(weights, checkpoint['epoch']))
     #def forward(self, inputs):
     def forward(self, inputs1, inputs2):
-        # input_shape: (batch,frames,dim_features)
-
-        # Temporal pooling operation
-        if self.pool == "MAX":
-            inputs = inputs.permute((0, 2, 1))
-            inputs_pooled = self.pool_layer(inputs)
-            inputs_pooled = inputs_pooled.squeeze(-1)
-            
-        elif self.pool == "MAX512":
-            inputs = inputs.float()
-            inputs = inputs.permute((0, 2, 1))
-            inputs = self.relu(self.norm(self.conv1(inputs)))
-            #breakpoint()
-            inputs_pooled = self.pool_layer(inputs)
-            #breakpoint()
-            inputs_pooled = inputs_pooled.squeeze(-1)
-            #breakpoint()
-            #### Transformer
-        elif self.pool == "MAX512_transformer":
-            inputs = inputs.float()
-            inputs = inputs.permute((0, 2, 1)) #(B x n_features x n_frames)
-            #print(inputs.shape)
-            inputs = self.relu(self.norm(self.conv1(inputs))) #(B x 512 x n_frames)
-            #print(inputs.shape)
-            inputs = inputs.permute((0, 2, 1)) #(B x n_frames x 512)
-            #print(inputs.shape)
-            inputs = self.pos_encoder(inputs) #(B x n_frames x 512)
-            #print(inputs.shape)
-            inputs = self.encoder(inputs) #(B x n_frames x 512)
-            #print(inputs.shape)
-            #breakpoint()
-            #inputs = self.pos_encoder2(inputs)
-            inputs = self.encoder2(inputs)
-            
-            inputs = self.encoder3(inputs)
-            inputs = inputs.permute((0, 2, 1)) #(B x 512 x n_frames)
-            #print(inputs.shape)
-            inputs_pooled = self.pool_layer(inputs) #(B x 512 x 1)
-            #print(inputs_pooled.shape)
-            #breakpoint()
-            inputs_pooled = inputs_pooled.squeeze(-1)
-            
-            outputs = self.sigm(self.fc2(self.drop(inputs_pooled)))
-            #breakpoint()
-            #### Transformer
-            
-        elif self.pool == "transformer_2features":
-            inputs1 = inputs1.float()
-            inputs2 = inputs2.float()
-            inputsB = inputs1.permute((0, 2, 1))
-            inputsR = inputs2.permute((0, 2, 1))
-            inputsR = self.relu(self.normR(self.conv1R(inputsR)))#(B x 512 x (chunk_size * 2))
-            inputsB = self.relu(self.normB(self.conv1B(inputsB))) #(B x 512 x (chunk_size))
-            inputsR = inputsR.permute((0, 2, 1))#(B x (chunk_size * 2) x 512)
-            inputsB = inputsB.permute((0, 2, 1))#(B x (chunk_size) x 512)
-            
-            #Positional encodding + feature encoding (1 for R, 0 for B)
-            inputsR = self.pos_encoder(inputsR, add=1.)#(B x (chunk_size * 2) x 512)
-            inputsB = self.pos_encoder(inputsB, add=0.)#(B x (chunk_size) x 512)
-
-            
-            inputs = torch.cat((inputsB, inputsR), dim=1) #(B x (chunk_size * (1 + 2)) x 512)
-            #Encoders
-            inputs = self.encoder(inputs) #(B x (chunk_size * (1 + 2)) x 512)
-            inputs = self.encoder2(inputs)
-            inputs = self.encoder3(inputs)
-            
-            inputs = inputs.permute((0, 2, 1))
-            inputs_pooled = self.pool_layer(inputs)
-            inputs_pooled = inputs_pooled.squeeze(-1)
-            
-            outputs = self.sigm(self.fc2(self.drop(inputs_pooled)))
         
-        elif self.pool == "together":
-            inputsA = inputs2.float()
-            inputsB = inputs1.float()
-            inputsB = inputsB.permute((0, 2, 1))
-            
-            inputsB = self.relu(self.normB(self.convB(inputsB)))
-            inputsB = inputsB.permute((0, 2, 1))
-            inputsB = self.encoderB(self.drop(inputsB))
-            inputsB = self.encoderB2(inputsB)
-            inputsB = inputsB.permute((0, 2, 1))
-            
-            inputs_pooledB = self.pool_layerB(inputsB).squeeze(-1)
-            outputsB = self.sigm(self.fcB(self.drop(inputs_pooledB)))
-            
-            return outputsB, outputsB, outputsB, outputsB, outputsB, outputsB, outputsB
 
-        elif self.pool == "final_model":
+        if self.pool == "final_model":
             inputsA = inputs2.float()
             inputsB = inputs1.float()
             
@@ -399,14 +253,12 @@ class Model(nn.Module):
             
             outputs_mix = self.sigm(self.fc_mix(self.drop(inputs_pooled_mix)))
             
-            return outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5
+        return outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5
             
-        # Extra FC layer with dropout and sigmoid activation
-        #output = self.sigm(self.fc2(self.drop(inputs_pooled)))
+        
+    
 
-        return outputs
-    
-    
+'Define Ensemble model experiments'
 class EnsembleModel(nn.Module):
 
     def __init__(self, ensemble_chunk = 3, n_models = 2):
@@ -426,17 +278,7 @@ class EnsembleModel(nn.Module):
         self.drop = nn.Dropout(p=0.3)
         self.sigm = nn.Sigmoid()
         self.relu = nn.ReLU()
-        '''
-        self.conv1 = nn.Conv1d(n_models * 17, 17, 1, stride=1, bias=False)
-        self.relu = nn.ReLU()
-        self.conv2 = nn.Conv1d(ensemble_chunk, 1, 1, stride=1, bias=False)
-        self.drop = nn.Dropout(p=0.2)
-        self.sigm = nn.Sigmoid()
-        self.fc1 = nn.Linear(n_models * 17, n_models * 17 * 2)
-        #self.fc2 = nn.Linear(n_models * 17 * 10, n_models * 17 * 5)
-        self.fc3 = nn.Linear(n_models * 17 * 2, n_models * 17)
-        self.fc4 = nn.Linear(n_models * 17, 17)
-        '''
+
     def forward(self, inputs):
         # Input B x 3 x 34
         inputs = inputs.float()
@@ -450,33 +292,6 @@ class EnsembleModel(nn.Module):
         outputs = self.sigm(self.fc((inputs)))
         #outputs = self.sigm(self.fc3((outputs)))
         
-        '''
-        inputs = self.relu(self.conv2((inputs))) #B x 1 x 34
-        
-        inputs = inputs.squeeze(1) #B x 34
-        
-        inputs = self.relu(self.fc1(self.drop(inputs))) #B x 34
-        
-        #inputs = self.relu(self.fc2(self.drop(inputs))) #B x 34
-        
-        inputs = self.relu(self.fc3(self.drop(inputs)))
-        
-        outputs = self.sigm(self.fc4(inputs))
-        
-        
-        
-        inputs = inputs.permute((0, 2, 1)) #B x 34 x 3
-        
-        inputs = self.relu(self.conv1(self.drop(inputs))) #B x 17 x 3
-        
-        inputs = inputs.permute((0, 2, 1)) #B x 3 x 17
-        
-        inputs = self.relu(self.conv2(self.drop(inputs))) #B x 1 x 17
-        
-        inputs = inputs.squeeze(1) #B x 17
-        
-        outputs = self.sigm(inputs)
-        
-        '''
+
         
         return outputs

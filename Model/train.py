@@ -1,3 +1,9 @@
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
+
+Code in this file trains the HMTAS model
+'''
+
 import logging
 import os
 import zipfile
@@ -21,7 +27,7 @@ import random
 
 
 
-
+'Define trainer'
 def trainer(path, train_loader,
             val_loader,
             val_metric_loader,
@@ -91,22 +97,10 @@ def trainer(path, train_loader,
             logging.info("Validation performance at epoch " +
                          str(epoch+1) + " -> " + str(performance_validation))
 
-        # Reduce LR on Plateau after patience reached
-        #prevLR = optimizer.param_groups[0]['lr']
-        #scheduler.step(loss_validation)
-        #currLR = optimizer.param_groups[0]['lr']
-        #if (currLR is not prevLR and scheduler.num_bad_epochs == 0):
-        #    logging.info("Plateau Reached!")
-
-        #if (prevLR < 2 * scheduler.eps and
-        #        scheduler.num_bad_epochs >= scheduler.patience):
-        #    logging.info(
-        #        "Plateau Reached and no more reduction -> Exiting Loop")
-        #    break
 
     return
 
-
+'Define train'
 def train(path,
           dataloader,
           model,
@@ -230,6 +224,7 @@ def train(path,
     return losses.avg
 
 
+'Define test function'
 def test(path, dataloader, model, model_name):
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -308,6 +303,7 @@ def test(path, dataloader, model, model_name):
 
     return mAP
 
+'Define test spotting'
 def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window=30, NMS_threshold=0.5):
 
     split = '_'.join(dataloader.dataset.split)
@@ -669,7 +665,8 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
     return results
 
     # return a_mAP
-  
+
+'Define function for spotting in Ensembles'
 def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.2, ensemble_method = 'mean', ensemble_chunk = 3):
 
     split2 = '_'.join([split])

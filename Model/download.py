@@ -1,3 +1,8 @@
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
+
+Code in this file downloads 
+'''
 import SoccerNet
 
 from SoccerNet.Downloader import SoccerNetDownloader, getListGames

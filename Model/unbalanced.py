@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Jun 18 11:12:45 2022
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
 
-@author: artur
-"""
+Code in this file analyzes the different actions occurance in the dataset
+'''
 import pickle
 import numpy as np
 from tqdm import tqdm
@@ -21,11 +20,7 @@ import blosc
 from tqdm import tqdm
 # import utils
 
-import torch
-
-import logging
 import json
-import random
 from SoccerNet.Downloader import getListGames
 from SoccerNet.Downloader import SoccerNetDownloader
 from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2

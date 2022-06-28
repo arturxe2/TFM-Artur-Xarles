@@ -1,19 +1,18 @@
-from torch.utils.data import Dataset
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
 
+Code in this file generates samples to feed the HMTAS model
+'''
+
+from torch.utils.data import Dataset
 import numpy as np
 import random
-# import pandas as pd
 import os
 import time
 import pickle
 import blosc
-
-
 from tqdm import tqdm
-# import utils
-
 import torch
-
 import logging
 import json
 import random
@@ -22,6 +21,7 @@ from SoccerNet.Downloader import SoccerNetDownloader
 from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
 
+'Function for mix-up data augmentation'
 def mix_up(feat1, feat2, y1, y2):
     lam = np.random.beta(a = 0.2, b=0.2, size=1)
     feat_new = feat1 * lam + feat2 * (1-lam)
@@ -31,7 +31,7 @@ def mix_up(feat1, feat2, y1, y2):
     return feat_new_list, y_new_list
 
 
-
+'Function to generate features from clips'
 def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
     if padding =="zeropad":
         print("beforepadding", feats.shape)
@@ -56,29 +56,8 @@ def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
     # print(idx)
     return feats[idx,...]
 
-# def feats2clip(feats, stride, clip_length, padding = "replicate_last"):
-#     if padding =="zeropad":
-#         print("beforepadding", feats.shape)
-#         pad = feats.shape[0] - int(feats.shape[0]/stride)*stride
-#         print("pad need to be", clip_length-pad)
-#         m = torch.nn.ZeroPad2d((0, 0, clip_length-pad, 0))
-#         feats = m(feats)
-#         print("afterpadding", feats.shape)
-#         # nn.ZeroPad2d(2)
 
-#     idx = torch.arange(start=0, end=feats.shape[0]-1, step=stride)
-#     idxs = []
-#     for i in torch.arange(0, clip_length):
-#         idxs.append(idx+i)
-#     idx = torch.stack(idxs, dim=1)
-
-#     if padding=="replicate_last":
-#         idx = idx.clamp(0, feats.shape[0]-1)
-#         # Not replicate last, but take the clip closest to the end of the video
-#         idx[-1] = torch.arange(clip_length)+feats.shape[0]-clip_length
-
-#     return feats[idx,:]
-
+'Class to generate samples and store them in RAM to train the HMTAS model'
 class SoccerNetClips(Dataset):
     def __init__(self, path, features="ResNET_PCA512.npy", split=["train"], version=1, 
                 framerate=2, chunk_size=240, augment = False):
@@ -315,7 +294,7 @@ class SoccerNetClips(Dataset):
         
         
         
-
+'Class to generate samples and store them to train the HMTAS model'
 class SoccerNetClipsTrain(Dataset):
     def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
                  path_audio = '/data-local/data1-hdd/axesparraguera/vggish', 
@@ -617,7 +596,7 @@ class SoccerNetClipsTrain(Dataset):
         #return len(self.path_list)
 
 
-
+'Class to generate the samples for the test part'
 class SoccerNetClipsTesting(Dataset):
     def __init__(self, path, features="ResNET_PCA512.npy", split=["test"], version=1, 
                 framerate=2, chunk_size=240):
@@ -803,7 +782,7 @@ class SoccerNetClipsTesting(Dataset):
         return len(self.listGames)
 
 
-
+'Main code of dataset'
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
             format="%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
@@ -822,22 +801,6 @@ if __name__ == '__main__':
         # print(feats.shape, labels)
 
 
-
-    # train_loader = torch.utils.data.DataLoader(dataset_Train,
-    #     batch_size=8, shuffle=True,
-    #     num_workers=4, pin_memory=True)
-    # for i, (feats, labels) in enumerate(train_loader):
-    #     print(i, feats.shape, labels.shape)
-
-    # dataset_Test = SoccerNetClipsTesting(path="/path/to/SoccerNet/" ,features="ResNET_PCA512.npy")
-    # print(len(dataset_Test))
-    # for i in range(2):
-    #     feats1, feats2, labels1, labels2 = dataset_Test[i]
-    #     print(feats1.shape)
-    #     print(labels1.shape)
-    #     print(feats2.shape)
-    #     print(labels2.shape)
-    #     # print(feats1[-1])
     
 class TrainEnsemble(Dataset):
     def __init__(self, features, labels):
