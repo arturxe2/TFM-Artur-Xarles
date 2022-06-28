@@ -237,7 +237,7 @@ def test(dataloader, model, model_name):
     return mAP
 
 'Define test spotting'
-def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window=30, NMS_threshold=0.5):
+def testSpotting(dataloader, model, model_name, overwrite=True, NMS_window=30, NMS_threshold=0.5):
 
     split = '_'.join(dataloader.dataset.split)
     # print(split)
@@ -260,311 +260,140 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
 
         end = time.time()
         with tqdm(enumerate(dataloader), total=len(dataloader), ncols=120) as t:
-            #Spotting if not Baidu+ResNet
-            if path != 'Baidu+ResNet':
-                for i, (game_ID, feat_half1, feat_half2, label_half1, label_half2) in t:
-                    data_time.update(time.time() - end)
+
+            for i, (game_ID, feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2) in t:
+
+                data_time.update(time.time() - end)
     
-                    # Batch size of 1
-                    game_ID = game_ID[0]
-                    feat_half1 = feat_half1.squeeze(0)
-                    label_half1 = label_half1.float().squeeze(0)
-                    feat_half2 = feat_half2.squeeze(0)
-                    label_half2 = label_half2.float().squeeze(0)
+                # Batch size of 1
+                    
+                game_ID = game_ID[0]
+                feat1_half1 = feat1_half1.squeeze(0)
+                feat2_half1 = feat2_half1.squeeze(0)
+                label_half1 = label_half1.float().squeeze(0)
+                feat1_half2 = feat1_half2.squeeze(0)
+                feat2_half2 = feat2_half2.squeeze(0)
+                label_half2 = label_half2.float().squeeze(0)
+                    
     
-                    # Compute the output for batches of frames
-                    BS = 256
-                    timestamp_long_half_1 = []
-                    for b in range(int(np.ceil(len(feat_half1)/BS))):
-                        start_frame = BS*b
-                        end_frame = BS*(b+1) if BS * \
-                            (b+1) < len(feat_half1) else len(feat_half1)-1
-                        feat = feat_half1[start_frame:end_frame].cuda()
-                        output = model(feat).cpu().detach().numpy()
-                        timestamp_long_half_1.append(output)
-                    timestamp_long_half_1 = np.concatenate(timestamp_long_half_1)
+                # Compute the output for batches of frames
+                BS = 256
+                timestamp_long_half_1 = []
+                for b in range(int(np.ceil(len(feat1_half1)/BS))):
+                    start_frame = BS*b
+                    end_frame = BS*(b+1) if BS * \
+                        (b+1) < len(feat1_half1) else len(feat1_half1)-1
+                    feat1 = feat1_half1[start_frame:end_frame].cuda()
+                    feat2 = feat2_half1[start_frame:end_frame].cuda()
+                    output, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feat1, feat2)
+                    output = output.cpu().detach().numpy()
+                    timestamp_long_half_1.append(output)
+                timestamp_long_half_1 = np.concatenate(timestamp_long_half_1)
     
-                    timestamp_long_half_2 = []
-                    for b in range(int(np.ceil(len(feat_half2)/BS))):
-                        start_frame = BS*b
-                        end_frame = BS*(b+1) if BS * \
-                            (b+1) < len(feat_half2) else len(feat_half2)-1
-                        feat = feat_half2[start_frame:end_frame].cuda()
-                        output = model(feat).cpu().detach().numpy()
-                        timestamp_long_half_2.append(output)
-                    timestamp_long_half_2 = np.concatenate(timestamp_long_half_2)
-    
-    
-                    timestamp_long_half_1 = timestamp_long_half_1[:, 1:]
-                    timestamp_long_half_2 = timestamp_long_half_2[:, 1:]
-    
-                    spotting_grountruth.append(torch.abs(label_half1))
-                    spotting_grountruth.append(torch.abs(label_half2))
-                    spotting_grountruth_visibility.append(label_half1)
-                    spotting_grountruth_visibility.append(label_half2)
-                    spotting_predictions.append(timestamp_long_half_1)
-                    spotting_predictions.append(timestamp_long_half_2)
-                    # segmentation_predictions.append(segmentation_long_half_1)
-                    # segmentation_predictions.append(segmentation_long_half_2)
-    
-                    # count_all = count_all + torch.sum(torch.abs(label_half1), dim=0)
-                    # count_visible = count_visible + torch.sum((torch.abs(label_half1)+label_half1)/2, dim=0)
-                    # count_unshown = count_unshown + torch.sum((torch.abs(label_half1)-label_half1)/2, dim=0)
-                    # count_all = count_all + torch.sum(torch.abs(label_half2), dim=0)
-                    # count_visible = count_visible + torch.sum((torch.abs(label_half2)+label_half2)/2, dim=0)
-                    # count_unshown = count_unshown + torch.sum((torch.abs(label_half2)-label_half2)/2, dim=0)
-    
-                    batch_time.update(time.time() - end)
-                    end = time.time()
-    
-                    desc = f'Test (spot.): '
-                    desc += f'Time {batch_time.avg:.3f}s '
-                    desc += f'(it:{batch_time.val:.3f}s) '
-                    desc += f'Data:{data_time.avg:.3f}s '
-                    desc += f'(it:{data_time.val:.3f}s) '
-                    t.set_description(desc)
+                timestamp_long_half_2 = []
+                for b in range(int(np.ceil(len(feat1_half2)/BS))):
+                    start_frame = BS*b
+                    end_frame = BS*(b+1) if BS * \
+                        (b+1) < len(feat1_half2) else len(feat1_half2)-1
+                    feat1 = feat1_half2[start_frame:end_frame].cuda()
+                    feat2 = feat2_half2[start_frame:end_frame].cuda()
+                    output, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feat1, feat2)
+                    output = output.cpu().detach().numpy()
+                    timestamp_long_half_2.append(output)
+                timestamp_long_half_2 = np.concatenate(timestamp_long_half_2)
     
     
+                timestamp_long_half_1 = timestamp_long_half_1[:, 1:]
+                timestamp_long_half_2 = timestamp_long_half_2[:, 1:]
     
-                    def get_spot_from_NMS(Input, window, thresh=0.0):
+                spotting_grountruth.append(torch.abs(label_half1))
+                spotting_grountruth.append(torch.abs(label_half2))
+                spotting_grountruth_visibility.append(label_half1)
+                spotting_grountruth_visibility.append(label_half2)
+                spotting_predictions.append(timestamp_long_half_1)
+                spotting_predictions.append(timestamp_long_half_2)
+                # segmentation_predictions.append(segmentation_long_half_1)
+                # segmentation_predictions.append(segmentation_long_half_2)
     
-                        detections_tmp = np.copy(Input)
-                        # res = np.empty(np.size(Input), dtype=bool)
-                        indexes = []
-                        MaxValues = []
-                        while(np.max(detections_tmp) >= thresh):
+                # count_all = count_all + torch.sum(torch.abs(label_half1), dim=0)
+                # count_visible = count_visible + torch.sum((torch.abs(label_half1)+label_half1)/2, dim=0)
+                # count_unshown = count_unshown + torch.sum((torch.abs(label_half1)-label_half1)/2, dim=0)
+                # count_all = count_all + torch.sum(torch.abs(label_half2), dim=0)
+                # count_visible = count_visible + torch.sum((torch.abs(label_half2)+label_half2)/2, dim=0)
+                # count_unshown = count_unshown + torch.sum((torch.abs(label_half2)-label_half2)/2, dim=0)
     
-                            # Get the max remaining index and value
-                            max_value = np.max(detections_tmp)
-                            max_index = np.argmax(detections_tmp)
+                batch_time.update(time.time() - end)
+                end = time.time()
+    
+                desc = f'Test (spot.): '
+                desc += f'Time {batch_time.avg:.3f}s '
+                desc += f'(it:{batch_time.val:.3f}s) '
+                desc += f'Data:{data_time.avg:.3f}s '
+                desc += f'(it:{data_time.val:.3f}s) '
+                t.set_description(desc)
+    
+    
+    
+                def get_spot_from_NMS(Input, window, thresh=0.0, min_window=3):
+    
+                    detections_tmp = np.copy(Input)
+                    # res = np.empty(np.size(Input), dtype=bool)
+                    indexes = []
+                    MaxValues = []
+                    while(np.max(detections_tmp) >= thresh):
+    
+                        # Get the max remaining index and value
+                        max_value = np.max(detections_tmp)
+                        max_index = np.argmax(detections_tmp)
+                            
+                        # detections_NMS[max_index,i] = max_value
+    
+                        nms_from = int(np.maximum(-(window/2)+max_index,0))
+                        nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
+                            
+                        if (detections_tmp[nms_from:nms_to] >= thresh).sum() > min_window:
                             MaxValues.append(max_value)
                             indexes.append(max_index)
-                            # detections_NMS[max_index,i] = max_value
+                        detections_tmp[nms_from:nms_to] = -1
     
-                            nms_from = int(np.maximum(-(window/2)+max_index,0))
-                            nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
-                            detections_tmp[nms_from:nms_to] = -1
+                    return np.transpose([indexes, MaxValues])
     
-                        return np.transpose([indexes, MaxValues])
-                    
-                    
+                framerate = dataloader.dataset.framerate
+                get_spot = get_spot_from_NMS
     
-                    framerate = dataloader.dataset.framerate
-                    get_spot = get_spot_from_BNMS2
-    
-                    json_data = dict()
-                    json_data["UrlLocal"] = game_ID
-                    json_data["predictions"] = list()
-    
-                    for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
-                        for l in range(dataloader.dataset.num_classes):
-                            spots = get_spot(
-                                timestamp[:, l], window=NMS_window*framerate, thresh=NMS_threshold, min_window=3)
-                            for spot in spots:
-                                # print("spot", int(spot[0]), spot[1], spot)
-                                frame_index = int(spot[0])
-                                confidence = spot[1]
-                                # confidence = predictions_half_1[frame_index, l]
-    
-                                seconds = int((frame_index//framerate)%60)
-                                minutes = int((frame_index//framerate)//60)
-    
-                                prediction_data = dict()
-                                prediction_data["gameTime"] = str(half+1) + " - " + str(minutes) + ":" + str(seconds)
-                                if dataloader.dataset.version == 2:
-                                    prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V2[l]
-                                else:
-                                    prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V1[l]
-                                prediction_data["position"] = str(int((frame_index/framerate)*1000))
-                                prediction_data["half"] = str(half+1)
-                                prediction_data["confidence"] = str(confidence)
-                                json_data["predictions"].append(prediction_data)
-                    
-                    os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
-                    with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
-                        json.dump(json_data, output_file, indent=4)
-            else:
-
-                for i, (game_ID, feat1_half1, feat2_half1, feat1_half2, feat2_half2, label_half1, label_half2) in t:
-
-                    data_time.update(time.time() - end)
-    
-                    # Batch size of 1
-                    
-                    game_ID = game_ID[0]
-                    feat1_half1 = feat1_half1.squeeze(0)
-                    feat2_half1 = feat2_half1.squeeze(0)
-                    label_half1 = label_half1.float().squeeze(0)
-                    feat1_half2 = feat1_half2.squeeze(0)
-                    feat2_half2 = feat2_half2.squeeze(0)
-                    label_half2 = label_half2.float().squeeze(0)
-                    
-    
-                    # Compute the output for batches of frames
-                    BS = 256
-                    timestamp_long_half_1 = []
-                    for b in range(int(np.ceil(len(feat1_half1)/BS))):
-                        start_frame = BS*b
-                        end_frame = BS*(b+1) if BS * \
-                            (b+1) < len(feat1_half1) else len(feat1_half1)-1
-                        feat1 = feat1_half1[start_frame:end_frame].cuda()
-                        feat2 = feat2_half1[start_frame:end_frame].cuda()
-                        output, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feat1, feat2)
-                        output = output.cpu().detach().numpy()
-                        timestamp_long_half_1.append(output)
-                    timestamp_long_half_1 = np.concatenate(timestamp_long_half_1)
-    
-                    timestamp_long_half_2 = []
-                    for b in range(int(np.ceil(len(feat1_half2)/BS))):
-                        start_frame = BS*b
-                        end_frame = BS*(b+1) if BS * \
-                            (b+1) < len(feat1_half2) else len(feat1_half2)-1
-                        feat1 = feat1_half2[start_frame:end_frame].cuda()
-                        feat2 = feat2_half2[start_frame:end_frame].cuda()
-                        output, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feat1, feat2)
-                        output = output.cpu().detach().numpy()
-                        timestamp_long_half_2.append(output)
-                    timestamp_long_half_2 = np.concatenate(timestamp_long_half_2)
-    
-    
-                    timestamp_long_half_1 = timestamp_long_half_1[:, 1:]
-                    timestamp_long_half_2 = timestamp_long_half_2[:, 1:]
-    
-                    spotting_grountruth.append(torch.abs(label_half1))
-                    spotting_grountruth.append(torch.abs(label_half2))
-                    spotting_grountruth_visibility.append(label_half1)
-                    spotting_grountruth_visibility.append(label_half2)
-                    spotting_predictions.append(timestamp_long_half_1)
-                    spotting_predictions.append(timestamp_long_half_2)
-                    # segmentation_predictions.append(segmentation_long_half_1)
-                    # segmentation_predictions.append(segmentation_long_half_2)
-    
-                    # count_all = count_all + torch.sum(torch.abs(label_half1), dim=0)
-                    # count_visible = count_visible + torch.sum((torch.abs(label_half1)+label_half1)/2, dim=0)
-                    # count_unshown = count_unshown + torch.sum((torch.abs(label_half1)-label_half1)/2, dim=0)
-                    # count_all = count_all + torch.sum(torch.abs(label_half2), dim=0)
-                    # count_visible = count_visible + torch.sum((torch.abs(label_half2)+label_half2)/2, dim=0)
-                    # count_unshown = count_unshown + torch.sum((torch.abs(label_half2)-label_half2)/2, dim=0)
-    
-                    batch_time.update(time.time() - end)
-                    end = time.time()
-    
-                    desc = f'Test (spot.): '
-                    desc += f'Time {batch_time.avg:.3f}s '
-                    desc += f'(it:{batch_time.val:.3f}s) '
-                    desc += f'Data:{data_time.avg:.3f}s '
-                    desc += f'(it:{data_time.val:.3f}s) '
-                    t.set_description(desc)
-    
-    
-    
-                    def get_spot_from_NMS(Input, window, thresh=0.0, min_window=3):
-    
-                        detections_tmp = np.copy(Input)
-                        # res = np.empty(np.size(Input), dtype=bool)
-                        indexes = []
-                        MaxValues = []
-                        while(np.max(detections_tmp) >= thresh):
-    
-                            # Get the max remaining index and value
-                            max_value = np.max(detections_tmp)
-                            max_index = np.argmax(detections_tmp)
-                            
-                            # detections_NMS[max_index,i] = max_value
-    
-                            nms_from = int(np.maximum(-(window/2)+max_index,0))
-                            nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
-                            
-                            if (detections_tmp[nms_from:nms_to] >= thresh).sum() > min_window:
-                                MaxValues.append(max_value)
-                                indexes.append(max_index)
-                            detections_tmp[nms_from:nms_to] = -1
-    
-                        return np.transpose([indexes, MaxValues])
-                    
-                    def get_spot_from_BNMS(Input, window, thresh= 0.0):
-                        detections_tmp = np.copy(Input)
-                        indexes = []
-                        MaxValues = []
-                        while(np.max(detections_tmp) >= thresh):
-                            max_value = np.max(detections_tmp)
-                            max_index = np.argmax(detections_tmp)
-                            MaxValues.append(max_value)
-        
-                            nms_from = int(np.maximum(-(window/2)+max_index,0))
-                            nms_to = int(np.minimum(max_index+int(window/2), len(detections_tmp)))
-                                                       
-                            best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
-                            
-                            indexes.append(round(best_index))
-                            detections_tmp[nms_from:nms_to] = 0
-                        return np.transpose([indexes, MaxValues])
-                    
-                    def get_spot_from_BNMS2(Input, window, thresh= 0.0, min_window = 0, max_window = 20):
-                        detections_tmp = np.copy(Input)
-                        not_indexes = ([i for i, x in enumerate(detections_tmp < thresh) if x])
-                        if len(not_indexes) == 0:
-                            not_indexes = [0, len(detections_tmp)]
-                        indexes = []
-                        MaxValues = []
-                        for i in range(len(not_indexes)-1):
-                            action_length = not_indexes[i+1] - not_indexes[i] -1
-                            if (action_length) > (min_window):
-                                if action_length > max_window:
-                                    splits = (math.ceil(action_length / max_window))
-                                    for j in range(splits):
-                                        nms_from = not_indexes[i]+1+j*max_window
-                                        nms_to = np.minimum(not_indexes[i]+(j+1)*max_window, len(detections_tmp))
-                                        max_value = np.mean(detections_tmp[nms_from:nms_to])
-                                        best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
-                                        indexes.append(round(best_index))
-                                        MaxValues.append(max_value)
-                                else:
-                                    nms_from = not_indexes[i] +1
-                                    nms_to = not_indexes[i+1]
-                                    max_value = np.mean(detections_tmp[nms_from:nms_to])
-                                    best_index = (np.arange(nms_from, nms_to) * detections_tmp[nms_from:nms_to]).sum() / detections_tmp[nms_from:nms_to].sum()
-                                    indexes.append(round(best_index))
-                                    MaxValues.append(max_value)
-            
-                        return np.transpose([indexes, MaxValues])
-    
-                    framerate = dataloader.dataset.framerate
-                    get_spot = get_spot_from_NMS
-    
-                    json_data = dict()
-                    json_data["UrlLocal"] = game_ID
-                    json_data["predictions"] = list()
-                    nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
-                    for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
+                json_data = dict()
+                json_data["UrlLocal"] = game_ID
+                json_data["predictions"] = list()
+                nms_window = [12, 7, 20, 9, 9, 9, 9, 7, 7, 7, 7, 7, 20, 20, 9, 20, 20]
+                for half, timestamp in enumerate([timestamp_long_half_1, timestamp_long_half_2]):
                         
-                        for l in range(dataloader.dataset.num_classes):
-                            spots = get_spot(
-                                timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
+                    for l in range(dataloader.dataset.num_classes):
+                        spots = get_spot(
+                            timestamp[:, l], window=nms_window[l]*framerate, thresh=NMS_threshold, min_window = 0)
 
-                            for spot in spots:
-                                # print("spot", int(spot[0]), spot[1], spot)
-                                frame_index = int(spot[0])
-                                confidence = spot[1]
-                                # confidence = predictions_half_1[frame_index, l]
+                        for spot in spots:
+                            # print("spot", int(spot[0]), spot[1], spot)
+                            frame_index = int(spot[0])
+                            confidence = spot[1]
+                            # confidence = predictions_half_1[frame_index, l]
     
-                                seconds = int((frame_index//framerate)%60)
-                                minutes = int((frame_index//framerate)//60)
+                            seconds = int((frame_index//framerate)%60)
+                            minutes = int((frame_index//framerate)//60)
     
-                                prediction_data = dict()
-                                prediction_data["gameTime"] = str(half+1) + " - " + str(minutes) + ":" + str(seconds)
-                                if dataloader.dataset.version == 2:
-                                    prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V2[l]
-                                else:
-                                    prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V1[l]
-                                prediction_data["position"] = str(int((frame_index/framerate)*1000))
-                                prediction_data["half"] = str(half+1)
-                                prediction_data["confidence"] = str(confidence)
-                                json_data["predictions"].append(prediction_data)
+                            prediction_data = dict()
+                            prediction_data["gameTime"] = str(half+1) + " - " + str(minutes) + ":" + str(seconds)
+                            if dataloader.dataset.version == 2:
+                                prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V2[l]
+                            else:
+                                prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V1[l]
+                            prediction_data["position"] = str(int((frame_index/framerate)*1000))
+                            prediction_data["half"] = str(half+1)
+                            prediction_data["confidence"] = str(confidence)
+                            json_data["predictions"].append(prediction_data)
                     
-                    os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
-                    with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
-                        json.dump(json_data, output_file, indent=4)
+                os.makedirs(os.path.join("models", model_name, output_folder, game_ID), exist_ok=True)
+                with open(os.path.join("models", model_name, output_folder, game_ID, "results_spotting.json"), 'w') as output_file:
+                    json.dump(json_data, output_file, indent=4)
 
 
 
@@ -600,7 +429,7 @@ def testSpotting(path, dataloader, model, model_name, overwrite=True, NMS_window
     # return a_mAP
 
 'Define function for spotting in Ensembles'
-def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.2, ensemble_method = 'mean', ensemble_chunk = 3):
+def testSpottingEnsemble(model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.2, ensemble_method = 'mean', ensemble_chunk = 3):
 
     split2 = '_'.join([split])
     chunk_sizes = [2, 3, 4, 5]#, 7]
@@ -627,7 +456,8 @@ def testSpottingEnsemble(path, model_name, split, overwrite=True, NMS_window=30,
             split_aux = [split]
         
         for chunk_size in chunk_sizes:
-            dataset_Test  = SoccerNetClipsTesting(path='Baidu+ResNet', features='baidu_soccer_embeddings.npy', split=split_aux, version=2, framerate=1, chunk_size=chunk_size*1)
+            dataset_Test  = SoccerNetClipsTesting(split=split_aux, version=2, 
+                            framerate=1, chunk_size=chunk_size*1)
             print('Test loader')
             dataloader = torch.utils.data.DataLoader(dataset_Test,
                 batch_size=1, shuffle=False,

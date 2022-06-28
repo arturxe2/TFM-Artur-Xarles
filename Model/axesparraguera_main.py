@@ -141,19 +141,25 @@ def main(args):
         if ensemble:
             ensemble_method = 'MLP'
             if (ensemble_method == 'MLP') & (n_ensemble_train == 0):
-                results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, 'valid', NMS_threshold=args.NMS_threshold, ensemble_method=ensemble_method)
+                results = testSpottingEnsemble(args.model_name, 'valid', NMS_threshold=args.NMS_threshold, ensemble_method=ensemble_method)
                 n_ensemble_train += 1
-            results = testSpottingEnsemble(args.SoccerNet_path, args.model_name, split, NMS_threshold=args.NMS_threshold, ensemble_method=ensemble_method)
+            results = testSpottingEnsemble(args.model_name, split, NMS_threshold=args.NMS_threshold, ensemble_method=ensemble_method)
         
         else:
-            dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=[split], version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
+            dataset_Test  = SoccerNetClipsTesting(path_baidu = args.baidu_path, 
+                            path_audio = args.audio_path,
+                            path_labels = args.labels_path,
+                            features_baidu = args.features_baidu,
+                            features_audio = args.features_audio, 
+                            split=args.split_test, version=args.version, 
+                            framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             print('Test loader')
             test_loader = torch.utils.data.DataLoader(dataset_Test,
                 batch_size=1, shuffle=False,
                 num_workers=1, pin_memory=True)
         
         
-            results = testSpotting(args.SoccerNet_path, test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
+            results = testSpotting(test_loader, model=model, model_name=args.model_name, NMS_window=args.NMS_window, NMS_threshold=args.NMS_threshold)
         if results is None:
             continue
 
