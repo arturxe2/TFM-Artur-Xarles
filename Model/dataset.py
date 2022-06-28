@@ -85,11 +85,8 @@ class SoccerNetClips(Dataset):
 
         logging.info("Pre-compute clips")
         
-        if self.path != 'Baidu+ResNet':
-            self.game_feats = list()
-        else:
-            self.game_feats1 = list()
-            self.game_feats2 = list()
+        self.game_feats1 = list()
+        self.game_feats2 = list()
         self.game_labels = list()
 
         # game_counter = 0
