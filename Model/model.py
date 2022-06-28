@@ -53,7 +53,7 @@ class Model(nn.Module):
 
         
         
-        if self.pool == "HMTAS":
+        if self.model == "HMTAS":
             #All features to 512 dimensionality
             #self.conv1A = nn.Conv1d(512, 512, 1, stride=1, bias=False)
             self.conv1A = nn.Conv1d(128, 512, 1, stride=1, bias=False)
@@ -148,7 +148,7 @@ class Model(nn.Module):
     def forward(self, inputs1, inputs2):
         
 
-        if self.pool == "HMTAS":
+        if self.model == "HMTAS":
             inputsA = inputs2.float()
             inputsB = inputs1.float()
             
