@@ -28,7 +28,7 @@ import random
 
 
 'Define trainer'
-def trainer(path, train_loader,
+def trainer(train_loader,
             val_loader,
             val_metric_loader,
             model,
@@ -58,13 +58,13 @@ def trainer(path, train_loader,
         best_model_path = os.path.join("models", model_name, "model.pth.tar")
 
         # train for one epoch
-        loss_training = train(path, train_loader, model, criterion, 
+        loss_training = train(train_loader, model, criterion, 
                               optimizer, epoch + 1, training_stage = training_stage,
                               train=True)
 
         # evaluate on validation set
         loss_validation = train(
-            path, val_loader, model, criterion, optimizer, epoch + 1, 
+            val_loader, model, criterion, optimizer, epoch + 1, 
             training_stage = training_stage, train=False)
 
         state = {
@@ -89,7 +89,6 @@ def trainer(path, train_loader,
         # Test the model on the validation set
         if epoch % evaluation_frequency == 0 and epoch != 0:
             performance_validation = test(
-                path,
                 val_metric_loader,
                 model,
                 model_name)
@@ -101,8 +100,7 @@ def trainer(path, train_loader,
     return
 
 'Define train'
-def train(path,
-          dataloader,
+def train(dataloader,
           model,
           criterion,
           optimizer,
@@ -127,93 +125,55 @@ def train(path,
     #Potser al fer cuda() hi ha el problema
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=160) as t:
         
-        if path != 'Baidu+ResNet':
-            for i, (feats, labels) in t:
-                # measure data loading time
-                data_time.update(time.time() - end)
-                feats = feats.cuda()
-                labels = labels.cuda()
-                # compute output
-                output = model(feats)
-    
-                # hand written NLL criterion
-                loss = criterion(labels, output)
-    
-                # measure accuracy and record loss
-                losses.update(loss.item(), feats.size(0))
-    
-                if train:
-                    # compute gradient and do SGD step
-                    optimizer.zero_grad()
-                    loss.backward()
-                    #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
-                    optimizer.step()
-    
-                # measure elapsed time
-                batch_time.update(time.time() - end)
-                end = time.time()
-    
-                if train:
-                    desc = f'Train {epoch}: '
-                else:
-                    desc = f'Evaluate {epoch}: '
-                desc += f'Time {batch_time.avg:.3f}s '
-                desc += f'(it:{batch_time.val:.3f}s) '
-                desc += f'Data:{data_time.avg:.3f}s '
-                desc += f'(it:{data_time.val:.3f}s) '
-                desc += f'Loss {losses.avg:.4e} '
-                t.set_description(desc)
-        else:
-
-            for i, (feats1, feats2, labels) in t:
+        for i, (feats1, feats2, labels) in t:
                 
-                # measure data loading time
-                data_time.update(time.time() - end)
-                feats1 = feats1.cuda()
-                feats2 = feats2.cuda()
-                labels = labels.cuda()
-                # compute output
-                outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
+            # measure data loading time
+            data_time.update(time.time() - end)
+            feats1 = feats1.cuda()
+            feats2 = feats2.cuda()
+            labels = labels.cuda()
+            # compute output
+            outputs_mix, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
         
-                # hand written NLL criterion
-                if training_stage == 0:
-                    lossF = criterion(labels, outputs_mix)
-                    lossA = criterion(labels, outputsA)
-                    lossB1 = criterion(labels, outputsB1)
-                    lossB2 = criterion(labels, outputsB2)
-                    lossB3 = criterion(labels, outputsB3)
-                    lossB4 = criterion(labels, outputsB4)
-                    lossB5 = criterion(labels, outputsB5)
-                    
-                    loss = lossF #+ 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
-                else:
-                    loss = criterion(labels, outputs_mix)
+            # hand written NLL criterion
+            if training_stage == 0:
+                lossF = criterion(labels, outputs_mix)
+                lossA = criterion(labels, outputsA)
+                lossB1 = criterion(labels, outputsB1)
+                lossB2 = criterion(labels, outputsB2)
+                lossB3 = criterion(labels, outputsB3)
+                lossB4 = criterion(labels, outputsB4)
+                lossB5 = criterion(labels, outputsB5)
                 
-                # measure accuracy and record loss
-                losses.update(loss.item(), feats1.size(0) + feats2.size(0))
+                loss = lossF #+ 0.05 * lossA + 0.05 * lossB1 + 0.05 * lossB2 + 0.05 * lossB3 + 0.05 * lossB4 + 0.05 * lossB5
+            else:
+                loss = criterion(labels, outputs_mix)
+                
+            # measure accuracy and record loss
+            losses.update(loss.item(), feats1.size(0) + feats2.size(0))
         
-                if train:
-                    # compute gradient and do SGD step
-                    optimizer.zero_grad()
-                    loss.backward()
-                    #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
-                    optimizer.step()
+            if train:
+                # compute gradient and do SGD step
+                optimizer.zero_grad()
+                loss.backward()
+                #torch.nn.utils.clip_grad_norm(model.parameters(), max_norm=5)
+                optimizer.step()
         
-                # measure elapsed time
-                batch_time.update(time.time() - end)
-                end = time.time()
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
         
-                if train:
-                    desc = f'Train {epoch}: '
-                else:
-                    desc = f'Evaluate {epoch}: '
-                desc += f'Time {batch_time.avg:.3f}s '
-                desc += f'(it:{batch_time.val:.3f}s) '
-                desc += f'Data:{data_time.avg:.3f}s '
-                desc += f'(it:{data_time.val:.3f}s) '
-                desc += f'Loss {losses.avg:.4e} '
-                t.set_description(desc)
-    if (training_stage == 0) & (path == 'Baidu+ResNet'):
+            if train:
+                desc = f'Train {epoch}: '
+            else:
+                desc = f'Evaluate {epoch}: '
+            desc += f'Time {batch_time.avg:.3f}s '
+            desc += f'(it:{batch_time.val:.3f}s) '
+            desc += f'Data:{data_time.avg:.3f}s '
+            desc += f'(it:{data_time.val:.3f}s) '
+            desc += f'Loss {losses.avg:.4e} '
+            t.set_description(desc)
+    if (training_stage == 0):
         print('Total loss: ' + str(lossF))
         print('Audio loss: ' + str(lossA))
         print('Baidu1 loss: ' + str(lossB1))
@@ -225,7 +185,7 @@ def train(path,
 
 
 'Define test function'
-def test(path, dataloader, model, model_name):
+def test(dataloader, model, model_name):
     batch_time = AverageMeter()
     data_time = AverageMeter()
 
@@ -235,59 +195,32 @@ def test(path, dataloader, model, model_name):
     all_labels = []
     all_outputs = []
     with tqdm(enumerate(dataloader), total=len(dataloader), ncols=120) as t:
-        if path != 'Baidu+ResNet':
-            for i, (feats, labels) in t:
-                # measure data loading time
-                data_time.update(time.time() - end)
-                feats = feats.cuda()
-                # labels = labels.cuda()
+        for i, (feats1, feats2, labels) in t:
+            # measure data loading time
+            data_time.update(time.time() - end)
+            feats1 = feats1.cuda()
+            feats2 = feats2.cuda()
+            # labels = labels.cuda()
     
-                # print(feats.shape)
-                # feats=feats.unsqueeze(0)
-                # print(feats.shape)
+            # print(feats.shape)
+            # feats=feats.unsqueeze(0)
+            # print(feats.shape)
     
-                # compute output
-                output = model(feats)
+            # compute output
+            output, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
     
-                all_labels.append(labels.detach().numpy())
-                all_outputs.append(output.cpu().detach().numpy())
+            all_labels.append(labels.detach().numpy())
+            all_outputs.append(output.cpu().detach().numpy())
     
-                batch_time.update(time.time() - end)
-                end = time.time()
+            batch_time.update(time.time() - end)
+            end = time.time()
     
-                desc = f'Test (cls): '
-                desc += f'Time {batch_time.avg:.3f}s '
-                desc += f'(it:{batch_time.val:.3f}s) '
-                desc += f'Data:{data_time.avg:.3f}s '
-                desc += f'(it:{data_time.val:.3f}s) '
-                t.set_description(desc)
-        else:
-            for i, (feats1, feats2, labels) in t:
-                # measure data loading time
-                data_time.update(time.time() - end)
-                feats1 = feats1.cuda()
-                feats2 = feats2.cuda()
-                # labels = labels.cuda()
-    
-                # print(feats.shape)
-                # feats=feats.unsqueeze(0)
-                # print(feats.shape)
-    
-                # compute output
-                output, outputsA, outputsB1, outputsB2, outputsB3, outputsB4, outputsB5 = model(feats1, feats2)
-    
-                all_labels.append(labels.detach().numpy())
-                all_outputs.append(output.cpu().detach().numpy())
-    
-                batch_time.update(time.time() - end)
-                end = time.time()
-    
-                desc = f'Test (cls): '
-                desc += f'Time {batch_time.avg:.3f}s '
-                desc += f'(it:{batch_time.val:.3f}s) '
-                desc += f'Data:{data_time.avg:.3f}s '
-                desc += f'(it:{data_time.val:.3f}s) '
-                t.set_description(desc)
+            desc = f'Test (cls): '
+            desc += f'Time {batch_time.avg:.3f}s '
+            desc += f'(it:{batch_time.val:.3f}s) '
+            desc += f'Data:{data_time.avg:.3f}s '
+            desc += f'(it:{data_time.val:.3f}s) '
+            t.set_description(desc)
 
     AP = []
     for i in range(1, dataloader.dataset.num_classes+1):

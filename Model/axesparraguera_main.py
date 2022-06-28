@@ -123,7 +123,7 @@ def main(args):
         #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', verbose=True, patience=args.patience)
         
         # start training
-        trainer(args.SoccerNet_path, train_loader, val_loader, val_metric_loader, 
+        trainer(train_loader, val_loader, val_metric_loader, 
                 model, optimizer, criterion, patience=args.patience,
                 model_name=args.model_name,
                 max_epochs=args.max_epochs, evaluation_frequency=args.evaluation_frequency)
