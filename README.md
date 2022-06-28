@@ -28,7 +28,7 @@ This folder contains the following files:
  - vggish_post.py: file to extract the embeddings from the trained model.
 
 
-Initial code inspired in [https://github.com/SilvioGiancola/SoccerNetv2-DevKit](SoccerNet) and [https://github.com/harritaylor/torchvggish](harritaylor).
+Initial code inspired in [SoccerNet](https://github.com/SilvioGiancola/SoccerNetv2-DevKit) and [harritaylor](https://github.com/harritaylor/torchvggish).
 
 
 ## Contact  
