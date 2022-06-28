@@ -24,7 +24,7 @@ from loss import NLLLoss_audio
 
 
 
-'Class for the train samples'
+#Class for the train samples
 class TrainVGGish(Dataset):
     def __init__(self, path="/data-local/data1-hdd/axesparraguera/vggish", features="audio.npy", labels="labels.npy", 
                  split=["train", "valid"], version=2, val_split = 0.8):
@@ -85,7 +85,7 @@ class TrainVGGish(Dataset):
         return self.n
 
 
-'Trainer of the model'        
+#Trainer of the model    
 def trainer(path, train_loader,
             val_loader,
             val_metric_loader,
@@ -160,7 +160,7 @@ def trainer(path, train_loader,
 
     return     
 
-'Train for the VGGish model'
+#Train for the VGGish model
 def train(path,
           dataloader,
           model,
@@ -226,9 +226,9 @@ def train(path,
     return loss.avg
 
 
-'Main part of the code'
+#Main part of the code
 if __name__ == '__main__':
-    'URLs to download weights and pca parameters'
+    #URLs to download weights and pca parameters
     model_urls = {
         'vggish': 'https://github.com/harritaylor/torchvggish/'
                   'releases/download/v0.1/vggish-10086976.pth',
@@ -236,22 +236,22 @@ if __name__ == '__main__':
                'releases/download/v0.1/vggish_pca_params-970ea276.pth'
     }
 
-    'Get the samples with the class TrainVGGish'    
+    #Get the samples with the class TrainVGGish
     dataset_Train = TrainVGGish()
     dataset_val = TrainVGGish(split=["test"])
-    'Generate loaders'
+    #Generate loaders
     train_loader = torch.utils.data.DataLoader(dataset_Train,
         batch_size=128, num_workers=4, shuffle=True, pin_memory=True)
     val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=128, shuffle=False,
                                              num_workers=1, pin_memory=True)
 
-    'Define model, optimizer and criterion'
+    #Define model, optimizer and criterion
     model = VGGish(urls = model_urls, pretrained = True, preprocess = False, postprocess=False).cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-03, 
                                 betas=(0.9, 0.999), eps=1e-08, 
                                 weight_decay=1e-5, amsgrad=True)
     criterion = NLLLoss_audio()
-    'Train model'
+    #Train model
     trainer('', train_loader, val_loader, val_loader, 
             model, optimizer, criterion, patience=5,
             model_name='final_model',

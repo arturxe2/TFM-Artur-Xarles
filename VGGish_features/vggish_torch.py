@@ -10,7 +10,7 @@ import torch.nn as nn
 from torch import hub
 import vggish_input, vggish_params
 
-'URLs with the vggish weights and PCA parameters'
+#URLs with the vggish weights and PCA parameters
 
 model_urls = {
     'vggish': 'https://github.com/harritaylor/torchvggish/'
@@ -19,7 +19,7 @@ model_urls = {
            'releases/download/v0.1/vggish_pca_params-970ea276.pth'
 }
 
-'Definition of the VGG model'
+#Definition of the VGG model
 class VGG(nn.Module):
     def __init__(self, features):
         super(VGG, self).__init__()
@@ -47,7 +47,7 @@ class VGG(nn.Module):
         return self.embeddings(x)
     
 
-'Definition of Postprocessor to extract embeddings from the model'
+#Definition of Postprocessor to extract embeddings from the model
 class Postprocessor(nn.Module):
     """Post-processes VGGish embeddings. Returns a torch.Tensor instead of a
     numpy array in order to preserve the gradient.
@@ -119,7 +119,7 @@ class Postprocessor(nn.Module):
         return self.postprocess(x)
 
 
-'Function to create the layers of the model'
+#Function to create the layers of the model
 def make_layers():
     layers = []
     in_channels = 1
@@ -155,7 +155,7 @@ def _vgg():
 #     return Spectrogram.MelSpectrogram(**config)
 
 
-'Definition of the VGGish model'
+#Definition of the VGGish model
 class VGGish(VGG):
     def __init__(self, urls, device=None, pretrained=True, preprocess=True, postprocess=True, progress=True):
         super().__init__(make_layers())

@@ -6,7 +6,7 @@ Code in this file defines the loss function for the VGGish model
 
 import torch
 
-'Define loss function for audio'
+#Define loss function for audio
 class NLLLoss_audio(torch.nn.Module):
     def __init__(self):
         super(NLLLoss_audio, self).__init__()

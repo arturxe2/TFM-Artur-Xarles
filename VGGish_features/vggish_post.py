@@ -21,14 +21,14 @@ import logging
 import json
 from SoccerNet.Downloader import getListGames
 
-'Define model name, the model and read from a checkpoint'
+#Define model name, the model and read from a checkpoint
 model_name = 'final_model'
 model = VGGish(urls = model_urls, pretrained = True, preprocess = False, postprocess=False)
 checkpoint = torch.load(os.path.join("models", model_name, "model.pth.tar"))
 model.load_state_dict(checkpoint['state_dict'])
 model = model.cuda()
 
-'Data to generate the audio features from'
+#Data to generate the audio features from
 listGames = getListGames(['train', 'valid', 'test', 'challenge'])
 path="/data-local/data1-hdd/axesparraguera/vggish"
 features="audio.npy"
@@ -40,7 +40,7 @@ def get_activation(name):
     return hook
 model.embeddings.register_forward_hook(get_activation('embeddings'))
 
-'Generate audio embeddings for each match'
+#Generate audio embeddings for each match
 for game in tqdm(listGames):
   
     #Check if exists audio.npy

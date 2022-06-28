@@ -20,7 +20,7 @@ from pydub import AudioSegment
 
 print('starting program')
 
-'Class to generate .wav files'
+#Class to generate .wav files
 class GenerateWav(Dataset):
     def __init__(self, path, features="224p.mp3", split = ["train", "valid", "test", "challenge"]):
         self.path = path
@@ -57,7 +57,7 @@ class GenerateWav(Dataset):
         
         
         
-'Generates samples for audio training'
+#Generates samples for audio training
 class AudioFeatures(Dataset):
     def __init__(self, path, features="audio.mp3", split=["train", "valid", "test", "challenge"], version=2, 
                 framerate=44100, chunk_size=42336, augment = False, only_labels = True):
