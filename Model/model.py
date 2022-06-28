@@ -37,7 +37,7 @@ class PositionalEncoding(nn.Module):
 
 'Model class'
 class Model(nn.Module):
-    def __init__(self, weights=None, input_size=512, num_classes=3, vocab_size=128, chunk_size=240, framerate=2, pool="NetVLAD"):
+    def __init__(self, weights=None, num_classes=3, chunk_size=240, framerate=2, model="HMTAS"):
         """
         INPUT: a Tensor of shape (batch_size,chunk_size,feature_size)
         OUTPUTS: a Tensor of shape (batch_size,num_classes+1)
@@ -45,16 +45,15 @@ class Model(nn.Module):
 
         super(Model, self).__init__()
 
-        self.input_size = input_size
         self.num_classes = num_classes
         self.chunk_size = chunk_size
         self.framerate = framerate
-        self.pool = pool
-        self.vlad_k = vocab_size
+        self.model = model
+
 
         
         
-        if self.pool == "final_model":
+        if self.pool == "HMTAS":
             #All features to 512 dimensionality
             #self.conv1A = nn.Conv1d(512, 512, 1, stride=1, bias=False)
             self.conv1A = nn.Conv1d(128, 512, 1, stride=1, bias=False)
@@ -149,7 +148,7 @@ class Model(nn.Module):
     def forward(self, inputs1, inputs2):
         
 
-        if self.pool == "final_model":
+        if self.pool == "HMTAS":
             inputsA = inputs2.float()
             inputsB = inputs1.float()
             

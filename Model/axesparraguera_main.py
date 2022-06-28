@@ -70,9 +70,9 @@ def main(args):
         
             
     # create model
-    model = Model(weights=args.load_weights, input_size=args.num_features,
+    model = Model(weights=args.load_weights,
                   num_classes=dataset_Test.num_classes, chunk_size=args.chunk_size*args.framerate,
-                  framerate=args.framerate, pool=args.pool).cuda()
+                  framerate=args.framerate, model=args.model).cuda()
     logging.info(model)
     total_params = sum(p.numel()
                        for p in model.parameters() if p.requires_grad)
@@ -82,36 +82,29 @@ def main(args):
     # create dataloader
     if not args.test_only:
         sample_strategy = False
-        if saved_loader == False:
-            if sample_strategy == True:
-                sampler = WeightedRandomSampler(torch.from_numpy(dataset_Train.weights).type('torch.DoubleTensor'), len(dataset_Train.weights))
-                train_loader = torch.utils.data.DataLoader(dataset_Train,
-                    batch_size=args.batch_size,
-                    num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
-                #torch.save(train_loader, 'train_loader_sampler.pth')
-            else:
-                train_loader = torch.utils.data.DataLoader(dataset_Train,
-                               batch_size=args.batch_size, shuffle=True,
-                               num_workers=args.max_num_worker, pin_memory=True)
+
+        if sample_strategy == True:
+            sampler = WeightedRandomSampler(torch.from_numpy(dataset_Train.weights).type('torch.DoubleTensor'), len(dataset_Train.weights))
+            train_loader = torch.utils.data.DataLoader(dataset_Train,
+                batch_size=args.batch_size,
+                num_workers=args.max_num_worker, pin_memory=True, sampler = sampler)
+
+        else:
+            train_loader = torch.utils.data.DataLoader(dataset_Train,
+                              batch_size=args.batch_size, shuffle=True,
+                              num_workers=args.max_num_worker, pin_memory=True)
                 #torch.save(train_loader, 'train_loader.pth')
                 
-            val_loader = torch.utils.data.DataLoader(dataset_Valid,
-                batch_size=args.batch_size, shuffle=False,
-                num_workers=args.max_num_worker, pin_memory=True)
-            #torch.save(val_loader, 'val_loader.pth')
+        val_loader = torch.utils.data.DataLoader(dataset_Valid,
+            batch_size=args.batch_size, shuffle=False,
+            num_workers=args.max_num_worker, pin_memory=True)
 
-            val_metric_loader = torch.utils.data.DataLoader(dataset_Valid_metric,
-                batch_size=args.batch_size, shuffle=False,
-                num_workers=args.max_num_worker, pin_memory=True)
-            #torch.save(val_metric_loader, 'val_metric_loader.pth')
-        else:
-            if sample_strategy == True:
-                train_loader = torch.load('train_loader_sampler.pth')
-            else:
-                train_loader = torch.load('train_loader.pth')
 
-            val_loader = torch.load('val_loader.pth')
-            val_metric_loader = torch.load('val_metric_loader.pth')
+        val_metric_loader = torch.utils.data.DataLoader(dataset_Valid_metric,
+            batch_size=args.batch_size, shuffle=False,
+            num_workers=args.max_num_worker, pin_memory=True)
+
+
     
 
     # training parameters
@@ -208,7 +201,7 @@ if __name__ == '__main__':
     parser.add_argument('--evaluation_frequency', required=False, type=int,   default=10,     help='Number of chunks per epoch' )
     parser.add_argument('--framerate', required=False, type=int,   default=2,     help='Framerate of the input features' )
     parser.add_argument('--chunk_size', required=False, type=int,   default=60,     help='Size of the chunk (in seconds)' )
-    parser.add_argument('--pool',       required=False, type=str,   default="MAX", help='How to pool' )
+    parser.add_argument('--model',       required=False, type=str,   default="HMTAS", help='How to pool' )
     parser.add_argument('--NMS_window',       required=False, type=int,   default=20, help='NMS window in second' )
     parser.add_argument('--NMS_threshold',       required=False, type=float,   default=0.5, help='NMS threshold for positive results' )
 
