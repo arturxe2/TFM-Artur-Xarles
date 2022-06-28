@@ -33,30 +33,20 @@ def main(args):
         logging.info(arg.rjust(15) + " : " + str(getattr(args, arg)))
 
     # create dataset
-    if not args.test_only:
-
-        if args.version == 1:
-            dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate, augment = False)
+    if not args.test_only:    
+        if args.version == 2:
+            dataset_Train = SoccerNetClipsTrain(path_baidu = args.baidu_path, 
+                            path_audio = args.audio_path,
+                            path_labels = args.labels_path, 
+                            path_store = args.store_path,
+                            features_baidu = args.features_baidu,
+                            features_audio = args.features_audio,
+                            stride = 1, split=["train"], version=args.version, 
+                            framerate=1, chunk_size=3, augment = False, store = True)
+                
+            #dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-    
-        if args.version == 2:
-            saved_loader = False
-            if saved_loader == False:
-                dataset_Train = SoccerNetClipsTrain(path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
-                             path_audio = '/data-local/data1-hdd/axesparraguera/vggish',
-                             #path_audio = '/home-net/axesparraguera/data/VGGFeatures', 
-                             path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2", 
-                             path_store = "/data-local/data3-ssd/axesparraguera",
-                             features_baidu = 'baidu_soccer_embeddings.npy',
-                             features_audio = 'featA.npy',
-                             #features_audio = 'VGGish.npy', 
-                             stride = 1, split=["train"], version=2, 
-                            framerate=1, chunk_size=3, augment = False, store = False)
-                
-                #dataset_Train = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_train, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                dataset_Valid = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
-                dataset_Valid_metric  = SoccerNetClips(path=args.SoccerNet_path, features=args.features, split=args.split_valid, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
     dataset_Test  = SoccerNetClipsTesting(path=args.SoccerNet_path, features=args.features, split=args.split_test, version=args.version, framerate=args.framerate, chunk_size=args.chunk_size*args.framerate)
             
         
@@ -178,8 +168,13 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(description='context aware loss function', formatter_class=ArgumentDefaultsHelpFormatter)
     
-    parser.add_argument('--SoccerNet_path',   required=False, type=str,   default="/path/to/SoccerNet/",     help='Path for SoccerNet' )
-    parser.add_argument('--features',   required=False, type=str,   default="ResNET_TF2_PCA512.npy",     help='Video features' )
+    parser.add_argument('--labels_path', required=False, type=str, default="/data-net/datasets/SoccerNetv2/ResNET_TF2", help='path of annotated labels')
+    parser.add_argument('--baidu_path', required=False, type=str, default="/data-net/datasets/SoccerNetv2/Baidu_features", help='path of baidu features')
+    parser.add_argument('--features_baidu', required=False, type=str, default="baidu_soccer_embeddings.npy", help='baidu features name')
+    parser.add_argument('--audio_path', required=False, type=str, default="/data-local/data1-hdd/axesparraguera/vggish", help='path of audio features')
+    parser.add_argument('--features_audio', required=False, type=str, default="featA2.npy", help='audio features name')
+    parser.add_argument('--store_path', required=False, type=str, default="/data-local/data3-ssd/axesparraguera", help='path to store the samples')
+    
     parser.add_argument('--max_epochs',   required=False, type=int,   default=1000,     help='Maximum number of epochs' )
     parser.add_argument('--load_weights',   required=False, type=str,   default=None,     help='weights to load' )
     parser.add_argument('--model_name',   required=False, type=str,   default="Pooling",     help='named of the model to save' )
