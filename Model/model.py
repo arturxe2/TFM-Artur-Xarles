@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from netvlad import NetVLAD
 
-'Positional Encoding class'
+#Positional Encoding class
 class PositionalEncoding(nn.Module):
 
     def __init__(self, d_model: int, dropout: float = 0.1, max_len: int = 6000):
@@ -35,7 +35,7 @@ class PositionalEncoding(nn.Module):
         return self.dropout(x)
 
 
-'Model class'
+#Model class
 class Model(nn.Module):
     def __init__(self, weights=None, num_classes=3, chunk_size=240, framerate=2, model="HMTAS"):
         """
@@ -257,7 +257,7 @@ class Model(nn.Module):
         
     
 
-'Define Ensemble model experiments'
+#Define Ensemble model experiments
 class EnsembleModel(nn.Module):
 
     def __init__(self, ensemble_chunk = 3, n_models = 2):

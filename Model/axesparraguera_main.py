@@ -25,7 +25,7 @@ torch.manual_seed(1)
 np.random.seed(1)
 
 
-'Main code to read data, train the model and make predictions'
+#Main code to read data, train the model and make predictions
 def main(args):
 
     logging.info("Parameters:")

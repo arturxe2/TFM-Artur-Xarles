@@ -21,7 +21,7 @@ from SoccerNet.Downloader import SoccerNetDownloader
 from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
 
-'Function for mix-up data augmentation'
+#Function for mix-up data augmentation
 def mix_up(feat1, feat2, y1, y2):
     lam = np.random.beta(a = 0.2, b=0.2, size=1)
     feat_new = feat1 * lam + feat2 * (1-lam)
@@ -31,7 +31,7 @@ def mix_up(feat1, feat2, y1, y2):
     return feat_new_list, y_new_list
 
 
-'Function to generate features from clips'
+#Function to generate features from clips
 def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
     if padding =="zeropad":
         print("beforepadding", feats.shape)
@@ -57,7 +57,7 @@ def feats2clip(feats, stride, clip_length, padding = "replicate_last", off=0):
     return feats[idx,...]
 
 
-'Class to generate samples and store them in RAM to train the HMTAS model'
+#Class to generate samples and store them in RAM to train the HMTAS model
 class SoccerNetClips(Dataset):
     def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
                  path_audio = '/data-local/data1-hdd/axesparraguera/vggish', 
@@ -231,7 +231,7 @@ class SoccerNetClips(Dataset):
         
         
         
-'Class to generate samples and store them to train the HMTAS model'
+#Class to generate samples and store them to train the HMTAS model
 class SoccerNetClipsTrain(Dataset):
     def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
                  path_audio = '/data-local/data1-hdd/axesparraguera/vggish', 
@@ -533,7 +533,7 @@ class SoccerNetClipsTrain(Dataset):
         #return len(self.path_list)
 
 
-'Class to generate the samples for the test part'
+#Class to generate the samples for the test part
 class SoccerNetClipsTesting(Dataset):
     def __init__(self, path_baidu = '/data-net/datasets/SoccerNetv2/Baidu_features', 
                  path_audio = '/data-local/data1-hdd/axesparraguera/vggish', 
@@ -687,7 +687,7 @@ class SoccerNetClipsTesting(Dataset):
         return len(self.listGames)
 
 
-'Main code of dataset'
+#Main code of dataset
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
             format="%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")

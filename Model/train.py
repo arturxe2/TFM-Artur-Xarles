@@ -27,7 +27,7 @@ import random
 
 
 
-'Define trainer'
+#Define trainer
 def trainer(train_loader,
             val_loader,
             val_metric_loader,
@@ -99,7 +99,7 @@ def trainer(train_loader,
 
     return
 
-'Define train'
+#Define train
 def train(dataloader,
           model,
           criterion,
@@ -184,7 +184,7 @@ def train(dataloader,
     return losses.avg
 
 
-'Define test function'
+#Define test function
 def test(dataloader, model, model_name):
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -236,7 +236,7 @@ def test(dataloader, model, model_name):
 
     return mAP
 
-'Define test spotting'
+#Define test spotting
 def testSpotting(dataloader, model, model_name, overwrite=True, NMS_window=30, NMS_threshold=0.5):
 
     split = '_'.join(dataloader.dataset.split)
@@ -428,7 +428,7 @@ def testSpotting(dataloader, model, model_name, overwrite=True, NMS_window=30, N
 
     # return a_mAP
 
-'Define function for spotting in Ensembles'
+#Define function for spotting in Ensembles
 def testSpottingEnsemble(model_name, split, overwrite=True, NMS_window=30, NMS_threshold=0.2, ensemble_method = 'mean', ensemble_chunk = 3):
 
     split2 = '_'.join([split])
@@ -700,7 +700,6 @@ def testSpottingEnsemble(model_name, split, overwrite=True, NMS_window=30, NMS_t
                 with open(os.path.join("models", model_name, output_folder, game_IDs[m], "results_spotting.json"), 'w') as output_file:
                     json.dump(json_data, output_file, indent=4)
 
-###### FINS AQUÍ
 
         else:
             
