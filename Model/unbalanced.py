@@ -30,10 +30,11 @@ path_labels = "/data-net/datasets/SoccerNetv2/ResNET_TF2"
 listGames = getListGames(['train', 'test', 'valid'])
     
 i = 0
+label_count = np.zeros(17)
 for game in tqdm(listGames):
     labels = json.load(open(os.path.join(path_labels, game, "Labels-v2.json")))
     
-    label_count = np.zeros(17)
+    
     for annotation in labels["annotations"]:
 
         time = annotation["gameTime"]
