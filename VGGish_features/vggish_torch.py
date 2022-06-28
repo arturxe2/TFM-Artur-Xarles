@@ -1,9 +1,16 @@
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
+
+Code in this file defines the VGGish model in torch
+'''
+
 import numpy as np
 import torch
 import torch.nn as nn
 from torch import hub
-
 import vggish_input, vggish_params
+
+'URLs with the vggish weights and PCA parameters'
 
 model_urls = {
     'vggish': 'https://github.com/harritaylor/torchvggish/'
@@ -12,6 +19,7 @@ model_urls = {
            'releases/download/v0.1/vggish_pca_params-970ea276.pth'
 }
 
+'Definition of the VGG model'
 class VGG(nn.Module):
     def __init__(self, features):
         super(VGG, self).__init__()
@@ -37,8 +45,9 @@ class VGG(nn.Module):
         x = x.view(x.size(0), -1)
 
         return self.embeddings(x)
+    
 
-
+'Definition of Postprocessor to extract embeddings from the model'
 class Postprocessor(nn.Module):
     """Post-processes VGGish embeddings. Returns a torch.Tensor instead of a
     numpy array in order to preserve the gradient.
@@ -110,6 +119,7 @@ class Postprocessor(nn.Module):
         return self.postprocess(x)
 
 
+'Function to create the layers of the model'
 def make_layers():
     layers = []
     in_channels = 1
@@ -145,6 +155,7 @@ def _vgg():
 #     return Spectrogram.MelSpectrogram(**config)
 
 
+'Definition of the VGGish model'
 class VGGish(VGG):
     def __init__(self, urls, device=None, pretrained=True, preprocess=True, postprocess=True, progress=True):
         super().__init__(make_layers())
@@ -199,8 +210,3 @@ class VGGish(VGG):
 
     def _postprocess(self, x):
         return self.pproc(x)
-
-#model = VGGish(urls = model_urls, pretrained = True, preprocess = False)
-#print(model)
-#model.classifier._modules['2'] = nn.Linear(100, 18)
-#print(model)

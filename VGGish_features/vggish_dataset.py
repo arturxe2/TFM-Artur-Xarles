@@ -1,24 +1,15 @@
+'''
+Code for TFM: Transformer-based Action Spotting for soccer videos
+
+The code in this file extracts samples for the VGGish model from the mel features
+'''
+
 from torch.utils.data import Dataset
-
 import numpy as np
-import random
-# import pandas as pd
 import os
-import time
-
-
 from tqdm import tqdm
-# import utils
-
-import torch
-
 import logging
 import json
-import random
-import moviepy.editor as mp
-import soundfile as sf
-import json
-import random
 from SoccerNet.Downloader import getListGames
 from SoccerNet.Downloader import SoccerNetDownloader
 from SoccerNet.Evaluation.utils import AverageMeter, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
@@ -29,6 +20,7 @@ from pydub import AudioSegment
 
 print('starting program')
 
+'Class to generate .wav files'
 class GenerateWav(Dataset):
     def __init__(self, path, features="224p.mp3", split = ["train", "valid", "test", "challenge"]):
         self.path = path
@@ -65,6 +57,7 @@ class GenerateWav(Dataset):
         
         
         
+'Generates samples for audio training'
 class AudioFeatures(Dataset):
     def __init__(self, path, features="audio.mp3", split=["train", "valid", "test", "challenge"], version=2, 
                 framerate=44100, chunk_size=42336, augment = False, only_labels = True):
@@ -328,12 +321,5 @@ class AudioFeatures(Dataset):
                 else:
                     print('Already has audio features')
             
-        #self.feats = np.concatenate(self.feats)
-        #self.game_labels = np.concatenate(self.game_labels)
-        
-        #print(self.feats.shape)
-        #print(self.game_labels.shape)
-        
-#GenerateWav('/data-net/datasets/SoccerNetv2/videos_lowres')
 
 audios = AudioFeatures('/data-local/data1-hdd/axesparraguera/vggish')
