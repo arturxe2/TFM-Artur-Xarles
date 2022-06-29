@@ -123,7 +123,7 @@ class Model(nn.Module):
             
             #Reduce mix to 18
             #self.pool_layer_mix = nn.MaxPool1d(chunk_size*(2+1*5), stride=1)
-            self.pool_layer_mix = nn.MaxPool1d(5, stride = 1)
+            self.pool_layer_mix = nn.MaxPool1d(6, stride = 1)
             self.fc_mix = nn.Linear(512, self.num_classes+1)
             
 
@@ -220,7 +220,7 @@ class Model(nn.Module):
             inputsB5 = inputs_pooledB5.permute((0, 2, 1)) #(B x 1 x 256)
             
             
-            inputs_mix = torch.cat((inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
+            inputs_mix = torch.cat((inputsA, inputsB1, inputsB2, inputsB3, inputsB4, inputsB5), dim=1)
             
             
             #Transformer mix (B x chunk_size * 7 x 256)
